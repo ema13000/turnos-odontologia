@@ -251,8 +251,8 @@
       "RN-01 duración por prestación",
       "RN-02 sin solapamiento por profesional",
       "RN-03 sin solapamiento por sillón",
-      "RN-04 10 min de margen entre turnos del mismo sillón (alcance a confirmar)",
-      "RN-05 intervalos [inicio, fin): contiguos no solapan",
+      "RN-04 10 min de margen entre turnos consecutivos del mismo sillón o del mismo profesional",
+      "RN-05 intervalos [inicio, fin); si comparten sillón o profesional aplica RN-04 (10:30 se rechaza, 10:40 se acepta)",
       "RN-06 sobreturno solo staff",
       "RN-07 paciente cancela/reprograma hasta 24 h antes",
       "RN-08 cancelar libera horario",
@@ -279,7 +279,6 @@
       "Conflictos de merge con 5 personas"
     ],
     "preguntas_abiertas": [
-      "Alcance del margen de 10 min (sillón vs profesional; contiguos en mismo sillón)",
       "Margen fijo o configurable",
       "Login del paciente",
       "Registro de ausentismo",

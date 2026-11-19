@@ -68,8 +68,8 @@ Hipótesis del equipo, confirmada y completada con la investigación (informe, D
 - **RN-01**: cada prestación tiene una **duración propia** (por ejemplo, consulta de 30 min o tratamiento de conducto de 60 min). El fin del turno se calcula como inicio más duración.
 - **RN-02**: un **profesional** no puede tener dos turnos que se superpongan en el tiempo. Tampoco puede atender en dos sillones a la vez.
 - **RN-03**: un **sillón o box** no puede tener dos turnos que se superpongan en el tiempo.
-- **RN-04**: entre dos turnos consecutivos **en el mismo sillón** debe haber **10 minutos** libres para limpieza y preparación. *(Ver la pregunta abierta 1 sobre su alcance.)*
-- **RN-05**: un turno que empieza exactamente cuando termina otro **no** se considera solapado (intervalos semiabiertos [inicio, fin)), siempre sujeto a RN-04.
+- **RN-04**: entre dos turnos consecutivos debe haber **10 minutos** libres, tanto **en el mismo sillón** (limpieza y preparación) como **para el mismo profesional** (aunque cambie de sillón). Ejemplo: si el Sillón 1 o la Dra. A tienen un turno de 10:00 a 10:30, el siguiente turno de ese sillón o de esa profesional puede empezar recién a las **10:40**. *(Decisión del equipo, 2026-11-19.)*
+- **RN-05**: el solapamiento se evalúa con intervalos semiabiertos [inicio, fin). Dos turnos de **sillones y profesionales distintos** pueden ser contiguos o simultáneos. Si comparten sillón o profesional, se aplica RN-04, así que un turno que empieza justo cuando termina otro (10:30) **se rechaza**, y uno que empieza a las 10:40 **se acepta** (caso de borde).
 - **RN-06**: solo el **personal** (recepcionista u odontólogo) puede cargar un **sobreturno**, que queda registrado como excepción a RN-02 y RN-03.
 - **RN-07**: el **paciente** puede cancelar o reprogramar online hasta **24 h** antes del inicio del turno. Después de ese plazo, solo puede hacerlo el personal.
 - **RN-08**: al cancelar un turno, el horario queda **libre** para otra reserva.
@@ -102,7 +102,7 @@ Hipótesis del equipo, confirmada y completada con la investigación (informe, D
 
 ## 11. Preguntas abiertas
 
-1. **Alcance del margen de 10 minutos (RN-04)**: ¿aplica solo al sillón (limpieza), o también al profesional cuando cambia de sillón? Y si aplica al sillón, un turno que empieza justo cuando termina otro **en el mismo sillón** sería rechazado. ¿Es así? *(Hay que resolverlo antes del spec del change.)*
+1. ~~Alcance del margen de 10 minutos~~ **Resuelta (2026-11-19)**: aplica al sillón **y** al profesional (ver RN-04 y RN-05).
 2. ¿El margen de 10 minutos es fijo o configurable por consultorio o por prestación?
 3. ¿Hace falta login para el paciente, o alcanza con DNI y teléfono o email para reservar?
 4. ¿Qué pasa con los turnos de un paciente que confirma por WhatsApp pero no asiste (ausentismo)? ¿Se registra?

@@ -224,7 +224,7 @@ Aparecen en la mayoría de los sistemas, así que **no diferencian a nadie**: so
 
 **Imprescindible (v1):**
 1. Alta de profesionales, sillones o boxes y prestaciones con **duración propia**.
-2. **Crear turno sin solapamiento por profesional y por sillón.** Un turno que empieza exactamente cuando termina otro no se solapa. Entre turnos consecutivos en el mismo sillón quedan **10 minutos** para limpieza (decisión del equipo; alcance a confirmar, ver `discovery.md`, pregunta abierta 1).
+2. **Crear turno sin solapamiento por profesional y por sillón.** Entre turnos consecutivos del mismo sillón **o** del mismo profesional deben quedar **10 minutos** libres (decisión del equipo, ver `discovery.md`, RN-04 y RN-05).
 3. **Cancelar y reprogramar** turnos. El paciente puede hacerlo online hasta **24 h antes**; el personal, siempre. Al cancelar, el horario queda libre.
 4. **Sobreturno** que solo puede cargar el personal (recepcionista u odontólogo), registrado como excepción.
 5. Agenda diaria y semanal por profesional y por sillón.
