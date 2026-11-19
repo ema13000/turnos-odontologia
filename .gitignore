@@ -1,0 +1,21 @@
+# Configuración personal del agente (permisos locales de cada integrante)
+.claude/settings.local.json
+
+# Dependencias y artefactos de build
+node_modules/
+dist/
+coverage/
+
+# Secretos y variables de entorno
+.env
+.env.*
+!.env.example
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Respaldos del orquestador
+*.bak

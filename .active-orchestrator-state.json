@@ -1,0 +1,23 @@
+{
+  "version": 5,
+  "step": "discovery",
+  "owner": "active-orchestrator",
+  "foundation": {
+    "version": 1,
+    "approved": "2026-11-18",
+    "approved_by": "Sofia Indovino (líder)",
+    "team": ["Sofia Indovino", "Emanuel", "Juan Sebastián", "Juan Cruz", "Enzo"],
+    "order": ["openspec-init", "discovery", "kb", "visual-design", "roadmap", "task-management", "find-skill", "registry", "agents"],
+    "phases": {
+      "openspec-init": {"variant": "default", "status": "done", "completed": "2026-11-18", "requires": [], "outputs": ["openspec/", ".claude/skills/openspec-*", ".agents/skills/openspec-*"], "notes": "openspec 2.1.0, --tools claude --scope project --language es, schema spec-driven"},
+      "discovery": {"variant": "interview+competitors", "status": "pending", "requires": ["openspec-init"], "outputs": ["docs/discovery/discovery.md", "docs/discovery/informe-discovery.md"]},
+      "kb": {"variant": "import", "status": "pending", "requires": ["discovery"], "outputs": ["knowledge-base/"]},
+      "visual-design": {"variant": "off", "status": "pending", "requires": [], "outputs": ["design-system/README.md"]},
+      "roadmap": {"variant": "local-markdown", "status": "pending", "requires": ["kb"], "outputs": ["CHANGES.md"]},
+      "task-management": {"variant": "local", "status": "pending", "requires": ["roadmap"], "outputs": [".active-stack/roadmap.json"]},
+      "find-skill": {"variant": "install-selected", "status": "pending", "requires": ["kb"], "outputs": []},
+      "registry": {"variant": "index", "status": "pending", "requires": ["find-skill"], "outputs": [".atl/skill-registry.md"]},
+      "agents": {"variant": "generate", "status": "pending", "requires": ["kb", "roadmap", "registry"], "outputs": ["AGENTS.md", "CLAUDE.md"]}
+    }
+  }
+}
