@@ -6,18 +6,288 @@
     "version": 1,
     "approved": "2026-11-18",
     "approved_by": "Sofia Indovino (líder)",
-    "team": ["Sofia Indovino", "Emanuel", "Juan Sebastián", "Juan Cruz", "Enzo"],
-    "order": ["openspec-init", "discovery", "kb", "visual-design", "roadmap", "task-management", "find-skill", "registry", "agents"],
+    "team": [
+      "Sofia Indovino",
+      "Emanuel",
+      "Juan Sebastián",
+      "Juan Cruz",
+      "Enzo"
+    ],
+    "order": [
+      "openspec-init",
+      "discovery",
+      "kb",
+      "visual-design",
+      "roadmap",
+      "task-management",
+      "find-skill",
+      "registry",
+      "agents"
+    ],
     "phases": {
-      "openspec-init": {"variant": "default", "status": "done", "completed": "2026-11-18", "requires": [], "outputs": ["openspec/", ".claude/skills/openspec-*", ".agents/skills/openspec-*"], "notes": "openspec 2.1.0, --tools claude --scope project --language es, schema spec-driven"},
-      "discovery": {"variant": "interview+competitors", "status": "pending", "requires": ["openspec-init"], "outputs": ["docs/discovery/discovery.md", "docs/discovery/informe-discovery.md"]},
-      "kb": {"variant": "import", "status": "pending", "requires": ["discovery"], "outputs": ["knowledge-base/"]},
-      "visual-design": {"variant": "off", "status": "pending", "requires": [], "outputs": ["design-system/README.md"]},
-      "roadmap": {"variant": "local-markdown", "status": "pending", "requires": ["kb"], "outputs": ["CHANGES.md"]},
-      "task-management": {"variant": "local", "status": "pending", "requires": ["roadmap"], "outputs": [".active-stack/roadmap.json"]},
-      "find-skill": {"variant": "install-selected", "status": "pending", "requires": ["kb"], "outputs": []},
-      "registry": {"variant": "index", "status": "pending", "requires": ["find-skill"], "outputs": [".atl/skill-registry.md"]},
-      "agents": {"variant": "generate", "status": "pending", "requires": ["kb", "roadmap", "registry"], "outputs": ["AGENTS.md", "CLAUDE.md"]}
+      "openspec-init": {
+        "variant": "default",
+        "status": "done",
+        "completed": "2026-11-18",
+        "requires": [],
+        "outputs": [
+          "openspec/",
+          ".claude/skills/openspec-*",
+          ".agents/skills/openspec-*"
+        ],
+        "notes": "openspec 2.1.0, --tools claude --scope project --language es, schema spec-driven"
+      },
+      "discovery": {
+        "variant": "interview+competitors",
+        "status": "in_progress",
+        "requires": [
+          "openspec-init"
+        ],
+        "outputs": [
+          "docs/discovery/discovery.md",
+          "docs/discovery/informe-discovery.md",
+          "docs/discovery/sources/relevamiento-fuentes.md"
+        ],
+        "pending": [
+          "verificación manual de 5 fuentes por el equipo",
+          "informe-discovery.pdf"
+        ]
+      },
+      "kb": {
+        "variant": "import",
+        "status": "pending",
+        "requires": [
+          "discovery"
+        ],
+        "outputs": [
+          "knowledge-base/"
+        ]
+      },
+      "visual-design": {
+        "variant": "off",
+        "status": "pending",
+        "requires": [],
+        "outputs": [
+          "design-system/README.md"
+        ]
+      },
+      "roadmap": {
+        "variant": "local-markdown",
+        "status": "pending",
+        "requires": [
+          "kb"
+        ],
+        "outputs": [
+          "CHANGES.md"
+        ]
+      },
+      "task-management": {
+        "variant": "local",
+        "status": "pending",
+        "requires": [
+          "roadmap"
+        ],
+        "outputs": [
+          ".active-stack/roadmap.json"
+        ]
+      },
+      "find-skill": {
+        "variant": "install-selected",
+        "status": "pending",
+        "requires": [
+          "kb"
+        ],
+        "outputs": []
+      },
+      "registry": {
+        "variant": "index",
+        "status": "pending",
+        "requires": [
+          "find-skill"
+        ],
+        "outputs": [
+          ".atl/skill-registry.md"
+        ]
+      },
+      "agents": {
+        "variant": "generate",
+        "status": "pending",
+        "requires": [
+          "kb",
+          "roadmap",
+          "registry"
+        ],
+        "outputs": [
+          "AGENTS.md",
+          "CLAUDE.md"
+        ]
+      }
     }
+  },
+  "discovery": {
+    "created_by": "discovery-research",
+    "sources": [
+      "https://bilog.com.ar/",
+      "https://web.dentaltec.com.ar/software-odontologos-argentina",
+      "https://dentalsoft.com.ar/",
+      "https://dentalcore.app/",
+      "https://agendapro.com/ar/dental/software-odontologico",
+      "https://www.softwaredentalink.com/",
+      "https://ayuda.softwaredentalink.com/es/collections/19196578-modulo-exclusivo-para-argentina",
+      "https://odonthia.com/",
+      "https://hiorbita.com/",
+      "https://odonto.ar/",
+      "https://vectora.ar/pages/vecdent/",
+      "https://www.denticlick.app/",
+      "https://clinic-cloud.com/",
+      "https://doctocliq.com/",
+      "https://www.medesk.net/es/solutiones/odontologia",
+      "https://www.dentidesk.com/",
+      "https://www.opendental.com/"
+    ],
+    "sources_fetched_at": "2026-11-19",
+    "competitors": [
+      {
+        "name": "Bilog",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "DentalTec",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "DentalSoft",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "DentalCore",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "AgendaPro",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Dentalink",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Odonthia",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Órbita",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Odonto.ar",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "VecDent",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "DentiClick",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Clinic Cloud",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Doctocliq",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Medesk",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Dentidesk",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      },
+      {
+        "name": "Open Dental",
+        "notes_file": "docs/discovery/sources/relevamiento-fuentes.md"
+      }
+    ],
+    "problema": "Turnos desordenados por WhatsApp/teléfono que se pierden o superponen, y falta de visibilidad de profesionales y sillones libres en consultorios odontológicos chicos.",
+    "usuarios": [
+      "recepcionista",
+      "odontólogo",
+      "administrador del consultorio",
+      "paciente"
+    ],
+    "casos_de_uso": [
+      "Crear turno sin solapamiento por profesional y sillón",
+      "Reserva online del paciente",
+      "Cancelar/reprogramar hasta 24 h antes",
+      "Recordatorio y confirmación por WhatsApp o email",
+      "Agenda diaria/semanal y ficha con odontograma"
+    ],
+    "funcionalidades_necesarias": [
+      "ABM profesionales, sillones y prestaciones con duración",
+      "Crear turno sin solapamiento profesional+sillón",
+      "Cancelar y reprogramar liberando horario",
+      "Sobreturno solo staff",
+      "Agenda diaria/semanal",
+      "Reserva online del paciente",
+      "Recordatorio/confirmación WhatsApp con fallback email",
+      "Ficha básica con odontograma"
+    ],
+    "funcionalidades_opcionales": [
+      "Lista de espera automática",
+      "Política de cancelación configurable",
+      "Obras sociales",
+      "ARCA",
+      "Mercado Pago",
+      "Periodontograma e imágenes",
+      "IA",
+      "Multisucursal",
+      "HL7 FHIR"
+    ],
+    "reglas_de_negocio": [
+      "RN-01 duración por prestación",
+      "RN-02 sin solapamiento por profesional",
+      "RN-03 sin solapamiento por sillón",
+      "RN-04 10 min de margen entre turnos del mismo sillón (alcance a confirmar)",
+      "RN-05 intervalos [inicio, fin): contiguos no solapan",
+      "RN-06 sobreturno solo staff",
+      "RN-07 paciente cancela/reprograma hasta 24 h antes",
+      "RN-08 cancelar libera horario",
+      "RN-09 recordatorios sin datos de salud; email si no tiene WhatsApp"
+    ],
+    "integraciones": [
+      "WhatsApp Business API (Meta) — simulable por adaptador",
+      "Email (fallback)"
+    ],
+    "restricciones": [
+      "Spring Boot + Gradle + PostgreSQL",
+      "TypeScript vanilla responsivo",
+      "Entrega en 6 días (~2026-11-25)",
+      "Solo datos ficticios",
+      "Leyes 25.326 y 26.529",
+      "Grupo de 5 (consigna: hasta 3) a confirmar"
+    ],
+    "riesgos": [
+      "Problema no validado con consultorios reales",
+      "Alcance vs plazo",
+      "Costo/aprobación WhatsApp API",
+      "Datos sensibles de salud",
+      "Evidencia de competidores mayormente comercial",
+      "Conflictos de merge con 5 personas"
+    ],
+    "preguntas_abiertas": [
+      "Alcance del margen de 10 min (sillón vs profesional; contiguos en mismo sillón)",
+      "Margen fijo o configurable",
+      "Login del paciente",
+      "Registro de ausentismo",
+      "Motivo obligatorio en sobreturno",
+      "Ítems No evidenciado del informe",
+      "Aceptación del grupo de 5"
+    ],
+    "report_file": "docs/discovery/informe-discovery.md",
+    "checklist_file": "docs/discovery/discovery.md"
   }
 }
