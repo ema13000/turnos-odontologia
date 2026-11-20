@@ -13,7 +13,7 @@ Trabajo Global de Integración de **Desarrollo de Software**: del Discovery al p
 | Juan Cruz | Integrante |
 | Enzo | Integrante |
 
-## 👉 Tarea actual para el equipo: verificación de fuentes
+## Tarea actual para el equipo: verificación de fuentes
 
 Cada integrante verifica **una fuente** del informe de Discovery, a mano y sin IA.
 Instrucciones, asignación y plantilla: **[docs/discovery/verificacion/README.md](docs/discovery/verificacion/README.md)**
@@ -22,14 +22,14 @@ Instrucciones, asignación y plantilla: **[docs/discovery/verificacion/README.md
 
 | Etapa | Estado |
 |---|---|
-| 0. Preparación del entorno | ✅ Hecho (`docs/evidencia/`) |
-| 1. `/active-orchestrator` + `openspec init` | ✅ Hecho |
-| 2. Discovery | 🔄 En curso: falta la verificación de fuentes y el PDF |
-| 3. Base de conocimiento (`knowledge-base/`) | ⏳ Pendiente |
-| 4. Roadmap (`CHANGES.md`) | ⏳ Pendiente |
-| 5. Skills y reglas del agente (`AGENTS.md`, `CLAUDE.md`) | ⏳ Pendiente |
-| 6. Ciclo OPSX sobre un change | ⏳ Pendiente |
-| 7. Memoria del agente (Engram) | ⏳ Pendiente |
+| 0. Preparación del entorno | Hecho (`docs/evidencia/`) |
+| 1. `/active-orchestrator` + `openspec init` | Hecho |
+| 2. Discovery | En curso: falta la verificación de fuentes y el PDF |
+| 3. Base de conocimiento (`knowledge-base/`) | Pendiente |
+| 4. Roadmap (`CHANGES.md`) | Pendiente |
+| 5. Skills y reglas del agente (`AGENTS.md`, `CLAUDE.md`) | Pendiente |
+| 6. Ciclo OPSX sobre un change | Pendiente |
+| 7. Memoria del agente (Engram) | Pendiente |
 
 El estado detallado de la fundación está en [`.active-orchestrator-state.json`](.active-orchestrator-state.json).
 
