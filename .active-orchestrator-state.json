@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "step": "discovery",
+  "step": "kb",
   "owner": "active-orchestrator",
   "foundation": {
     "version": 1,
@@ -49,18 +49,29 @@
           "docs/discovery/sources/relevamiento-fuentes.md"
         ],
         "pending": [
-          "verificación manual de 5 fuentes por el equipo",
+          "verificación de Bilog (Emanuel)",
+          "verificación de DentalSoft (Juan Sebastián)",
           "informe-discovery.pdf"
+        ],
+        "verified_sources": [
+          "Dentalink (Juan Cruz, PR #1)",
+          "Odonthia (Enzo, PR #2)",
+          "VecDent (Sofia, PR #3)"
         ]
       },
       "kb": {
         "variant": "import",
-        "status": "pending",
+        "status": "in_progress",
         "requires": [
           "discovery"
         ],
         "outputs": [
           "knowledge-base/"
+        ],
+        "inputs": [
+          "docs/discovery/discovery.md",
+          "docs/discovery/informe-discovery.md",
+          "docs/discovery/sources/relevamiento-fuentes.md"
         ]
       },
       "visual-design": {
@@ -122,7 +133,15 @@
           "CLAUDE.md"
         ]
       }
-    }
+    },
+    "decisions": [
+      {
+        "date": "2026-11-20",
+        "by": "Sofia Indovino (líder)",
+        "decision": "Avanzar a la KB en paralelo sin esperar las verificaciones de Bilog y DentalSoft; si encuentran errores se aplica Ajustar al informe y a la KB.",
+        "reason": "Plazo de 6 días; la KB depende del checklist y del MVP, no de esas dos fuentes."
+      }
+    ]
   },
   "discovery": {
     "created_by": "discovery-research",
