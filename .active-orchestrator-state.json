@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "step": "kb",
+  "step": "visual-design",
   "owner": "active-orchestrator",
   "foundation": {
     "version": 1,
@@ -61,7 +61,7 @@
       },
       "kb": {
         "variant": "import",
-        "status": "in_progress",
+        "status": "done",
         "requires": [
           "discovery"
         ],
@@ -72,7 +72,9 @@
           "docs/discovery/discovery.md",
           "docs/discovery/informe-discovery.md",
           "docs/discovery/sources/relevamiento-fuentes.md"
-        ]
+        ],
+        "completed": "2026-11-20",
+        "review": "pendiente de Continuar/Ajustar de la líder"
       },
       "visual-design": {
         "variant": "off",
@@ -307,5 +309,30 @@
     ],
     "report_file": "docs/discovery/informe-discovery.md",
     "checklist_file": "docs/discovery/discovery.md"
+  },
+  "kb": {
+    "created_by": "kb-creator",
+    "source": "ingest",
+    "discovery": {
+      "problem": "Turnos desordenados por WhatsApp/teléfono que se pierden o superponen, y falta de visibilidad de profesionales y sillones libres en consultorios odontológicos chicos.",
+      "system_type": "web_app",
+      "domain": "salud / odontología (agenda de turnos)",
+      "scale": "team",
+      "stack": "Spring Boot + Gradle + PostgreSQL; TypeScript vanilla",
+      "needs_infra": true
+    },
+    "files": [
+      "knowledge-base/01_vision_y_objetivos.md",
+      "knowledge-base/02_descripcion_general.md",
+      "knowledge-base/03_actores_y_roles.md",
+      "knowledge-base/04_modelo_de_datos.md",
+      "knowledge-base/05_reglas_de_negocio.md",
+      "knowledge-base/06_funcionalidades.md",
+      "knowledge-base/07_flujos_principales.md",
+      "knowledge-base/08_arquitectura_propuesta.md",
+      "knowledge-base/09_decisiones_y_supuestos.md",
+      "knowledge-base/10_preguntas_abiertas.md",
+      "knowledge-base/README.md"
+    ]
   }
 }
