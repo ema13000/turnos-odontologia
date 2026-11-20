@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Materia** | Desarrollo de Software (Trabajo Global de Integración) |
-| **Integrantes** | Sofia Indovino (líder), Emanuel, Juan Sebastián, Juan Cruz, Enzo |
+| **Integrantes** | Sofia Indovino (líder), Emanuel Mateo, Juan Sebastián Cabrera, Juan Cruz Grivel, Enzo Mellimaci |
 | **Fecha** | 2026-11-19 |
 | **Estado** | Borrador v1. Pendiente de la verificación manual de fuentes por el equipo. |
 | **Uso de IA** | Relevamiento y redacción asistidos por un agente de IA (Claude Code). Las afirmaciones se tomaron de las páginas oficiales citadas y el equipo debe verificarlas (ver "Verificación de fuentes"). |
@@ -255,12 +255,12 @@ Aparecen en la mayoría de los sistemas, así que **no diferencian a nadie**: so
 
 | # | Tipo de fuente | URL | Qué afirma el informe | Responsable | Qué encontramos (fecha) | Corrección aplicada |
 |---|---|---|---|---|---|---|
-| 1 | Sitio oficial | https://bilog.com.ar/ | +1.500 clínicas; reserva y cancelación online; recordatorios por WhatsApp; sin precios publicados | _(a completar)_ | | |
-| 2 | Página de precios | https://dentalsoft.com.ar/ (sección planes) | Plan Gratis de 50 turnos/mes; Gestión $30.000; Pro $60.000 por profesional; costo de Meta de USD 0,026 por mensaje | _(a completar)_ | | |
-| 3 | Centro de ayuda | https://ayuda.softwaredentalink.com/es/collections/19196578-modulo-exclusivo-para-argentina | Módulo para Argentina con obras sociales, conciliaciones y receta electrónica | _(a completar)_ | | |
-| 4 | Video oficial | https://odonthia.com/ (video "Mirá Odonthia por dentro") | Odontograma FDI con dientes temporales; plan gratuito permanente | _(a completar)_ | | |
-| 5 | Demo pública | https://vectora.ar/pages/vecdent/ (demo sin registro) | Periodontograma de 6 puntos; portal del paciente; ARS 30.000, 50.000 y 80.000 | _(a completar)_ | | |
-| 6 (opcional) | Sitio oficial | https://dentalcore.app/ | Precio ARS 75.000 contra USD 50 (inconsistencia detectada) | _(a completar)_ | | |
+| 1 | Sitio oficial | https://bilog.com.ar/ | +1.500 clínicas; reserva y cancelación online; recordatorios por WhatsApp; sin precios publicados | Emanuel | | |
+| 2 | Página de precios | https://dentalsoft.com.ar/ (sección planes) | Plan Gratis de 50 turnos/mes; Gestión $30.000; Pro $60.000 por profesional; costo de Meta de USD 0,026 por mensaje | Juan Sebastian | | |
+| 3 | Centro de ayuda | https://ayuda.softwaredentalink.com/es/collections/19196578-modulo-exclusivo-para-argentina | Módulo para Argentina con obras sociales, conciliaciones y receta electrónica | Juan Cruz | | |
+| 4 | Video oficial | https://odonthia.com/ (video "Mirá Odonthia por dentro") | Odontograma FDI con dientes temporales; plan gratuito permanente | Enzo | | |
+| 5 | Demo pública | https://vectora.ar/pages/vecdent/ (demo sin registro) | Periodontograma de 6 puntos; portal del paciente; ARS 30.000, 50.000 y 80.000 | Sofia | | |
+| 6 (opcional) | Sitio oficial | https://dentalcore.app/ | Precio ARS 75.000 contra USD 50 (inconsistencia detectada) | (Libre) | | |
 
 **Problemas ya detectados en el relevamiento automático** (para la reflexión):
 
