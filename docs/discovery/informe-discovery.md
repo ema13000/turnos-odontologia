@@ -83,7 +83,7 @@ Todas las fuentes se consultaron el **2026-11-19**.
 | 7 | Odonthia | No evidenciado (solo enlace) | Afirmado (plan "varios sillones") | No evidenciado | Afirmado (solo enlace) | Afirmado (solo enlace) | Afirmado (planes pagos) | No evidenciado |
 | 8 | Órbita | No evidenciado | Afirmado (captura) | No evidenciado | No evidenciado (vía WhatsApp sí) | Afirmado | Afirmado (API Meta) | No evidenciado |
 | 9 | Odonto.ar | Afirmado | No evidenciado | No evidenciado | Afirmado (mockup, con reglas de cancelación) | No evidenciado | No evidenciado | No evidenciado |
-| 10 | VecDent | Comprobado (demo) | No evidenciado | No evidenciado | Comprobado (portal en demo) | No evidenciado | No evidenciado | No evidenciado |
+| 10 | VecDent | Comprobado (demo) | No evidenciado | No evidenciado | No evidenciado (la demo solo permite crear turnos al personal; verificación manual del 2026-11-20) | No evidenciado | No evidenciado | No evidenciado |
 | 11 | DentiClick | Afirmado | No evidenciado | No evidenciado | Afirmado (mini-web) | No evidenciado | No evidenciado | No evidenciado |
 | 12 | Clinic Cloud | Afirmado | No evidenciado | No evidenciado | Afirmado (vía Doctoralia) | Afirmado | Afirmado | No evidenciado |
 | 13 | Doctocliq | Afirmado | No evidenciado | No evidenciado | No evidenciado (vía WhatsApp sí) | Afirmado | Afirmado (IA) | No evidenciado |
@@ -101,10 +101,10 @@ Todas las fuentes se consultaron el **2026-11-19**.
 | 4 | DentalCore | Afirmado | Afirmado | Afirmado | Afirmado (65 cargadas) | Afirmado | Afirmado | ARS 75.000/mes **o** USD 50/mes (inconsistente) | Prueba de 7 días |
 | 5 | AgendaPro | Afirmado | No evidenciado | Afirmado | No evidenciado | No evidenciado | Afirmado (señas) | Desde ARS 13.900/mes | Prueba de 14 días |
 | 6 | Dentalink | Afirmado | Afirmado | Afirmado | Comprobado (centro de ayuda, módulo AR) | No evidenciado | No evidenciado | No evidenciado (cotización) | No evidenciado |
-| 7 | Odonthia | Comprobado (captura y video) | Afirmado (solo enlace) | Afirmado (solo enlace) | Afirmado (solo enlace) | No evidenciado | No evidenciado | ARS 76.600 y 158.100/mes | Plan gratis permanente |
+| 7 | Odonthia | Comprobado (captura y video) | Afirmado (solo enlace) | Afirmado (solo enlace) | Afirmado (solo enlace) | No evidenciado | No evidenciado | ARS 77.100 y 159.100/mes (verificado el 2026-11-20; el relevamiento del 19/11 leyó 76.600 y 158.100) | Plan gratis permanente (gestión del consultorio; IA y WhatsApp automático son pagos) |
 | 8 | Órbita | Afirmado (voz) | No evidenciado | Afirmado | Afirmado | No evidenciado | No evidenciado | No evidenciado | No evidenciado |
 | 9 | Odonto.ar | Afirmado (mockup) | No evidenciado | Afirmado | Afirmado | No evidenciado | No evidenciado (solo para pagar la suscripción) | USD 29, 49 y 99/mes | Prueba de 30 días |
-| 10 | VecDent | Comprobado (demo) | Comprobado (demo) | Afirmado | Comprobado (demo) | No evidenciado | No evidenciado | ARS 30.000, 50.000 y 80.000/mes | Demo sin registro |
+| 10 | VecDent | Comprobado (demo) | Comprobado (demo, 6 puntos; desde el plan Profesional) | Afirmado | Comprobado (demo) | No evidenciado | No evidenciado | $30.000, 50.000 y 80.000/mes (moneda no explícita) | Demo sin registro |
 | 11 | DentiClick | Comprobado (demo interactiva) | No evidenciado | Afirmado | Afirmado | No evidenciado | No evidenciado | USD 12, 29 y 35/mes | Plan gratis y prueba de 1 mes |
 | 12 | Clinic Cloud | No evidenciado | No evidenciado | No evidenciado | No evidenciado (mutuas de España) | No evidenciado | No evidenciado | No evidenciado | Afirmado ("empezar gratis") |
 | 13 | Doctocliq | Afirmado (captura) | No evidenciado | Afirmado | No evidenciado | No evidenciado | No evidenciado | No evidenciado | Plan gratis y prueba de 7 días |
@@ -143,13 +143,15 @@ El detalle por sistema (roles, auditoría, exportación, seguridad, cifras de ad
 | 9 | DentiClick | 2 | 4 | 1 | 3 | 3 | 2 | 5 | **2,65** |
 | 10 | Odonthia | 2 | 3 | 2 | 1 | 2 | 3 | 5 | **2,30** |
 | 11 | Odonto.ar | 2 | 3 | 1 | 2 | 3 | 2 | 4 | **2,25** |
-| 11 | VecDent | 1 | 4 | 1 | 3 | 3 | 1 | 4 | **2,25** |
-| 13 | Clinic Cloud | 3 | 1 | 1 | 2 | 4 | 3 | 2 | **2,20** |
-| 14 | Medesk | 2 | 2 | 1 | 2 | 3 | 3 | 2 | **2,05** |
+| 12 | Clinic Cloud | 3 | 1 | 1 | 2 | 4 | 3 | 2 | **2,20** |
+| 13 | Medesk | 2 | 2 | 1 | 2 | 3 | 3 | 2 | **2,05** |
+| 13 | VecDent | 1 | 4 | 1 | 3 | 1 | 1 | 4 | **2,05** ✱ |
 | 15 | Dentidesk | 2 | 3 | 0 | 2 | 2 | 1 | 2 | **1,80** |
 | 15 | Open Dental | 3 | 2 | 0 | 2 | 3 | 0 | 1 | **1,80** |
 
 Fórmula: Total = (T·25 + C·20 + I·15 + A·15 + P·10 + S·10 + $·5) / 100.
+
+✱ **Ajuste por verificación manual (2026-11-20)**: VecDent bajó en "Experiencia del paciente" de 3 a 1, y su total pasó de 2,25 a 2,05, porque la demo no tiene reserva por el paciente (ver "Verificación de fuentes", fila 5).
 
 ### Nota metodológica
 
@@ -258,8 +260,8 @@ Aparecen en la mayoría de los sistemas, así que **no diferencian a nadie**: so
 | 1 | Sitio oficial | https://bilog.com.ar/ | +1.500 clínicas; reserva y cancelación online; recordatorios por WhatsApp; sin precios publicados | Emanuel | | |
 | 2 | Página de precios | https://dentalsoft.com.ar/ (sección planes) | Plan Gratis de 50 turnos/mes; Gestión $30.000; Pro $60.000 por profesional; costo de Meta de USD 0,026 por mensaje | Juan Sebastian | | |
 | 3 | Centro de ayuda | https://ayuda.softwaredentalink.com/es/collections/19196578-modulo-exclusivo-para-argentina | Módulo para Argentina con obras sociales, conciliaciones y receta electrónica | Juan Cruz | **Coincide** (2026-11-20 14:36). Las 3 afirmaciones están respaldadas, y la fuente agrega detalle: convenios, planes y aranceles, simulación de presupuesto, recaudación de pago y conciliaciones con estado. Detalle en `verificacion/juan-cruz.md` (PR #1). | Ninguna en el informe. La ficha de Dentalink en A.3 pasa de mencionar solo los títulos a tener **contenido verificado**. |
-| 4 | Video oficial | https://odonthia.com/ (video "Mirá Odonthia por dentro") | Odontograma FDI con dientes temporales; plan gratuito permanente | Enzo | | |
-| 5 | Demo pública | https://vectora.ar/pages/vecdent/ (demo sin registro) | Periodontograma de 6 puntos; portal del paciente; ARS 30.000, 50.000 y 80.000 | Sofia | | |
+| 4 | Video oficial | https://odonthia.com/ (video "Mirá Odonthia por dentro") | Odontograma FDI con dientes temporales; plan gratuito permanente | Enzo | **Coincide** (2026-11-20 16:45). Odontograma FDI (ISO 3950) en el video (min 2:44) con controles de dentición primaria, mixta y edéntulo (min 2:49). Los dientes temporales se confirman en el texto de la página, no en el video. El plan gratis no vence. **Los precios cambiaron**: IA ARS 77.100 y Max ARS 159.100 (el informe decía 76.600 y 158.100). Detalle en `verificacion/enzo.md` (PR #2). | **Ajustar**: se actualizan los precios de Odonthia en A.3 y se aclara que el plan gratis cubre la gestión del consultorio, mientras que la IA, el WhatsApp automático y los mensajes internos son pagos. |
+| 5 | Demo pública | https://vectora.ar/pages/vecdent/ (demo sin registro) | Periodontograma de 6 puntos; portal del paciente; ARS 30.000, 50.000 y 80.000 | Sofia | (2026-11-20 19:29) **Periodontograma: coincide**, con 3 puntos vestibulares (MV, V, DV) y 3 palatinos/linguales (ML, L, DL), más recesión, sangrado, placa, movilidad y furcación; está incluido desde el plan Profesional. **Portal del paciente: NO coincide**: solo administrador, odontólogo y recepcionista crean turnos. Un rol personalizado "paciente" ve el dashboard con estadísticas de la clínica y el menú Configuración, así que no es autogestión. **Precios: coinciden** ($30.000, $50.000 y $80.000 por mes), pero el sitio no aclara la moneda. Detalle en `verificacion/sofia.md` (PR #3). | **Ajustar**: A.2 VecDent / Reserva online pasa a "No evidenciado". A.3 aclara la moneda y que el periodontograma va desde el plan Profesional. Matriz B: P baja de 3 a 1 y el total, de 2,25 a 2,05. |
 | 6 (opcional) | Sitio oficial | https://dentalcore.app/ | Precio ARS 75.000 contra USD 50 (inconsistencia detectada) | (Libre) | | |
 
 **Problemas ya detectados en el relevamiento automático** (para la reflexión):
@@ -269,6 +271,12 @@ Aparecen en la mayoría de los sistemas, así que **no diferencian a nadie**: so
 - Un resumen automático de buscador dijo que el odontograma de AgendaPro "no quedaba claro". La lectura directa de la página oficial lo muestra en texto y mockup. **Los resúmenes de buscador no se usaron como fuente.**
 - **Reservo** se excluyó porque la página leída no permitió verificar funciones dentales. **Dently** se excluyó porque su dominio no resuelve. **Doctoralia Argentina** rechazó la conexión.
 - **Open Dental**: que es open source y está en español es un dato conocido, pero **no figura** en la página consultada, así que se marcó "No evidenciado" en lugar de completarlo de memoria.
+
+**Problemas detectados por la verificación manual del equipo** (2026-11-20):
+
+- **VecDent: el agente marcó como "Comprobado" algo falso.** El relevamiento automático puso "Comprobado (portal en demo)" en la reserva del paciente porque la página de venta muestra una captura del "portal". Al probar la demo, solo el personal puede crear turnos, y un rol "paciente" armado a mano ve datos internos de la clínica. **Una captura de marketing no es una demostración de la función.** (Sofia)
+- **Odonthia: los precios cambiaron de un día al otro**, o la lectura automática no fue exacta (ARS 76.600 a 77.100 y 158.100 a 159.100). Confirma por qué la consigna exige la fecha de consulta. (Enzo)
+- **Moneda implícita**: VecDent, como DentalSoft, publica precios con "$" sin aclarar la moneda. El informe había escrito "ARS" deduciéndolo. (Sofia)
 
 ---
 

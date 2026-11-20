@@ -60,7 +60,7 @@ Convención de evidencia:
 - WhatsApp automático en planes pagos. **Afirmado**.
 - Clínica: ficha y odontograma FDI. **Comprobado** (captura y video "Mirá Odonthia por dentro").
 - Seguridad: registro de actividad, exportación de datos, firma con hash. **Afirmado**.
-- Comercial: plan gratuito sin vencimiento; IA ARS 76.600/mes; Max ARS 158.100/mes. Cifra: 4.480 consultorios con cuenta. **Afirmado**.
+- Comercial: plan gratuito sin vencimiento (gestión del consultorio; IA, WhatsApp automático y mensajes internos son pagos). IA ARS 77.100/mes y Max ARS 159.100/mes según la **verificación manual de Enzo del 2026-11-20** (la lectura automática del 19/11 decía 76.600 y 158.100). Cifra: 4.480 consultorios con cuenta. **Afirmado**.
 
 ### 6. Órbita (Órbita Global). https://hiorbita.com/
 - País: Argentina (La Plata). Datos en AWS.
@@ -82,9 +82,11 @@ Convención de evidencia:
 
 ### 8. VecDent (Vectora). https://vectora.ar/pages/vecdent/
 - País: Argentina (inferido por precios en ARS). Segmento: independiente, consultorio y clínica.
-- Agenda semanal por profesional; portal del paciente para pedir turno; ficha; odontograma por voz; periodontograma de 6 puntos; obras sociales; liquidaciones; roles. **Comprobado** (demo en vivo con datos de ejemplo).
+- Agenda semanal por profesional, ficha, odontograma por voz, periodontograma de 6 puntos, obras sociales, liquidaciones y roles. **Comprobado** (demo en vivo con datos de ejemplo).
+- ~~Portal del paciente para pedir turno: Comprobado~~ **Corregido por verificación manual (Sofia, 2026-11-20)**: en la demo solo el personal crea turnos. El "portal" solo aparece como captura en la página de venta. Queda **No evidenciado**.
+- El periodontograma está incluido desde el plan Profesional. Los precios se muestran con "$" sin aclarar la moneda.
 - Recordatorios de turnos, ARCA y Mercado Pago: **No evidenciado**.
-- Comercial: Básico ARS 30.000, Profesional ARS 50.000, Premium ARS 80.000 por mes.
+- Comercial: Básico $30.000, Profesional $50.000 y Premium $80.000 por mes (moneda no explícita).
 
 ### 9. DentiClick (ThunderSkills). https://www.denticlick.app/
 - País: "hecho en Argentina y Venezuela". Nube; instalable como app.
