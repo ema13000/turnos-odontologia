@@ -28,7 +28,7 @@ Trabajo Global de Integración de **Desarrollo de Software**: del Discovery al p
 | 3. Base de conocimiento (`knowledge-base/`) | Hecho |
 | 4. Roadmap (`CHANGES.md`) | Hecho: 32 changes (MVP C-01 a C-14) |
 | 5. Skills y reglas del agente (`AGENTS.md`, `CLAUDE.md`) | Hecho: 5 skills en el repo, [registro](.atl/skill-registry.md) y 10 reglas duras |
-| 6. Ciclo OPSX sobre un change | Pendiente |
+| 6. Ciclo OPSX sobre un change | Hecho: C-01 `crear-turno-sin-solapamientos` (explore → propose → apply → verify → archive), 12 escenarios con su test. [Evidencia](docs/evidencia/etapa-6-c01-tests.txt) |
 | 7. Memoria del agente (Engram) | Pendiente |
 
 El estado detallado de la fundación está en [`.active-orchestrator-state.json`](.active-orchestrator-state.json).
@@ -57,4 +57,11 @@ El estado detallado de la fundación está en [`.active-orchestrator-state.json`
 
 ## Instalación y tests
 
-_Se completará en la Etapa 6, cuando exista el código del change._
+Requisito: Java 21. Si no lo tenés, Gradle lo descarga solo la primera vez. No hace falta instalar Gradle ni Docker para C-01.
+
+```bash
+cd backend
+./gradlew test        # en Windows: gradlew.bat test
+```
+
+Corre los 14 tests del backend. Los 12 escenarios de `openspec/specs/agenda-turnos/spec.md` están en `CrearTurnoTest` y `MargenTest`, y cada test tiene el mismo nombre que su escenario. La guía completa de instalación (PostgreSQL y frontend) llega con C-14.
