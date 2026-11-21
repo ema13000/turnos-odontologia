@@ -1,0 +1,96 @@
+# Spec Delta
+
+## Purpose
+
+Definir cómo el frontend se comunica con la API REST del consultorio. Cubre a qué dirección envía los pedidos, cómo identifica la sesión, cómo se protege contra CSRF y cómo entrega a las pantallas los errores de negocio y de validación con su código estable, sin exponer detalles internos. En los escenarios, la URL base de ejemplo es `http://localhost:8080/api/v1`.
+
+## ADDED Requirements
+
+### Requirement: URL base configurable
+El cliente SHALL armar la dirección de cada pedido como la URL base configurada en `VITE_API_BASE_URL` seguida de la ruta del recurso, sin duplicar ni omitir la barra entre las dos. La URL base MUST NOT estar escrita en el código.
+
+#### Scenario: Pedido a un recurso de la API
+- **GIVEN** la URL base `http://localhost:8080/api/v1`
+- **WHEN** una pantalla pide `GET /turnos`
+- **THEN** el pedido se envía a `http://localhost:8080/api/v1/turnos`
+
+#### Scenario: URL base con barra final
+- **GIVEN** la URL base `http://localhost:8080/api/v1/`
+- **WHEN** una pantalla pide `GET /turnos`
+- **THEN** el pedido se envía a `http://localhost:8080/api/v1/turnos`
+
+### Requirement: Envío de la sesión
+El cliente MUST enviar la cookie de sesión en todos los pedidos, incluidos los dirigidos a otro origen durante el desarrollo, y MUST NOT leer, guardar ni enviar tokens de sesión por su cuenta (DD-10).
+
+#### Scenario: Pedido con la cookie de sesión
+- **WHEN** una pantalla pide `GET /turnos`
+- **THEN** el pedido se envía con las credenciales del navegador incluidas
+
+### Requirement: Token CSRF en los pedidos que modifican datos
+En los pedidos `POST`, `PUT`, `PATCH` y `DELETE`, el cliente SHALL leer el token de la cookie `XSRF-TOKEN` y enviarlo en el encabezado `X-XSRF-TOKEN`. En `GET` MUST NOT enviar ese encabezado. Si la cookie no existe, el pedido se envía sin el encabezado y el servidor decide.
+
+#### Scenario: POST con token CSRF
+- **GIVEN** la cookie `XSRF-TOKEN` con el valor `token-ficticio-123`
+- **WHEN** una pantalla pide `POST /turnos`
+- **THEN** el pedido lleva el encabezado `X-XSRF-TOKEN: token-ficticio-123`
+
+#### Scenario: GET sin token CSRF
+- **GIVEN** la cookie `XSRF-TOKEN` con el valor `token-ficticio-123`
+- **WHEN** una pantalla pide `GET /turnos`
+- **THEN** el pedido no lleva el encabezado `X-XSRF-TOKEN`
+
+#### Scenario: POST sin cookie CSRF
+- **GIVEN** que no existe la cookie `XSRF-TOKEN`
+- **WHEN** una pantalla pide `POST /turnos`
+- **THEN** el pedido se envía sin el encabezado `X-XSRF-TOKEN`
+
+### Requirement: Cuerpo JSON
+El cliente SHALL enviar el cuerpo de los pedidos como JSON con `Content-Type: application/json`. Ante una respuesta exitosa con cuerpo JSON, SHALL entregar el cuerpo interpretado. Ante una respuesta `204` o sin cuerpo, SHALL entregar un resultado vacío sin fallar.
+
+#### Scenario: Respuesta exitosa con datos
+- **GIVEN** que la API responde `201` con el cuerpo `{"id": 1, "estado": "RESERVADO"}`
+- **WHEN** una pantalla pide `POST /turnos` con un turno ficticio
+- **THEN** el pedido lleva el cuerpo en JSON y `Content-Type: application/json`
+- **AND** la pantalla recibe el objeto con `id` 1 y `estado` `RESERVADO`
+
+#### Scenario: Respuesta exitosa sin cuerpo
+- **GIVEN** que la API responde `204` sin cuerpo
+- **WHEN** una pantalla pide `POST /turnos/1/cancelar`
+- **THEN** la pantalla recibe un resultado vacío, sin error
+
+### Requirement: Error de negocio ante un 409
+Ante un `409`, el cliente MUST entregar un error de negocio con el código de la propiedad `codigo` del `ProblemDetail` (por ejemplo `SOLAPAMIENTO_PROFESIONAL`) y su `detail`, para que la pantalla decida qué mostrar según el código. Si falta el código, usa `CONFLICTO_SIN_CODIGO`.
+
+#### Scenario: Solapamiento por profesional
+- **GIVEN** que la API responde `409` con `{"status": 409, "title": "Conflict", "detail": "El profesional ya tiene un turno en ese horario", "codigo": "SOLAPAMIENTO_PROFESIONAL"}`
+- **WHEN** una pantalla pide `POST /turnos`
+- **THEN** la pantalla recibe un error de negocio con el código `SOLAPAMIENTO_PROFESIONAL`
+- **AND** el detalle `El profesional ya tiene un turno en ese horario`
+
+#### Scenario: Conflicto sin código
+- **GIVEN** que la API responde `409` con un cuerpo sin la propiedad `codigo`
+- **WHEN** una pantalla pide `POST /turnos`
+- **THEN** la pantalla recibe un error de negocio con el código `CONFLICTO_SIN_CODIGO`
+
+### Requirement: Error de validación ante un 422
+Ante un `422`, el cliente MUST entregar un error de validación con el `detail` del `ProblemDetail` y, si la respuesta lo incluye, el código de la propiedad `codigo` (por ejemplo `INICIO_EN_EL_PASADO`), distinguible de un error de negocio.
+
+#### Scenario: Inicio en el pasado
+- **GIVEN** que la API responde `422` con `{"status": 422, "detail": "El turno empieza en el pasado", "codigo": "INICIO_EN_EL_PASADO"}`
+- **WHEN** una pantalla pide `POST /turnos`
+- **THEN** la pantalla recibe un error de validación con el código `INICIO_EN_EL_PASADO`
+- **AND** el detalle `El turno empieza en el pasado`
+
+### Requirement: Otras fallas sin detalles internos
+Ante cualquier otra respuesta no exitosa, o si no se puede llegar al servidor, el cliente MUST entregar un error genérico con el estado HTTP (o ninguno si no hubo respuesta) y un mensaje fijo en español, sin incluir el cuerpo de la respuesta ni trazas del servidor.
+
+#### Scenario: Error interno del servidor
+- **GIVEN** que la API responde `500` con un cuerpo que contiene una traza
+- **WHEN** una pantalla pide `GET /turnos`
+- **THEN** la pantalla recibe un error genérico con estado `500`
+- **AND** el mensaje del error no contiene el texto de la traza
+
+#### Scenario: Servidor inalcanzable
+- **GIVEN** que el pedido falla por un problema de red
+- **WHEN** una pantalla pide `GET /turnos`
+- **THEN** la pantalla recibe un error genérico sin estado HTTP
