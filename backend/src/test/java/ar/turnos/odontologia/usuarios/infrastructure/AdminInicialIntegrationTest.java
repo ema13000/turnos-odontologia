@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /** Primer arranque con APP_ADMIN_USERNAME y APP_ADMIN_PASSWORD ficticios: el admin creado puede iniciar sesión. */
 @Tag("integration")
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
@@ -47,12 +49,12 @@ class AdminInicialIntegrationTest {
     /** Corre antes de que Spring cree el contexto: el arranque solo crea el admin si la base no tiene ninguno. */
     @BeforeAll
     static void baseSinUsuarios() throws SQLException {
-        String url = env("DB_URL", "jdbc:postgresql://localhost:5432/turnos");
+        String url = env("DB_TEST_URL", "jdbc:postgresql://localhost:5432/turnos_test");
         String usuario = env("DB_USER", "turnos");
         String clave = env("DB_PASSWORD", "turnos_dev");
         Flyway.configure().dataSource(url, usuario, clave).load().migrate();
         try (Connection conn = DriverManager.getConnection(url, usuario, clave); Statement st = conn.createStatement()) {
-            // OJO: vacía las tablas de la base local de desarrollo
+            // OJO: vacía las tablas de la base de tests (DB_TEST_URL)
             st.execute("TRUNCATE usuario, turno, paciente, prestacion, sillon, profesional RESTART IDENTITY CASCADE");
         }
     }
