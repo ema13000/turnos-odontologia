@@ -53,7 +53,7 @@ turnos-odontologia/
 
 ## Seguridad
 
-- **Autenticación del personal**: Spring Security con usuario y contraseña (hash BCrypt) y una sesión o JWT de corta duración. *(Mecanismo exacto a fijar en el change de base; ver PA-10.)*
+- **Autenticación** (personal y pacientes): Spring Security con usuario y contraseña (hash BCrypt) y **sesión del lado del servidor con cookie** (`HttpOnly`, `Secure` en producción, `SameSite=Lax`), con protección CSRF habilitada (DD-10).
 - **Autorización**: por rol (`ADMIN`, `RECEPCIONISTA`, `ODONTOLOGO`) con `@PreAuthorize` y la matriz de `03_actores_y_roles.md`.
 - **Paciente**: sin cuenta del personal. Accede solo a `/public/**` con **códigos o tokens de un solo uso**, aleatorios y no secuenciales.
 - **Validación de entrada**: Bean Validation en los DTOs; las reglas de negocio están en el dominio, no en el controller.
@@ -71,7 +71,7 @@ turnos-odontologia/
 | `APP_TIMEZONE` | Zona horaria del consultorio | `America/Argentina/Buenos_Aires` | N |
 | `APP_MARGEN_MINUTOS` | Margen entre turnos (RN-AG-04) | `10` | N |
 | `APP_CANCELACION_HORAS` | Anticipación mínima para el paciente (RN-AG-07) | `24` | N |
-| `JWT_SECRET` | Firma de tokens del personal (si se usa JWT) | `(solo en .env local)` | **Y** |
+| `SESSION_TIMEOUT` | Duración de la sesión inactiva | `30m` | N |
 | `WHATSAPP_API_TOKEN` | Token del proveedor (no se usa en el TP) | `(vacío)` | **Y** |
 | `SMTP_HOST` / `SMTP_PORT` | Servidor de email (de desarrollo) | `localhost` / `1025` | N |
 | `VITE_API_BASE_URL` | URL de la API para el frontend | `http://localhost:8080/api/v1` | N |

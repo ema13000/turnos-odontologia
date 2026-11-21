@@ -38,7 +38,8 @@ Cada regla tiene un código `RN-{DOMINIO}-{NN}`. Entre paréntesis va el código
 - **RN-AG-13**: un turno debe quedar **completo dentro de un horario de trabajo** del profesional: `inicio` y `fin` dentro de la misma franja de ese día de la semana. Un turno fuera de horario se rechaza con `FUERA_DE_HORARIO`. Solo un **sobreturno** cargado por el personal puede quedar fuera de horario (RN-AG-06).
 - **RN-AG-14**: **extensión por complicaciones** [2026-11-20]. Si durante la atención surge una complicación, el **personal** puede **extender** el fin de un turno ya iniciado. La extensión se valida como cualquier turno (sillón libre con margen y profesional). Si choca con el turno siguiente, el sistema lo avisa y el personal decide: reprogramar el siguiente o registrar la extensión como sobreturno. Se audita con su motivo.
 - **RN-AG-15**: **especialidades** [2026-11-20]. Un turno solo puede asignarse a un profesional **habilitado para esa prestación**. Si no lo está, el error es `PROFESIONAL_NO_HABILITADO`.
-- **RN-AG-16**: **ausencias y licencias del profesional** [2026-11-20]. El **administrador** o la **recepcionista** registran las ausencias (por ejemplo, enfermedad) y las licencias (por ejemplo, vacaciones) de cada profesional, con fecha y hora de inicio y fin. Mientras dura, el profesional **no recibe turnos** (RN-AG-10). Qué pasa con los turnos ya dados en ese período está pendiente (PA-17).
+- **RN-AG-16**: **ausencias y licencias del profesional** [2026-11-20]. El **administrador** o la **recepcionista** registran las ausencias (por ejemplo, enfermedad) y las licencias (por ejemplo, vacaciones) de cada profesional, con fecha y hora de inicio y fin. Mientras dura, el profesional **no recibe turnos** (RN-AG-10). Si ya tenía **turnos dados en ese período**, el sistema los lista y la recepción los **reasigna** a otro profesional habilitado para la prestación (RN-AG-15) en el mismo horario. Si no hay ninguno, los **reprograma**. En los dos casos se **avisa al paciente** por su canal (RN-NO-02) [2026-11-21].
+- **RN-AG-17**: **ausencia del paciente** [2026-11-21]. Si el paciente no se presenta, el **odontólogo** lo marca como **ausente desde la ficha clínica**. El turno pasa a `AUSENTE`, deja de estar activo y **el tiempo que resta queda liberado** para otro turno o un sobreturno, siempre desde el momento actual (RN-AG-09). La ausencia queda registrada en la ficha del paciente.
 
 ## Dominio: Reserva online (RN-RO)
 
@@ -54,7 +55,7 @@ Cada regla tiene un código `RN-{DOMINIO}-{NN}`. Entre paréntesis va el código
   3. si hay empate, uno **al azar**.
 - **RN-RO-06**: el sistema **asigna el sillón** en toda reserva online [2026-11-20]: primero el **sillón habitual** del profesional, si está libre con margen; si no, cualquier otro sillón activo libre con margen. El paciente nunca elige sillón.
 - **RN-RO-07**: un horario se muestra como disponible solo si existe **al menos una combinación de profesional habilitado y sillón** libre que cumpla las reglas de RN-RO-02.
-- **RN-RO-08**: las acciones online del paciente (reservar, cancelar, reprogramar, ver sus turnos) requieren **cuenta de paciente** con sesión iniciada (ver SU-08). La cuenta de paciente **no es una cuenta del personal**: solo accede a sus propios datos y turnos.
+- **RN-RO-08**: las acciones online del paciente (reservar, cancelar, reprogramar, ver sus turnos) requieren **cuenta de paciente** con sesión iniciada. El paciente **se registra una sola vez** (la primera reserva) y después solo inicia sesión [2026-11-21]. La cuenta de paciente **no es una cuenta del personal**: solo accede a sus propios datos y turnos.
 
 ## Dominio: Notificaciones (RN-NO)
 

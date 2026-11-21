@@ -76,6 +76,9 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 
 ### US-017: Registrar ausencias y licencias del profesional
 **Como** administrador o recepcionista **quiero** registrar cuándo un profesional falta o está de licencia **para** que no se le asignen turnos en ese período.
+**Criterios de aceptación**:
+- [ ] CA-1: si ya había turnos dados en el período, el sistema los lista para reasignarlos a otro profesional habilitado o reprogramarlos.
+- [ ] CA-2: cada paciente afectado recibe un aviso por su canal.
 **Reglas relacionadas**: RN-AG-16, RN-AG-10
 
 ### US-018: Configurar especialidades y sillón habitual
@@ -156,6 +159,13 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 ### US-041: Registrar el odontograma
 **Como** odontólogo **quiero** marcar el estado de cada pieza y cara con notación FDI **para** llevar el historial del paciente.
 **Reglas relacionadas**: RN-CL-02, RN-CL-03
+
+### US-042: Marcar la ausencia del paciente
+**Como** odontólogo **quiero** marcar desde la ficha clínica que el paciente no vino **para** registrarlo y liberar el tiempo que queda del turno.
+**Criterios de aceptación**:
+- [ ] CA-1: el turno pasa a `AUSENTE` y el tiempo restante queda libre desde ese momento.
+- [ ] CA-2: la ausencia queda en la ficha del paciente.
+**Reglas relacionadas**: RN-AG-17
 
 ## Backlog: v1.x y posteriores (fuera del MVP)
 

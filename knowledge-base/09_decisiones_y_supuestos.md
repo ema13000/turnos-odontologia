@@ -66,12 +66,23 @@ Como el margen es configurable (con mínimo 10), se guarda la columna `fin_con_m
 **Contexto**: Ajustar de la líder sobre la KB v1.
 **Trade-offs aceptados**: crece el modelo (cuentas de paciente, especialidades, ausencias). Nada de esto amplía el change C-01; cada punto va a su change del roadmap.
 
+### DD-10: Autenticación con sesión y cookie (no JWT)
+**Decisión**: personal y pacientes inician sesión con usuario y contraseña. El servidor mantiene la sesión y el navegador la identifica con una cookie `HttpOnly`.
+**Contexto**: PA-10, decidida por la líder el 2026-11-21.
+**Alternativas consideradas**: JWT (un token firmado que el navegador envía en cada pedido).
+**Justificación**: es lo más simple con Spring Security y un único backend; no hay apps móviles ni varios servidores que justifiquen JWT.
+**Trade-offs aceptados**: la sesión vive en el servidor, y para escalar a varias instancias habría que compartirla (por ejemplo, Spring Session con la base). No aplica en v1.
+
+### DD-11: Ausencias del profesional y del paciente
+**Decisión**: (a) los turnos afectados por la ausencia o licencia de un profesional se **reasignan** a otro profesional habilitado o se reprograman, **avisando al paciente** (RN-AG-16). (b) El odontólogo marca la **ausencia del paciente desde la ficha clínica**, y el tiempo restante del turno queda libre (RN-AG-17).
+**Contexto**: PA-17 y PA-19, decididas por la líder el 2026-11-21.
+
 ## Supuestos inferidos
 
 ### ~~SU-07: Todos los profesionales pueden hacer todas las prestaciones~~ (refutado)
 **Refutado el 2026-11-20**: hay especialidades (DD-09, RN-AG-15).
 
-### SU-08: La reserva online requiere cuenta de paciente
+### SU-08: La reserva online requiere cuenta de paciente (**confirmado el 2026-11-21**: se registra solo la primera vez)
 **Supuesto**: como el paciente cancela y reprograma "desde su cuenta", también **reserva** con la cuenta iniciada. No hay reserva anónima.
 **Origen**: respuesta a PA-03.
 **Riesgo si es falso**: se pierden reservas de pacientes que no quieren registrarse.
