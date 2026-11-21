@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "step": "agents",
+  "step": "done",
   "owner": "active-orchestrator",
   "foundation": {
     "version": 1,
@@ -132,7 +132,7 @@
       },
       "agents": {
         "variant": "generate",
-        "status": "pending",
+        "status": "done",
         "requires": [
           "kb",
           "roadmap",
@@ -524,6 +524,31 @@
   "registry": {
     "path": ".atl/skill-registry.md",
     "engram_topic": "skill-registry",
+    "date": "2026-11-21"
+  },
+  "agents": {
+    "created_by": "agent-instruction",
+    "files": [
+      "AGENTS.md",
+      "CLAUDE.md"
+    ],
+    "reglas_applied": [
+      "datos-ficticios",
+      "sin-commit-directo-a-master",
+      "dueno-por-modulo-y-migraciones-reservadas",
+      "sin-secretos",
+      "doble-garantia-solapamientos",
+      "sin-datos-de-salud-en-notificaciones",
+      "test-por-escenario",
+      "sesion-con-cookie-csrf",
+      "errores-409-problemdetail-dto",
+      "frontend-ts-strict"
+    ],
+    "reglas_rechazadas": [
+      "dominio-puro",
+      "clock-inyectado-timestamptz"
+    ],
+    "global_file": "~/.claude/CLAUDE.md",
     "date": "2026-11-21"
   }
 }

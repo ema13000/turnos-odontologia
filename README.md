@@ -13,10 +13,10 @@ Trabajo Global de Integración de **Desarrollo de Software**: del Discovery al p
 | Juan Cruz | Integrante |
 | Enzo | Integrante |
 
-## Tarea actual para el equipo: verificación de fuentes
+## Antes de empezar
 
-Cada integrante verifica **una fuente** del informe de Discovery, a mano y sin IA.
-Instrucciones, asignación y plantilla: **[docs/discovery/verificacion/README.md](docs/discovery/verificacion/README.md)**
+1. Leé **[AGENTS.md](AGENTS.md)**: stack, skills y las reglas duras del proyecto.
+2. Buscá tu change y su dueño en **[CHANGES.md](CHANGES.md)**. Trabajá en la rama `change/C-NN-<nombre>` y abrí un PR a `master`.
 
 ## Estado del proyecto
 
@@ -24,10 +24,10 @@ Instrucciones, asignación y plantilla: **[docs/discovery/verificacion/README.md
 |---|---|
 | 0. Preparación del entorno | Hecho (`docs/evidencia/`) |
 | 1. `/active-orchestrator` + `openspec init` | Hecho |
-| 2. Discovery | En curso: falta la verificación de fuentes y el PDF |
-| 3. Base de conocimiento (`knowledge-base/`) | Pendiente |
-| 4. Roadmap (`CHANGES.md`) | Pendiente |
-| 5. Skills y reglas del agente (`AGENTS.md`, `CLAUDE.md`) | Pendiente |
+| 2. Discovery | Hecho: 5 fuentes verificadas por el equipo y [PDF](docs/discovery/informe-discovery.pdf) |
+| 3. Base de conocimiento (`knowledge-base/`) | Hecho |
+| 4. Roadmap (`CHANGES.md`) | Hecho: 32 changes (MVP C-01 a C-14) |
+| 5. Skills y reglas del agente (`AGENTS.md`, `CLAUDE.md`) | Hecho: 5 skills en el repo, [registro](.atl/skill-registry.md) y 10 reglas duras |
 | 6. Ciclo OPSX sobre un change | Pendiente |
 | 7. Memoria del agente (Engram) | Pendiente |
 
@@ -35,7 +35,11 @@ El estado detallado de la fundación está en [`.active-orchestrator-state.json`
 
 ## Documentos principales
 
-- [Informe de Discovery](docs/discovery/informe-discovery.md): 16 sistemas, matriz ponderada y MVP recomendado.
+- [Instrucciones para agentes y reglas duras](AGENTS.md).
+- [Roadmap de changes](CHANGES.md).
+- [Base de conocimiento](knowledge-base/README.md).
+- [Informe de Discovery](docs/discovery/informe-discovery.md) ([PDF](docs/discovery/informe-discovery.pdf)): 16 sistemas, matriz ponderada y MVP recomendado.
+- [Verificación de fuentes del equipo](docs/discovery/verificacion/README.md).
 - [Checklist de Discovery (11 puntos)](docs/discovery/discovery.md): problema, usuarios, reglas de negocio RN-01 a RN-09.
 - [Evidencia por sistema](docs/discovery/sources/relevamiento-fuentes.md).
 
