@@ -15,9 +15,10 @@ La agenda de C-01 necesita datos que hoy no se pueden cargar: qué profesionales
 - **Errores**: `409` con código estable para los conflictos de negocio (`MATRICULA_DUPLICADA`, `NOMBRE_DUPLICADO`) y `422` para las validaciones de entrada (`DURACION_INVALIDA`, `MARGEN_INVALIDO`, `SILLON_INACTIVO`…), en `ProblemDetail` (regla dura 9). La API devuelve DTOs, nunca entidades JPA.
 - **Migración V2**: tabla `profesional_prestacion`, tabla `configuracion` con `margen_minutos = 10`, columna `profesional.sillon_habitual_id` y CHECK de duración múltiplo de 5.
 - **Seed ficticio solo para el perfil `dev`** (migración aparte, `V2_1`): Dra. Ana Ejemplo y Dr. Bruno Prueba, Sillón 1 y 2, las 4 prestaciones de la KB, especialidades y sillón habitual. No llega a otros entornos.
+- **Permisos por rol** (agregado al integrar C-05): según la matriz RBAC de la KB, el personal (`ADMIN`, `RECEPCIONISTA`, `ODONTOLOGO`) consulta y solo `ADMIN` modifica. Otro rol recibe `403 ACCESO_DENEGADO`, como pide el requisito "Permisos por rol en cada operación del personal" de `seguridad-autorizacion`.
 
 **Fuera de alcance**:
-- La seguridad de estos endpoints. Quedan sin autenticación hasta que C-05 agregue Spring Security con acceso denegado por defecto. Desde ese momento, C-05 MUST restringirlos al rol `ADMIN`. Esto queda como requisito explícito para C-05.
+- Autenticación, sesión y CSRF: los aporta C-05.
 - Rechazar turnos con un profesional, sillón o prestación inactivos (RN-AG-11), o con un profesional no habilitado (RN-AG-15, `PROFESIONAL_NO_HABILITADO`). C-04 provee los datos y la consulta, y la regla se aplica al crear el turno en C-06.
 - Horarios de trabajo y ausencias (C-07).
 - Pantallas del frontend.

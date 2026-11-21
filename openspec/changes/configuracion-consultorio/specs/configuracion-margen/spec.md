@@ -40,3 +40,19 @@ El sistema MUST conservar el margen vigente entre reinicios de la aplicación, y
 - **GIVEN** que el administrador cambió el margen a 15 minutos
 - **WHEN** la aplicación se reinicia
 - **THEN** el margen vigente sigue siendo de 15 minutos
+
+### Requirement: Solo el administrador cambia el margen
+El sistema SHALL permitir consultar el margen a los roles `ADMIN`, `RECEPCIONISTA` y `ODONTOLOGO`, y MUST permitir cambiarlo solo al rol `ADMIN`. Otro rol recibe `403` con el código `ACCESO_DENEGADO` y el margen no cambia.
+
+#### Scenario: Recepción consulta el margen
+- **GIVEN** un margen de 10 minutos
+- **AND** el usuario `recepcion` con sesión iniciada
+- **WHEN** consulta el margen
+- **THEN** la respuesta es `200` con 10 minutos
+
+#### Scenario: Odontólogo intenta cambiar el margen
+- **GIVEN** un margen de 10 minutos
+- **AND** el usuario `ana.ejemplo` (`ODONTOLOGO`) con sesión iniciada
+- **WHEN** cambia el margen a 20 minutos
+- **THEN** la respuesta es `403` con el código `ACCESO_DENEGADO`
+- **AND** el margen vigente sigue siendo de 10 minutos

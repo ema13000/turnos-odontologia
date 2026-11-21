@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api/v1/prestaciones")
 public class PrestacionController {
+
+    /** Solo ADMIN modifica la configuración; el resto del personal consulta (matriz RBAC de la KB). */
+    private static final String SOLO_ADMIN = "hasRole('ADMIN')";
 
     private final PrestacionService servicio;
 
@@ -37,6 +41,7 @@ public class PrestacionController {
         return servicio.obtener(id);
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PostMapping
     public ResponseEntity<PrestacionVista> crear(@Valid @RequestBody PrestacionSolicitud solicitud) {
         PrestacionVista creada = servicio.crear(solicitud.nombre(), solicitud.duracionMinutos());
@@ -45,16 +50,19 @@ public class PrestacionController {
         return ResponseEntity.created(ubicacion).body(creada);
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PutMapping("/{id}")
     public PrestacionVista actualizar(@PathVariable Long id, @Valid @RequestBody PrestacionSolicitud solicitud) {
         return servicio.actualizar(id, solicitud.nombre(), solicitud.duracionMinutos());
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PostMapping("/{id}/activar")
     public PrestacionVista activar(@PathVariable Long id) {
         return servicio.activar(id);
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PostMapping("/{id}/desactivar")
     public PrestacionVista desactivar(@PathVariable Long id) {
         return servicio.desactivar(id);

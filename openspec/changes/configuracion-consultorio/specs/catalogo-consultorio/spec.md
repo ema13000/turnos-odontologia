@@ -131,3 +131,25 @@ El sistema SHALL permitir asignar a un profesional un sillón habitual activo, o
 - **GIVEN** la Dra. Ana Ejemplo con el "Sillón 1" como sillón habitual
 - **WHEN** el administrador le quita el sillón habitual
 - **THEN** la Dra. Ana Ejemplo figura sin sillón habitual
+
+### Requirement: Solo el administrador modifica el catálogo
+El sistema SHALL permitir consultar profesionales, sillones, prestaciones y especialidades a los roles `ADMIN`, `RECEPCIONISTA` y `ODONTOLOGO`, y MUST permitir altas, modificaciones, activaciones, desactivaciones, especialidades y sillón habitual solo al rol `ADMIN`. Otro rol recibe `403` con el código `ACCESO_DENEGADO`, sin cambios.
+
+#### Scenario: Recepción consulta los profesionales
+- **GIVEN** la Dra. Ana Ejemplo dada de alta
+- **AND** el usuario `recepcion` con sesión iniciada
+- **WHEN** consulta los profesionales
+- **THEN** la respuesta es `200` e incluye a la Dra. Ana Ejemplo
+
+#### Scenario: Recepción intenta dar de alta un profesional
+- **GIVEN** el usuario `recepcion` con sesión iniciada
+- **WHEN** da de alta a Ana Ejemplo con la matrícula MP-0001
+- **THEN** la respuesta es `403` con el código `ACCESO_DENEGADO`
+- **AND** no se crea ningún profesional
+
+#### Scenario: Odontólogo intenta desactivar un sillón
+- **GIVEN** el "Sillón 1" activo
+- **AND** el usuario `ana.ejemplo` (`ODONTOLOGO`) con sesión iniciada
+- **WHEN** desactiva el "Sillón 1"
+- **THEN** la respuesta es `403` con el código `ACCESO_DENEGADO`
+- **AND** el "Sillón 1" sigue activo

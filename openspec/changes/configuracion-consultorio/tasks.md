@@ -38,6 +38,17 @@
 - [x] 7.2 Verificar con `grep` que `configuracion/domain` no importa `org.springframework` ni `jakarta.persistence`, y que ningún controlador devuelve clases de `shared/persistence`
 - [x] 7.3 Correr `openspec validate configuracion-consultorio --strict` y verificar que es válido
 
+## 8. Integración con C-05 (seguridad)
+
+- [x] 8.1 Mergear `upstream/master` con C-05 y sacar las dependencias `web` y `validation` duplicadas en `build.gradle`; verificar que `./gradlew test` corre sin base (58 tests, corrida `e425d968`)
+- [x] 8.2 Agregar los requisitos "Solo el administrador modifica el catálogo" y "Solo el administrador cambia el margen" con sus 5 escenarios, y `@PreAuthorize("hasRole('ADMIN')")` en las 15 operaciones que modifican (design D12); verificar con `RolesIntegrationTest`
+- [x] 8.3 Pasar los tests de integración de C-04 a sesión de `admin` y a CSRF de cookie más encabezado, sin el atajo `csrf()`; verificar que los tests de C-05 pasan en la misma corrida
+- [x] 8.4 Pasar los tests de integración de C-05 (`IntegracionSeguridadBase`, `IntegracionServidorBase`, `AdminInicialIntegrationTest`, `UsuarioRestriccionesIntegrationTest`) al perfil `test` y a `DB_TEST_URL`; verificar que el seed de desarrollo queda intacto (7 especialidades antes y después)
+- [x] 8.5 Arrancar el contexto de "Margen después de reiniciar" como servlet en un puerto libre, porque la seguridad necesita el contexto web; verificar que pasa
+- [x] 8.6 Agregar `spring.flyway.out-of-order: true` en `dev` y `test` (design D13); verificar con una base que solo tiene V1 y V3 que sin el cambio la app no arranca y con el cambio aplica V2 y V2_1
+- [x] 8.7 Fijar `user.timezone` también en `bootRun`; verificar que la app arranca con `./gradlew bootRun`
+- [x] 8.8 Correr todo: 58 tests unitarios (corrida `29aef699`) y 95 de integración (corrida `ddb4462b`), con los 29 escenarios de C-04 uno a uno
+
 ## Workflow follow-up
 
 - Abrir el PR de `change/C-04-configuracion-consultorio` a `master` avisando a Juan Cruz (`shared/persistence`, `application.yml`) y a Sofia (`build.gradle`). Informar los riesgos de ids `BIGINT` contra `UUID` y del estado `RESERVADO`, y el requisito para C-05 de restringir estos endpoints al rol `ADMIN`.

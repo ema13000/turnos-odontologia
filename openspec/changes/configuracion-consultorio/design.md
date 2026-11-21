@@ -114,11 +114,22 @@ Todo va bajo `/api/v1`. No hay `DELETE` (RN-AG-11). Las altas devuelven `201` co
 - **Integración** (`@Tag("integration")`, `@SpringBootTest` con `MockMvc`, PostgreSQL real): un test por escenario del spec, entrando por la API, con el `@DisplayName` igual al nombre del escenario. Usan el perfil `test`, que no carga el seed, y vacían las tablas antes de cada test, como C-03.
 - El escenario "Margen después de reiniciar" se prueba leyendo el valor con un contexto nuevo (o directamente por JDBC) después de cambiarlo por la API.
 
+### D12. Permisos por rol con `@PreAuthorize` (agregado al integrar C-05)
+
+- C-05 deja `/api/v1/**` abierto a los tres roles del personal y pide que cada operación declare sus roles. C-04 anota con `@PreAuthorize("hasRole('ADMIN')")` todas las operaciones que modifican (`POST` y `PUT`). Los `GET` quedan para todo el personal, según la matriz RBAC de la KB.
+- No se toca `SecurityConfig` de C-05: la seguridad por método ya está habilitada (`@EnableMethodSecurity`), y el `403` con `ACCESO_DENEGADO` lo responde el manejador de C-05.
+- Los tests de integración entran como `admin` con `@WithMockUser`, y un test puede pedir otro rol con su propio `@WithMockUser`. El CSRF se manda como el frontend (la cookie `XSRF-TOKEN` y el encabezado `X-XSRF-TOKEN` con el mismo valor). *Alternativa descartada*: el atajo `csrf()` de spring-security-test, porque reemplaza el repositorio CSRF del filtro compartido y rompe los tests de C-05 que corren después en el mismo contexto.
+
+### D13. Migraciones fuera de orden en `dev` y `test` (agregado al integrar C-05)
+
+Los números de migración están reservados por change, pero los PR se mergean en otro orden: C-05 (V3) entró antes que C-04 (V2). Una base de desarrollo con V3 aplicada rechaza V2 (`Detected resolved migration not applied to database: 2`). Por eso los perfiles `dev` y `test` usan `spring.flyway.out-of-order: true`. Lo verifiqué con una base que solo tenía V1 y V3: sin el cambio la app no arranca, y con el cambio aplica V2 y V2_1 después de V3.
+
 ## Risks / Trade-offs
 
 - **[Riesgo] Ids `BIGINT` contra `UUID`.** La KB y el dominio de C-01 (`Turno`, `CrearTurnoCommand`) usan `UUID`, y la base de C-03 usa `BIGINT`. C-06 va a tener que conectar los dos. → Mitigación: C-04 sigue a la base y el PR lo informa a Sofia y a Juan Cruz para que decidan antes de C-06.
 - **[Riesgo] Estados de turno.** El CHECK de V1 no incluye `RESERVADO`, que el dominio de C-01 usa como estado inicial. No afecta a C-04 (los tests insertan turnos `CONFIRMADO`), pero se informa junto con el riesgo anterior.
-- **[Riesgo] Endpoints sin autenticación hasta C-05.** → Mitigación: el PR de C-04 y el proposal dejan anotado que C-05 MUST restringir `/api/v1/profesionales/**`, `/sillones/**`, `/prestaciones/**` y `/configuracion/**` al rol `ADMIN`. No se despliega nada antes del MVP completo.
-- **[Riesgo] Los tests de integración borran la base local de desarrollo**, porque C-03 hace `TRUNCATE` sobre la misma base que usa `dev`. → Mitigación: el perfil `test` acepta un `DB_URL` propio. Se recomienda una base `turnos_test` y se documenta en las tareas.
+- **[Riesgo resuelto] Endpoints sin autenticación hasta C-05.** C-05 ya está en `master`, y C-04 restringe las escrituras a `ADMIN` (D12).
+- **[Riesgo resuelto] Los tests de integración borraban la base local de desarrollo** (los de C-03 y C-05 hacían `TRUNCATE` sobre la base de `dev`). Ahora todos usan el perfil `test` y `DB_TEST_URL`.
+- **[Riesgo] Zona horaria en Windows.** Java toma la hora de Argentina como `America/Buenos_Aires`, que PostgreSQL 16 rechaza. `build.gradle` la fija en los tests y en `bootRun`. Para el jar (C-14) hay que pasar `-Duser.timezone=America/Argentina/Buenos_Aires`.
 - **[Trade-off] Cambios en `shared/persistence` y `build.gradle`**, que son de otros dueños. Son aditivos (métodos y relaciones nuevas, dos starters) y se avisan en el PR.
 - **[Trade-off] Sin caché del margen.** Se hace una consulta por cada turno creado, lo que es despreciable para un consultorio chico.

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api/v1/sillones")
 public class SillonController {
+
+    /** Solo ADMIN modifica la configuración; el resto del personal consulta (matriz RBAC de la KB). */
+    private static final String SOLO_ADMIN = "hasRole('ADMIN')";
 
     private final SillonService servicio;
 
@@ -37,6 +41,7 @@ public class SillonController {
         return servicio.obtener(id);
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PostMapping
     public ResponseEntity<SillonVista> crear(@Valid @RequestBody SillonSolicitud solicitud) {
         SillonVista creado = servicio.crear(solicitud.nombre());
@@ -45,16 +50,19 @@ public class SillonController {
         return ResponseEntity.created(ubicacion).body(creado);
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PutMapping("/{id}")
     public SillonVista actualizar(@PathVariable Long id, @Valid @RequestBody SillonSolicitud solicitud) {
         return servicio.actualizar(id, solicitud.nombre());
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PostMapping("/{id}/activar")
     public SillonVista activar(@PathVariable Long id) {
         return servicio.activar(id);
     }
 
+    @PreAuthorize(SOLO_ADMIN)
     @PostMapping("/{id}/desactivar")
     public SillonVista desactivar(@PathVariable Long id) {
         return servicio.desactivar(id);

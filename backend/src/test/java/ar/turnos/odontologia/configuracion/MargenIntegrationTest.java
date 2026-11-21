@@ -88,10 +88,12 @@ class MargenIntegrationTest extends ConfiguracionIntegrationTest {
         putJson("/configuracion/margen", """
                 {"minutos":15}""").andExpect(status().isOk());
 
-        // WHEN la aplicación se reinicia (un contexto de Spring nuevo, sin web)
+        // WHEN la aplicación se reinicia (un contexto de Spring nuevo). Desde C-05 la seguridad
+        // necesita el contexto web, así que arranca como servlet en un puerto libre.
         try (ConfigurableApplicationContext reiniciada = new SpringApplicationBuilder(TurnosOdontologiaApplication.class)
                 .profiles("test")
-                .web(WebApplicationType.NONE)
+                .web(WebApplicationType.SERVLET)
+                .properties("server.port=0")
                 .run()) {
 
             // THEN el margen vigente sigue siendo de 15 minutos

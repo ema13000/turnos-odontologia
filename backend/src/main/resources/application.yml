@@ -32,6 +32,9 @@ spring:
     enabled: true
     # C-04: el seed ficticio (db/seed) se carga solo en desarrollo.
     locations: classpath:db/migration,classpath:db/seed
+    # Los números de migración están reservados por change (CHANGES.md) y los PR se mergean en
+    # otro orden: una base de desarrollo con V3 aplicada tiene que poder aplicar después V2.
+    out-of-order: true
 ---
 # C-04: perfil de los tests de integración. Usa una base aparte (recomendado turnos_test)
 # porque los tests vacían las tablas, y no carga el seed de desarrollo.
@@ -50,3 +53,4 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    out-of-order: true
