@@ -291,7 +291,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
   - `knowledge-base/06_funcionalidades.md` §Épica 1
 
 ### [C-05] `auth-sesion-roles`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completo (2026-11-21, PR pendiente). Specs: `openspec/specs/seguridad-autenticacion/`, `seguridad-autorizacion/`, `cuentas-pacientes/`; change archivado en `openspec/changes/archive/2026-11-21-auth-sesion-roles/`. Evidencia: `docs/evidencia/etapa-c05-auth.txt`
 - **Responsable**: Juan Sebastián
 - **Scope**:
   - Spring Security con **sesión y cookie** `HttpOnly`/`SameSite=Lax`, CSRF habilitado (DD-10). Contraseñas con BCrypt.

@@ -1,6 +1,20 @@
 spring:
   profiles:
     default: dev
+server:
+  servlet:
+    session:
+      timeout: ${SESSION_TIMEOUT:30m}
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${SESSION_COOKIE_SECURE:false}
+app:
+  seguridad:
+    cors-origenes: ${APP_CORS_ORIGENES:http://localhost:5173}
+    admin-inicial:
+      username: ${APP_ADMIN_USERNAME:}
+      password: ${APP_ADMIN_PASSWORD:}
 ---
 spring:
   config:
