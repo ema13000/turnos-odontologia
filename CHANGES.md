@@ -36,6 +36,14 @@ Conservá los IDs de las fichas al editar o reordenar. El seguimiento es **local
 | `backend/.../notificaciones/` | Juan Cruz | V7 |
 | `backend/.../clinica/` | Emanuel | V8 |
 | `frontend/` | Enzo | — |
+| **Post-MVP** | | |
+| `backend/.../agenda/` lista de espera, `configuracion/` política de cancelación | Sofia (C-16 avisa a Emanuel) | V9, V10 |
+| `backend/.../notificaciones/` consentimiento | Juan Cruz | V11 |
+| `backend/.../coberturas/` (obras sociales, presupuestos, liquidaciones) | Juan Sebastián | V12, V13, V14 |
+| `backend/.../caja/`, `pagos/`, `facturacion/`, `reportes/` | Enzo | V15 |
+| `backend/.../clinica/` periodontograma, imágenes, consentimientos, FHIR | Emanuel | V16, V17, V18 |
+| `backend/.../sucursales/` (transversal) | Sofia | V19 |
+| `backend/.../integraciones/` Google Calendar, asistente IA | Juan Cruz | — |
 
 ---
 
@@ -59,6 +67,34 @@ C-01 crear-turno-sin-solapamientos  [Sofia · OPSX]      ← tarea 1 = scaffoldi
 C-02 frontend-base-ts  [Enzo]                            ← independiente: carpeta frontend/
   │
 C-14 entrega-readme-y-evidencia  [Sofia]                 ← al final: README reproducible + evidencias
+
+═══════════════ POST-MVP (arranca con C-01 a C-14 completos) ═══════════════
+
+v1.x
+  C-06 + C-11 ── C-15 lista-de-espera-automatica   [Sofia]
+  C-04 + C-10 ── C-16 politica-cancelacion-configurable [Sofia]
+  C-11 ───────── C-17 consentimiento-comunicaciones [Juan Cruz]
+
+Obras sociales, cobros y facturación
+  C-04 + C-05 ── C-18 obras-sociales-y-planes      [Juan Sebastián]
+                   ├── C-19 presupuestos-y-cobertura [Juan Sebastián] ← + C-13
+                   │     └── C-20 liquidaciones-obras-sociales [Juan Sebastián]
+                   └── C-21 validacion-online-obras-sociales [Juan Sebastián]
+  C-06 ───────── C-22 caja-y-cobros                [Enzo]
+                   ├── C-23 senas-mercado-pago     [Enzo]   ← + C-10
+                   └── C-24 facturacion-electronica-arca [Enzo]
+
+Clínica avanzada (todas desde C-13)
+  C-13 ──┬── C-25 periodontograma                  [Emanuel]
+         ├── C-26 imagenes-y-radiografias          [Emanuel]
+         ├── C-27 consentimientos-firma-electronica [Emanuel]
+         └── C-28 exportacion-hl7-fhir             [Emanuel]
+
+Escala, integraciones e inteligencia
+  C-04 + C-06 + C-07 ── C-29 multisucursal         [Sofia]
+  C-06 ──────────────── C-30 sincronizacion-google-calendar [Juan Cruz]
+  C-10 + C-11 ───────── C-31 asistente-ia-whatsapp [Juan Cruz]
+  C-06 + C-13 ───────── C-32 reportes-y-metricas   [Enzo]
 ```
 
 ### Paralelismo por fase
@@ -94,9 +130,39 @@ GATE 5: C-10 ✓
 
 GATE 6: changes de la entrega ✓
   → C-14 entrega-readme-y-evidencia          [Agente A · Sofia]
+
+──────────── POST-MVP ────────────
+
+GATE 7: MVP completo (C-01 a C-14) ✓ + KB ampliada            ← FORK (los 5 en paralelo)
+  → C-15 lista-de-espera-automatica          [Agente A · Sofia]
+  → C-17 consentimiento-comunicaciones       [Agente B · Juan Cruz]
+  → C-18 obras-sociales-y-planes             [Agente B · Juan Sebastián]
+  → C-22 caja-y-cobros                       [Agente C · Enzo]
+  → C-25 periodontograma                     [Agente B · Emanuel]
+
+GATE 8: primera tanda post-MVP ✓                              ← FORK
+  → C-16 politica-cancelacion-configurable   [Agente A · Sofia]
+  → C-30 sincronizacion-google-calendar      [Agente B · Juan Cruz]
+  → C-19 presupuestos-y-cobertura            [Agente B · Juan Sebastián — si C-18 ✓]
+  → C-21 validacion-online-obras-sociales    [Agente B · Juan Sebastián — después de C-19]
+  → C-23 senas-mercado-pago                  [Agente C · Enzo — si C-22 ✓]
+  → C-26 imagenes-y-radiografias             [Agente B · Emanuel]
+
+GATE 9: C-19 ✓ + C-22 ✓                                       ← FORK
+  → C-29 multisucursal                       [Agente A · Sofia]
+  → C-31 asistente-ia-whatsapp               [Agente B · Juan Cruz]
+  → C-20 liquidaciones-obras-sociales        [Agente B · Juan Sebastián]
+  → C-24 facturacion-electronica-arca        [Agente C · Enzo]
+  → C-27 consentimientos-firma-electronica   [Agente B · Emanuel]
+
+GATE 10: resto del post-MVP
+  → C-28 exportacion-hl7-fhir                [Agente B · Emanuel]
+  → C-32 reportes-y-metricas                 [Agente C · Enzo]
 ```
 
-### Camino crítico (7 changes — mínimo irreducible)
+*C-29 (multisucursal) cambia el modelo de forma transversal: conviene hacerlo cuando no haya otros changes abiertos sobre `agenda/`, o al principio del post-MVP si el negocio lo pide antes.*
+
+### Camino crítico del MVP (7 changes — mínimo irreducible)
 
 ```
 C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
@@ -104,13 +170,16 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
 
 *C-07 (horarios) y C-04 también son prerrequisito de C-10; si se atrasan, pasan a ser el camino crítico (C-01 → C-03 → C-04 → C-07 → C-10 → C-12 → C-14).*
 
-### Alcance realista para la entrega (~2026-11-25)
+### MVP y post-MVP
 
-| Prioridad | Changes | Por qué |
+| Bloque | Changes | Origen |
 |---|---|---|
-| **P0: obligatorio** | **C-01** con el ciclo OPSX completo (explore → propose → apply → verify → archive) y **C-14** | Es lo que evalúa la consigna en la Etapa 6 ("mejor un solo change bien hecho") |
-| **P1: deseable** | C-02, C-03, C-04, C-05, C-06 | Dan participación demostrable a cada integrante y una API funcionando |
-| **P2: si alcanza** | C-07 a C-13 | Completan el MVP. Si no se terminan, quedan especificados en este roadmap |
+| **MVP v1.0** (fases 1 a 6) | C-01 a C-14 | Sección D.3 del informe, lista "imprescindible" |
+| **Post-MVP v1.x** (fase 7) | C-15 a C-17 | Sección D.3, lista "diferenciador" |
+| **Post-MVP: etapas posteriores** (fases 8 a 10) | C-18 a C-32 | Sección D.3, lista "etapas posteriores" |
+
+> **C-01 es el change del ciclo OPSX** (explore → propose → apply → verify → archive) que se presenta en la Etapa 6 de la consigna.
+> Los changes post-MVP **no se empiezan hasta que el MVP esté completo**. Antes de implementarlos, hay que **ampliar la KB** con sus reglas (hoy solo figuran en el backlog de `06_funcionalidades.md`), porque el Discovery no las detalló.
 
 ### Plan óptimo con 3 agentes
 
@@ -124,16 +193,23 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
 | 6 | C-08 sobreturno-y-extension | C-10 reserva-online-paciente | C-09 frontend-agenda-personal |
 | 7 | C-11 notificaciones-recordatorios | C-13 ficha-clinica-odontograma | C-12 frontend-reserva-paciente |
 | 8 | C-14 entrega-readme-y-evidencia | — | — |
+| | **Post-MVP** | | |
+| 9 | C-15 lista-de-espera-automatica | C-18 obras-sociales-y-planes | C-22 caja-y-cobros |
+| 10 | C-16 politica-cancelacion-configurable | C-19 presupuestos-y-cobertura | C-23 senas-mercado-pago |
+| 11 | C-17 consentimiento-comunicaciones | C-20 liquidaciones-obras-sociales | C-24 facturacion-electronica-arca |
+| 12 | C-30 sincronizacion-google-calendar | C-21 validacion-online-obras-sociales | C-25 periodontograma |
+| 13 | C-31 asistente-ia-whatsapp | C-26 imagenes-y-radiografias | C-27 consentimientos-firma-electronica |
+| 14 | C-29 multisucursal | C-28 exportacion-hl7-fhir | C-32 reportes-y-metricas |
 
 ### Asignación al equipo de 5 (propuesta de la líder)
 
-| Integrante | Changes | Días sugeridos |
+| Integrante | MVP | Post-MVP (sugerido, por afinidad con su módulo) |
 |---|---|---|
-| **Sofia Indovino** (líder) | **C-01** (OPSX), C-06, C-14 + revisión de todos los PR | C-01: 21–22/11 · C-06: 23/11 · C-14: 24–25/11 |
-| **Juan Cruz** | C-03, C-08, C-11 | C-03: 21–22/11 (apenas esté el scaffolding) · C-08: 23/11 · C-11: 24/11 |
-| **Emanuel** | C-04, C-07, C-13 | C-04: 22/11 · C-07: 23/11 · C-13: 24/11 |
-| **Juan Sebastián** | C-05, C-10 | C-05: 22/11 · C-10: 23–24/11 |
-| **Enzo** | C-02, C-09, C-12 | C-02: 21/11 · C-09: 23/11 · C-12: 24/11 |
+| **Sofia Indovino** (líder) | **C-01** (OPSX), C-06, C-14 + revisión de todos los PR | C-15, C-16, C-29 |
+| **Juan Cruz** | C-03, C-08, C-11 | C-17, C-30, C-31 |
+| **Emanuel** | C-04, C-07, C-13 | C-25, C-26, C-27, C-28 |
+| **Juan Sebastián** | C-05, C-10 | C-18, C-19, C-20, C-21 |
+| **Enzo** | C-02, C-09, C-12 | C-22, C-23, C-24, C-32 (backend y pantallas de administración) |
 
 ---
 
@@ -385,6 +461,249 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
 
 ---
 
-## Fuera de este roadmap (etapas posteriores, sección D del informe)
+## FASE 7: Post-MVP v1.x (diferenciadores)
 
-Obras sociales y prepagas, facturación ARCA, señas con Mercado Pago, periodontograma, imágenes y radiografías, firma electrónica, asistentes con IA, multisucursal, HL7 FHIR, lista de espera automática (v1.x).
+> Arranca con el MVP completo (C-01 a C-14). Los tres changes pueden ir en paralelo.
+
+### [C-15] `lista-de-espera-automatica`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Sofia Indovino
+- **Scope**:
+  - Entidad `ListaEspera` (paciente, prestación, profesional opcional, rango de fechas preferido). **Migración V9**.
+  - Al cancelarse un turno (RN-AG-08), ofrecer el horario liberado al primer paciente compatible de la lista, por su canal (RN-NO-02), con un plazo para aceptar.
+  - Tests: el horario cancelado se ofrece en orden de llegada; si nadie acepta en el plazo, vuelve a quedar libre.
+  - **Antes de empezar**: ampliar la KB con las reglas de la lista de espera (US-100). Hoy es el vacío del mercado: 0 de 16 sistemas la tienen.
+- **Dependencias**: `C-06, C-11`
+- **Governance**: MEDIO
+- **Leer antes**:
+  - `knowledge-base/06_funcionalidades.md` §Backlog (US-100)
+  - `knowledge-base/05_reglas_de_negocio.md` §RN-AG-08, §Notificaciones
+  - `docs/discovery/informe-discovery.md` §C.3, §C.4
+
+### [C-16] `politica-cancelacion-configurable`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Sofia Indovino
+- **Scope**:
+  - Reemplazar las 24 h fijas de RN-AG-07 por un valor configurable por consultorio (`configuracion.cancelacion_horas`). **Migración V10**.
+  - `PUT /configuracion/cancelacion` (ADMIN). Aplica igual en la cuenta del paciente y en los links del recordatorio.
+  - Tests: cancelación dentro y fuera del plazo configurado.
+- **Dependencias**: `C-04, C-10`
+- **Governance**: BAJO
+- **Leer antes**:
+  - `knowledge-base/05_reglas_de_negocio.md` §RN-AG-07
+  - `knowledge-base/06_funcionalidades.md` §Backlog (US-101)
+  - `knowledge-base/04_modelo_de_datos.md` §Configuracion
+
+### [C-17] `consentimiento-comunicaciones`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Juan Cruz
+- **Scope**:
+  - Pantalla y endpoint para que el paciente otorgue o revoque el consentimiento de comunicaciones, con fecha y canal (Ley 25.326). Historial de cambios. **Migración V11**.
+  - Las notificaciones respetan el estado vigente (RN-NO-03).
+  - Tests: revocar el consentimiento corta los recordatorios; el historial no se pierde.
+- **Dependencias**: `C-11`
+- **Governance**: ALTO (datos personales)
+- **Leer antes**:
+  - `knowledge-base/05_reglas_de_negocio.md` §RN-NO-03
+  - `knowledge-base/09_decisiones_y_supuestos.md` §DD-07
+  - `knowledge-base/06_funcionalidades.md` §Backlog (US-102)
+
+---
+
+## FASE 8: Post-MVP: obras sociales, cobros y facturación
+
+> **Antes de empezar esta fase, ampliar la KB**: reglas de obras sociales y prepagas (nomencladores, coberturas, copagos), caja y facturación. Hoy solo están en el backlog. Referencias de mercado: DentalTec, DentalCore y el módulo de Dentalink para Argentina (informe, sección A).
+
+### [C-18] `obras-sociales-y-planes`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Juan Sebastián
+- **Scope**:
+  - Entidades `ObraSocial`, `Plan`, `Nomenclador`, `AfiliacionPaciente` (número de afiliado, plan). **Migración V12**.
+  - CRUD (ADMIN) y asociación del paciente con su obra social.
+  - Tests: CRUD; un paciente con afiliación vigente y otro sin cobertura.
+- **Dependencias**: `C-04, C-05`
+- **Governance**: MEDIO
+- **Leer antes**:
+  - `knowledge-base/06_funcionalidades.md` §Backlog (US-200)
+  - `knowledge-base/01_vision_y_objetivos.md` §Fuera de alcance
+  - `docs/discovery/sources/relevamiento-fuentes.md` §DentalTec, §DentalCore, §Dentalink
+
+### [C-19] `presupuestos-y-cobertura`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Juan Sebastián
+- **Scope**:
+  - Presupuesto por paciente a partir de las prestaciones del odontograma, separando la parte que cubre la obra social y el copago. **Migración V13**.
+  - Tests: cálculo de cobertura y copago; presupuesto sin obra social.
+- **Dependencias**: `C-13, C-18`
+- **Governance**: MEDIO
+- **Leer antes**:
+  - `knowledge-base/04_modelo_de_datos.md` §OdontogramaRegistro
+  - `docs/discovery/informe-discovery.md` §A.3 (presupuestos)
+
+### [C-20] `liquidaciones-obras-sociales`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Juan Sebastián
+- **Scope**:
+  - Liquidación mensual por obra social y plan, con exportación a PDF o CSV y conciliación de lo cobrado. **Migración V14**.
+  - Tests: agrupación por obra social y período; conciliación parcial.
+- **Dependencias**: `C-19`
+- **Governance**: ALTO (dinero)
+- **Leer antes**:
+  - `docs/discovery/sources/relevamiento-fuentes.md` §Dentalink (conciliaciones), §DentiClick
+  - `knowledge-base/06_funcionalidades.md` §Backlog (US-200)
+
+### [C-21] `validacion-online-obras-sociales`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Juan Sebastián
+- **Scope**:
+  - Puerto `ValidadorCobertura` con un adaptador **simulado** y un esqueleto de adaptador SOAP o REST por obra social: afiliado, prestación, topes y autorizaciones.
+  - Tests: respuesta válida, afiliado inexistente, prestación no cubierta, timeout del servicio.
+- **Dependencias**: `C-18`
+- **Governance**: ALTO (integración externa)
+- **Leer antes**:
+  - `knowledge-base/02_descripcion_general.md` §Integraciones externas
+  - `docs/discovery/sources/relevamiento-fuentes.md` §DentalTec
+
+### [C-22] `caja-y-cobros`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Enzo
+- **Scope**:
+  - Caja diaria (apertura, cierre, arqueo), cobros por turno y cuenta corriente del paciente. **Migración V15**.
+  - Pantallas de caja en `frontend/`.
+  - Tests: arqueo cuadrado y descuadrado; cobro parcial.
+- **Dependencias**: `C-06`
+- **Governance**: CRITICO (dinero)
+- **Leer antes**:
+  - `docs/discovery/informe-discovery.md` §A.3, §C.1
+  - `knowledge-base/03_actores_y_roles.md` §RBAC
+
+### [C-23] `senas-mercado-pago`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Enzo
+- **Scope**:
+  - Puerto `PasarelaPago` con adaptador Mercado Pago (modo sandbox, **sin credenciales reales en el repo**): link de pago para la seña al reservar y webhook de confirmación con validación de firma.
+  - Tests: seña pagada confirma el turno; seña vencida lo libera; webhook con firma inválida rechazado.
+- **Dependencias**: `C-10, C-22`
+- **Governance**: CRITICO (pagos)
+- **Leer antes**:
+  - `knowledge-base/02_descripcion_general.md` §Integraciones externas
+  - `knowledge-base/08_arquitectura_propuesta.md` §Seguridad, §Variables de entorno
+
+### [C-24] `facturacion-electronica-arca`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Enzo
+- **Scope**:
+  - Puerto `Facturador` con adaptador ARCA (homologación, sin certificados reales en el repo): Factura B/C con CAE y QR.
+  - Tests: comprobante emitido en homologación; error de ARCA manejado.
+- **Dependencias**: `C-22`
+- **Governance**: CRITICO (fiscal)
+- **Leer antes**:
+  - `knowledge-base/02_descripcion_general.md` §Integraciones externas
+  - `docs/discovery/sources/relevamiento-fuentes.md` §DentalCore, §DentalTec
+
+---
+
+## FASE 9: Post-MVP: clínica avanzada
+
+> Los cuatro changes pueden ir en paralelo con el MVP completo. Todos tocan `clinica/` (dueño: Emanuel).
+
+### [C-25] `periodontograma`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Emanuel
+- **Scope**:
+  - Sondaje de 6 puntos por pieza (MV, V, DV, ML, L, DL), recesión, sangrado, placa, movilidad y furcación, con versiones por visita. **Migración V16**.
+  - Tests: carga completa por pieza; cálculo del estado (sano, leve, moderado, severo).
+- **Dependencias**: `C-13`
+- **Governance**: ALTO (datos de salud)
+- **Leer antes**:
+  - `docs/discovery/verificacion/sofia.md` (periodontograma verificado en VecDent)
+  - `knowledge-base/05_reglas_de_negocio.md` §Clínica
+
+### [C-26] `imagenes-y-radiografias`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Emanuel
+- **Scope**:
+  - Carga de imágenes y radiografías por paciente, pieza y fecha, con almacenamiento detrás de un puerto (local o S3 compatible). **Migración V17**.
+  - Tests: tipos y tamaños permitidos; acceso solo para el odontólogo.
+- **Dependencias**: `C-13`
+- **Governance**: ALTO (datos de salud)
+- **Leer antes**:
+  - `knowledge-base/05_reglas_de_negocio.md` §RN-CL-01
+  - `knowledge-base/08_arquitectura_propuesta.md` §Seguridad
+
+### [C-27] `consentimientos-firma-electronica`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Emanuel
+- **Scope**:
+  - Plantillas de consentimiento informado y firma con hash, fecha, IP y dispositivo; documento bloqueado una vez firmado (Ley 25.506). **Migración V18**.
+  - Tests: no se puede modificar un documento firmado; verificación del hash.
+- **Dependencias**: `C-13`
+- **Governance**: CRITICO (validez legal)
+- **Leer antes**:
+  - `docs/discovery/sources/relevamiento-fuentes.md` §Bilog, §Odonthia
+  - `knowledge-base/05_reglas_de_negocio.md` §Clínica
+
+### [C-28] `exportacion-hl7-fhir`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Emanuel
+- **Scope**:
+  - Exportación de la historia clínica del paciente en PDF y en HL7 FHIR (recursos `Patient`, `Condition`, `Procedure`).
+  - Tests: el documento exportado es válido contra el esquema FHIR; el paciente solo exporta lo suyo.
+- **Dependencias**: `C-13`
+- **Governance**: ALTO (portabilidad de datos de salud)
+- **Leer antes**:
+  - `docs/discovery/informe-discovery.md` §C.2 (interoperabilidad)
+  - `knowledge-base/04_modelo_de_datos.md` §FichaClinica
+
+---
+
+## FASE 10: Post-MVP: escala, integraciones e inteligencia
+
+### [C-29] `multisucursal`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Sofia Indovino
+- **Scope**:
+  - Entidad `Sucursal`; profesionales, sillones, horarios, turnos y caja asociados a una sucursal. Filtro por sucursal en toda la API. **Migración V19**.
+  - Revisar DD-05 (hoy single-tenant) y las restricciones de exclusión por sucursal.
+  - Tests: aislamiento de agendas entre sucursales; profesional que atiende en dos sucursales en días distintos.
+- **Dependencias**: `C-04, C-06, C-07`
+- **Governance**: ALTO (cambio transversal del modelo)
+- **Leer antes**:
+  - `knowledge-base/09_decisiones_y_supuestos.md` §DD-05
+  - `knowledge-base/04_modelo_de_datos.md`
+
+### [C-30] `sincronizacion-google-calendar`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Juan Cruz
+- **Scope**:
+  - Puerto `CalendarioExterno` con adaptador Google Calendar (OAuth del profesional, sin credenciales en el repo): publicar los turnos del profesional en su calendario.
+  - Tests: alta, cancelación y reprogramación reflejadas; token revocado manejado.
+- **Dependencias**: `C-06`
+- **Governance**: ALTO (OAuth e integración externa)
+- **Leer antes**:
+  - `knowledge-base/02_descripcion_general.md` §Integraciones externas
+
+### [C-31] `asistente-ia-whatsapp`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Juan Cruz
+- **Scope**:
+  - Asistente conversacional por WhatsApp que consulta disponibilidad, reserva, confirma y reprograma usando los mismos casos de uso de C-10 (sin saltear reglas). Derivación a una persona ante urgencias.
+  - Sin datos de salud en la conversación (RN-NO-01).
+  - Tests: reserva por conversación respeta RN-AG; la derivación funciona.
+- **Dependencias**: `C-10, C-11`
+- **Governance**: ALTO
+- **Leer antes**:
+  - `docs/discovery/informe-discovery.md` §C.2 (asistentes por WhatsApp)
+  - `knowledge-base/05_reglas_de_negocio.md` §Reserva online, §Notificaciones
+
+### [C-32] `reportes-y-metricas`
+- **Estado**: `[ ]` pendiente
+- **Responsable**: Enzo
+- **Scope**:
+  - Panel con ocupación por profesional y sillón, turnos por origen (online o del personal), ausencias de pacientes y de profesionales, y cancelaciones. Solo para el personal.
+  - Tests: los cálculos coinciden con datos de prueba conocidos; el paciente recibe `403`.
+- **Dependencias**: `C-06, C-13`
+- **Governance**: MEDIO
+- **Leer antes**:
+  - `knowledge-base/01_vision_y_objetivos.md` §Métricas de éxito
+  - `knowledge-base/03_actores_y_roles.md` §RBAC
