@@ -1,0 +1,176 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { crearClienteApi, type ClienteApi } from '../src/shared/api/cliente.ts';
+import { ErrorGenerico, ErrorNegocio, ErrorValidacion } from '../src/shared/api/errores.ts';
+
+const URL_BASE = 'http://localhost:8080/api/v1';
+
+type FetchSimulado = ReturnType<typeof vi.fn<typeof fetch>>;
+
+function responder(estado: number, cuerpo?: unknown): FetchSimulado {
+  const texto = cuerpo === undefined ? null : typeof cuerpo === 'string' ? cuerpo : JSON.stringify(cuerpo);
+  return vi.fn<typeof fetch>().mockResolvedValue(new Response(texto, { status: estado }));
+}
+
+function pedido(fetchSimulado: FetchSimulado): { url: string; opciones: RequestInit; encabezados: Headers } {
+  const llamada = fetchSimulado.mock.calls[0];
+  if (llamada === undefined) {
+    throw new Error('No se envió ningún pedido');
+  }
+  const [entrada, opciones = {}] = llamada;
+  return { url: String(entrada), opciones, encabezados: new Headers(opciones.headers) };
+}
+
+function fijarCookie(valor: string): void {
+  document.cookie = `XSRF-TOKEN=${valor}; path=/`;
+}
+
+function borrarCookie(): void {
+  document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+}
+
+async function capturarError(promesa: Promise<unknown>): Promise<unknown> {
+  try {
+    await promesa;
+  } catch (error) {
+    return error;
+  }
+  throw new Error('Se esperaba un error');
+}
+
+describe('URL base configurable', () => {
+  it('Pedido a un recurso de la API', async () => {
+    const fetchSimulado = responder(200, []);
+    await crearClienteApi(URL_BASE, fetchSimulado).obtener('/turnos');
+    expect(pedido(fetchSimulado).url).toBe('http://localhost:8080/api/v1/turnos');
+  });
+
+  it('URL base con barra final', async () => {
+    const fetchSimulado = responder(200, []);
+    await crearClienteApi(`${URL_BASE}/`, fetchSimulado).obtener('/turnos');
+    expect(pedido(fetchSimulado).url).toBe('http://localhost:8080/api/v1/turnos');
+  });
+});
+
+describe('Envío de la sesión', () => {
+  it('Pedido con la cookie de sesión', async () => {
+    const fetchSimulado = responder(200, []);
+    await crearClienteApi(URL_BASE, fetchSimulado).obtener('/turnos');
+    expect(pedido(fetchSimulado).opciones.credentials).toBe('include');
+  });
+});
+
+describe('Token CSRF en los pedidos que modifican datos', () => {
+  beforeEach(borrarCookie);
+  afterEach(borrarCookie);
+
+  it('POST con token CSRF', async () => {
+    fijarCookie('token-ficticio-123');
+    const fetchSimulado = responder(201, { id: 1 });
+    await crearClienteApi(URL_BASE, fetchSimulado).crear('/turnos', { profesionalId: 1 });
+    expect(pedido(fetchSimulado).encabezados.get('X-XSRF-TOKEN')).toBe('token-ficticio-123');
+  });
+
+  it('GET sin token CSRF', async () => {
+    fijarCookie('token-ficticio-123');
+    const fetchSimulado = responder(200, []);
+    await crearClienteApi(URL_BASE, fetchSimulado).obtener('/turnos');
+    expect(pedido(fetchSimulado).encabezados.has('X-XSRF-TOKEN')).toBe(false);
+  });
+
+  it('POST sin cookie CSRF', async () => {
+    const fetchSimulado = responder(201, { id: 1 });
+    await crearClienteApi(URL_BASE, fetchSimulado).crear('/turnos', { profesionalId: 1 });
+    expect(pedido(fetchSimulado).encabezados.has('X-XSRF-TOKEN')).toBe(false);
+  });
+});
+
+describe('Cuerpo JSON', () => {
+  it('Respuesta exitosa con datos', async () => {
+    const fetchSimulado = responder(201, { id: 1, estado: 'RESERVADO' });
+    const turnoFicticio = { pacienteId: 7, profesionalId: 1, sillonId: 1, prestacionId: 1, inicio: '2026-12-01T10:00' };
+
+    const resultado = await crearClienteApi(URL_BASE, fetchSimulado).crear('/turnos', turnoFicticio);
+
+    const { opciones, encabezados } = pedido(fetchSimulado);
+    expect(opciones.body).toBe(JSON.stringify(turnoFicticio));
+    expect(encabezados.get('Content-Type')).toBe('application/json');
+    expect(resultado).toEqual({ id: 1, estado: 'RESERVADO' });
+  });
+
+  it('Respuesta exitosa sin cuerpo', async () => {
+    const fetchSimulado = responder(204);
+    const resultado = await crearClienteApi(URL_BASE, fetchSimulado).crear('/turnos/1/cancelar');
+    expect(resultado).toBeUndefined();
+  });
+});
+
+describe('Error de negocio ante un 409', () => {
+  let cliente: ClienteApi;
+
+  it('Solapamiento por profesional', async () => {
+    cliente = crearClienteApi(
+      URL_BASE,
+      responder(409, {
+        status: 409,
+        title: 'Conflict',
+        detail: 'El profesional ya tiene un turno en ese horario',
+        codigo: 'SOLAPAMIENTO_PROFESIONAL',
+      }),
+    );
+
+    const error = await capturarError(cliente.crear('/turnos', {}));
+
+    expect(error).toBeInstanceOf(ErrorNegocio);
+    expect(error).toMatchObject({
+      codigo: 'SOLAPAMIENTO_PROFESIONAL',
+      detalle: 'El profesional ya tiene un turno en ese horario',
+    });
+  });
+
+  it('Conflicto sin código', async () => {
+    cliente = crearClienteApi(URL_BASE, responder(409, { status: 409, title: 'Conflict' }));
+
+    const error = await capturarError(cliente.crear('/turnos', {}));
+
+    expect(error).toBeInstanceOf(ErrorNegocio);
+    expect(error).toMatchObject({ codigo: 'CONFLICTO_SIN_CODIGO' });
+  });
+});
+
+describe('Error de validación ante un 422', () => {
+  it('Inicio en el pasado', async () => {
+    const cliente = crearClienteApi(
+      URL_BASE,
+      responder(422, { status: 422, detail: 'El turno empieza en el pasado', codigo: 'INICIO_EN_EL_PASADO' }),
+    );
+
+    const error = await capturarError(cliente.crear('/turnos', {}));
+
+    expect(error).toBeInstanceOf(ErrorValidacion);
+    expect(error).not.toBeInstanceOf(ErrorNegocio);
+    expect(error).toMatchObject({ codigo: 'INICIO_EN_EL_PASADO', detalle: 'El turno empieza en el pasado' });
+  });
+});
+
+describe('Otras fallas sin detalles internos', () => {
+  it('Error interno del servidor', async () => {
+    const traza = 'java.lang.NullPointerException at ar.turnos.odontologia.agenda.Ficticio.metodo(Ficticio.java:42)';
+    const cliente = crearClienteApi(URL_BASE, responder(500, traza));
+
+    const error = await capturarError(cliente.obtener('/turnos'));
+
+    expect(error).toBeInstanceOf(ErrorGenerico);
+    expect(error).toMatchObject({ estado: 500 });
+    expect((error as ErrorGenerico).message).not.toContain('NullPointerException');
+  });
+
+  it('Servidor inalcanzable', async () => {
+    const fetchSimulado = vi.fn<typeof fetch>().mockRejectedValue(new TypeError('Failed to fetch'));
+    const cliente = crearClienteApi(URL_BASE, fetchSimulado);
+
+    const error = await capturarError(cliente.obtener('/turnos'));
+
+    expect(error).toBeInstanceOf(ErrorGenerico);
+    expect(error).toMatchObject({ estado: null });
+  });
+});
