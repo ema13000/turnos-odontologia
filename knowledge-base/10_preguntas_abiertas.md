@@ -21,24 +21,34 @@
 
 ## Preguntas abiertas (priorizadas)
 
+### Pendientes
+
 | ID | Prioridad | Pregunta | Bloquea | Decisor |
 |---|---|---|---|---|
-| PA-01 | **Alta** | ¿El margen de 10 min es **fijo** o configurable por consultorio o por prestación? (Por ahora es configurable por variable de entorno, con valor 10.) | Spec del change OPSX | Equipo (líder) |
-| PA-02 | **Alta** | ¿Un **sobreturno** también saltea el margen de 10 min, o solo el solapamiento? | Spec de sobreturno | Equipo |
-| PA-03 | **Alta** | ¿El paciente necesita **login**, o alcanza con DNI y un código o token de reserva para cancelar o reprogramar? | Reserva online | Equipo |
-| PA-04 | Media | ¿Se registra el **ausentismo** (estado `AUSENTE`) y quién lo marca? | Métricas | Equipo |
-| PA-05 | Media | ¿El **sobreturno** exige un **motivo** obligatorio? | Sobreturno | Equipo |
-| PA-06 | ~~Media~~ | ~~¿Hay horario de atención?~~ **Resuelta (2026-11-20)**: cada profesional tiene horarios de trabajo semanales y los turnos fuera de horario se rechazan (RN-AG-13, DD-08). | — | Equipo |
-| PA-14 | **Alta** | Con "sin preferencia", si hay **varios profesionales libres** en el mismo horario, ¿a cuál se asigna? Propuesta: el que tenga menos turnos ese día. Alternativas: orden fijo o al azar. | Reserva online | Equipo |
-| PA-15 | Media | ¿Cada profesional tiene un **sillón habitual**, o se asigna cualquier sillón libre? | Reserva online | Equipo |
-| PA-16 | Media | ¿Todos los profesionales hacen **todas las prestaciones**, o hay especialidades (por ejemplo, solo uno hace conductos)? (SU-07) | Modelo de datos | Equipo |
-| PA-07 | Media | ¿La duración de una prestación puede **variar según el profesional**? | Modelo de datos | Equipo |
-| PA-08 | ~~Media~~ | ~~¿Con cuánta anticipación se envía el recordatorio?~~ **Resuelta (2026-11-20)**: 24 h antes (RN-NO-04). | — | Equipo |
-| PA-09 | Baja | ¿Se confirma la zona horaria única `America/Argentina/Buenos_Aires`? (SU-03) | Fechas | Equipo |
-| PA-10 | Media | Autenticación del personal: ¿sesión o **JWT**? | Change de base | Equipo técnico |
-| PA-11 | Media | ¿Los 5 integrantes tienen **Docker** para los tests de integración con PostgreSQL? (SU-04) | Verify y README | Equipo técnico |
-| PA-12 | Baja | ¿El docente acepta un grupo de **5 integrantes**? La consigna dice "hasta 3". | Entrega | Líder con el docente |
+| PA-10 | Media | Autenticación: ¿**sesión con cookie** (propuesta, más simple) o **JWT**? Aplica al personal y a la cuenta de paciente. | Change de base | Líder o equipo técnico |
+| PA-11 | Media | ¿Quiénes del equipo tienen **Docker**? La líder sí. Sin Docker hay alternativas (SU-04). | Verify y README | Cada integrante |
 | PA-13 | Baja | Verificaciones pendientes de **Bilog** (Emanuel) y **DentalSoft** (Juan Sebastián): si encuentran errores, se aplica *Ajustar* al informe y a esta KB. | Cierre del Discovery | Emanuel, Juan Sebastián |
+| PA-17 | Media | Si se registra una **ausencia o licencia** de un profesional que ya tiene turnos dados en ese período, ¿qué pasa con esos turnos? Propuesta: el sistema los lista, avisa a los pacientes y la recepción los reasigna o reprograma. | Change de ausencias | Equipo |
+| PA-18 | Media | ¿La reserva online **requiere cuenta** sí o sí (SU-08), o se permite reservar sin registrarse? | Reserva online | Equipo |
+| PA-19 | Baja | ¿Se registra el **ausentismo del paciente** (no se presentó, estado `AUSENTE`)? ¿Quién lo marca? (La respuesta a PA-04 se refería a las ausencias del profesional.) | Métricas | Equipo |
+
+### Resueltas (2026-11-20, respuestas de la líder)
+
+| ID | Pregunta | Resolución | Dónde |
+|---|---|---|---|
+| PA-01 | ¿Margen fijo o configurable? | Configurable, **mínimo 10 min** | RN-AG-04 |
+| PA-02 | ¿El sobreturno saltea el margen? | Saltea la agenda del profesional; **nunca la limpieza del sillón**: si no hay sillón libre con margen, se rechaza | RN-AG-06 |
+| PA-03 | ¿Login del paciente? | Sí: cancela o reprograma **desde su cuenta con el número de reserva**; por el consultorio, con **DNI y número de reserva** | RN-AG-07, RN-RO-08 |
+| PA-04 | ¿Se registra el ausentismo? | Se registran las **ausencias y licencias del profesional**, que cargan el administrador o la recepcionista | RN-AG-16 (el ausentismo del paciente sigue en PA-19) |
+| PA-05 | ¿Motivo obligatorio en el sobreturno? | **Sí** | RN-AG-06 |
+| PA-06 | ¿Horario de atención? | Horarios de trabajo semanales por profesional | RN-AG-13 |
+| PA-07 | ¿La duración varía por profesional? | **No**: es la misma para todos; el personal puede **extender** el turno si hay complicaciones | RN-AG-01, RN-AG-14 |
+| PA-08 | ¿Anticipación del recordatorio? | 24 h antes | RN-NO-04 |
+| PA-09 | ¿Zona horaria única? | **Sí**, `America/Argentina/Buenos_Aires` | RN-GL-02 |
+| PA-12 | ¿Acepta el docente un grupo de 5? | **Sí** | — |
+| PA-14 | ¿A quién se asigna en "sin preferencia"? | Al profesional **habilitado** para la prestación con **menos turnos** ese día; si hay empate, **al azar** | RN-RO-05 |
+| PA-15 | ¿Sillón habitual? | **Sí**, se usa primero; si está ocupado, otro libre | RN-RO-06 |
+| PA-16 | ¿Especialidades? | **Sí**, hay profesionales con especialidades | RN-AG-15 |
 
 ## Puntos "No evidenciado" del Discovery
 

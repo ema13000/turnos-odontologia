@@ -41,7 +41,7 @@ Recepción → Frontend → API → CrearTurno → Agenda(dominio) → TurnoRepo
    - sin preferencia: la unión de los huecos de todos los profesionales que trabajan ese día, sin repetir horarios.
    Un horario aparece solo si hay al menos un par de profesional y sillón libre (RN-RO-07). Se devuelven solo horarios, sin datos de otros pacientes.
 3. El paciente elige un horario y completa sus datos (DNI, nombre, contacto, canal, consentimiento).
-4. `POST /public/reservas` **asigna el profesional** (si eligió "sin preferencia", RN-RO-05) y **el sillón** (RN-RO-06), y ejecuta el mismo caso de uso que el Flujo 1, con `origen = ONLINE` y sin opción de sobreturno.
+4. Con su sesión de paciente iniciada (RN-RO-08), `POST /paciente/reservas` **asigna el profesional** si eligió "sin preferencia" (habilitado para la prestación, con menos turnos ese día y, si hay empate, al azar; RN-RO-05) y **el sillón** (primero el habitual; RN-RO-06), y ejecuta el mismo caso de uso que el Flujo 1, con `origen = ONLINE` y sin opción de sobreturno.
 5. Se devuelve el **código de reserva** y se envía la confirmación por el canal que corresponde.
 
 **Casos de error**:
@@ -54,8 +54,10 @@ Recepción → Frontend → API → CrearTurno → Agenda(dominio) → TurnoRepo
 **Disparador**: el paciente (desde el link o con el código) o el personal (desde el panel).
 
 **Pasos**:
-1. Se identifica el turno (por `id` para el personal, o por código o token para el paciente).
-2. Si el actor es el paciente: se verifica que falten **24 h o más** para el inicio (RN-AG-07).
+1. Se identifica el turno:
+   - **paciente online**: con su sesión iniciada, ingresa el **número de reserva**; el sistema verifica que el turno sea suyo;
+   - **por el consultorio**: la recepcionista valida el **DNI** del paciente y el **número de reserva (token)** antes de operar.
+2. Si el actor es el paciente online: se verifica que falten **24 h o más** para el inicio (RN-AG-07).
 3. **Cancelar**: el estado pasa a `CANCELADO` y el hueco queda libre (RN-AG-08).
 4. **Reprogramar**: en una transacción se crea el turno nuevo con las reglas del Flujo 1 y se cancela el original. Si el nuevo falla, el original no cambia.
 5. Se registra la auditoría y se notifica al paciente.

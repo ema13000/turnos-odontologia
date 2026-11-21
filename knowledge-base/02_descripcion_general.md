@@ -61,8 +61,13 @@ Base: `/api/v1`. Formato JSON. Fechas en ISO-8601 con zona horaria.
 | Bloqueos | `POST /profesionales/{id}/bloqueos`, `DELETE /bloqueos/{id}` | ODONTOLOGO, ADMIN |
 | Horarios de trabajo | `GET/PUT /profesionales/{id}/horarios` | ADMIN |
 | Disponibilidad (pública) | `GET /public/disponibilidad?prestacionId&fecha[&profesionalId]` (sin `profesionalId` = "sin preferencia") | Público |
-| Reserva online (pública) | `POST /public/reservas`, `POST /public/reservas/{codigo}/cancelar`, `POST /public/reservas/{codigo}/reprogramar` | Paciente (identificación a definir, ver PA-03) |
+| Cuenta de paciente | `POST /public/pacientes/registro`, `POST /public/login` | Público |
+| Reserva online | `POST /paciente/reservas`, `GET /paciente/turnos`, `POST /paciente/reservas/{numeroReserva}/cancelar`, `POST /paciente/reservas/{numeroReserva}/reprogramar` | PACIENTE (con sesión) |
+| Cancelación por el consultorio | `POST /turnos/{id}/cancelar` con DNI y número de reserva verificados | RECEPCIONISTA |
+| Ausencias y licencias | `GET/POST /profesionales/{id}/ausencias`, `DELETE /ausencias/{id}` | ADMIN, RECEPCIONISTA |
+| Especialidades | `PUT /profesionales/{id}/prestaciones`, `PUT /profesionales/{id}/sillon-habitual` | ADMIN |
+| Extensión | `POST /turnos/{id}/extender` (con motivo) | Personal |
 | Confirmación | `POST /public/confirmaciones/{token}` (y el webhook de WhatsApp) | Paciente |
 | Pacientes y ficha | `GET/POST /pacientes`, `GET/PUT /pacientes/{id}/ficha`, `PUT /pacientes/{id}/odontograma` | ODONTOLOGO (la ficha), RECEPCIONISTA (los datos de contacto) |
 
-**Errores de negocio**: `409 Conflict` con un código estable (`SOLAPAMIENTO_PROFESIONAL`, `SOLAPAMIENTO_SILLON`, `MARGEN_INSUFICIENTE`, `FUERA_DE_HORARIO`, `SIN_DISPONIBILIDAD`, `CANCELACION_FUERA_DE_PLAZO`). `422` para validaciones de entrada.
+**Errores de negocio**: `409 Conflict` con un código estable (`SOLAPAMIENTO_PROFESIONAL`, `SOLAPAMIENTO_SILLON`, `MARGEN_INSUFICIENTE`, `FUERA_DE_HORARIO`, `SIN_DISPONIBILIDAD`, `SIN_SILLON_DISPONIBLE`, `PROFESIONAL_NO_HABILITADO`, `CANCELACION_FUERA_DE_PLAZO`). `422` para validaciones de entrada.

@@ -7,7 +7,7 @@
 | **Recepcionista o secretaria** (`RECEPCIONISTA`) | Personal administrativo del consultorio | Panel web: carga, mueve y cancela turnos; carga sobreturnos; administra los datos de contacto de los pacientes |
 | **Odontólogo** (`ODONTOLOGO`) | Profesional que atiende | Panel web: ve su agenda, bloquea horarios, carga sobreturnos, registra la ficha y el odontograma |
 | **Administrador del consultorio** (`ADMIN`) | Dueño o encargado (puede ser el mismo odontólogo) | Panel web: configura profesionales, sillones, prestaciones y usuarios |
-| **Paciente** (sin cuenta de personal) | Persona que se atiende | Página pública de reserva; links de confirmación, cancelación y reprogramación; recibe recordatorios |
+| **Paciente** (`PACIENTE`, cuenta propia, no es personal) | Persona que se atiende | Con **su cuenta**: reserva, ve sus turnos, cancela o reprograma con el número de reserva (RN-AG-07, RN-RO-08). Sin cuenta: confirma desde el link del recordatorio o llama al consultorio, que valida DNI y número de reserva |
 | **Sistema de notificaciones** (actor técnico) | Tarea programada | Envía recordatorios por WhatsApp o email y procesa las confirmaciones |
 
 **Segmento** (`discovery.md`, punto 2): odontólogo independiente (1 profesional y 1 sillón, a veces con secretaria) y consultorio chico (varios profesionales que comparten sillones).
@@ -26,6 +26,10 @@ C = crear, R = leer, U = modificar, D = eliminar o desactivar. "Propio" = solo s
 | Agenda (ver) | R | R | R (puede filtrar la propia) | **Solo disponibilidad**: horarios libres, sin datos de otros pacientes |
 | Bloqueo de agenda | CRUD | — | CRUD propio | — |
 | Horarios de trabajo | CRUD | R | R (propios) | R indirecta (solo ve los huecos libres resultantes) |
+| Especialidades (profesional-prestación) y sillón habitual | CRUD | R | R | R (solo qué profesionales hacen cada prestación) |
+| Ausencias y licencias del profesional | CRUD | CRUD | R (propias) | — |
+| Margen entre turnos (configuración) | U (mínimo 10 min) | R | R | — |
+| Extensión de un turno por complicaciones | U | U | U | — |
 | Paciente (datos de contacto) | CRUD | CRUD | R | R/U propio (al reservar) |
 | Ficha clínica y odontograma | R | **—** | CRUD | — |
 | Estadísticas o dashboard | R | R (operativas) | R (propias) | **—** |
@@ -37,8 +41,12 @@ C = crear, R = leer, U = modificar, D = eliminar o desactivar. "Propio" = solo s
 Accesibles sin sesión del personal:
 
 - `GET /api/v1/public/disponibilidad`: horarios libres por prestación y fecha. No expone nombres de pacientes.
-- `POST /api/v1/public/reservas`: reserva online.
-- `POST /api/v1/public/reservas/{codigo}/cancelar` y `/reprogramar`: con código o token de reserva (mecanismo a definir, ver PA-03).
+- `POST /api/v1/public/pacientes/registro` y `POST /api/v1/public/login`: alta e inicio de sesión de la cuenta de paciente.
+
+**Rutas del paciente** (requieren sesión con rol `PACIENTE`; solo sus datos):
+- `POST /api/v1/paciente/reservas`: reserva online.
+- `GET /api/v1/paciente/turnos`: sus turnos.
+- `POST /api/v1/paciente/reservas/{numeroReserva}/cancelar` y `/reprogramar`: hasta 24 h antes (RN-AG-07).
 - `POST /api/v1/public/confirmaciones/{token}`: confirmación desde el link del recordatorio.
 - `POST /api/v1/webhooks/whatsapp`: webhook del proveedor. Valida la firma.
 - Frontend: página de reserva del paciente.

@@ -56,7 +56,9 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 **Como** odontólogo o recepcionista **quiero** cargar un sobreturno **para** atender una urgencia aunque el horario esté ocupado.
 **Criterios de aceptación**:
 - [ ] CA-1: solo el personal puede hacerlo; el paciente recibe `403`.
-- [ ] CA-2: el turno queda marcado como sobreturno y auditado.
+- [ ] CA-2: el motivo es obligatorio.
+- [ ] CA-3: puede superponerse con otro turno del mismo profesional, pero necesita un **sillón libre con margen de limpieza**. Si no hay, se rechaza con `SIN_SILLON_DISPONIBLE`.
+- [ ] CA-4: el turno queda marcado como sobreturno y auditado.
 **Reglas relacionadas**: RN-AG-06, RN-RO-03
 
 ### US-014: Ver la agenda diaria y semanal
@@ -72,6 +74,21 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 - [ ] CA-2: un turno fuera de horario se rechaza con `FUERA_DE_HORARIO`, salvo un sobreturno del personal.
 **Reglas relacionadas**: RN-AG-13
 
+### US-017: Registrar ausencias y licencias del profesional
+**Como** administrador o recepcionista **quiero** registrar cuándo un profesional falta o está de licencia **para** que no se le asignen turnos en ese período.
+**Reglas relacionadas**: RN-AG-16, RN-AG-10
+
+### US-018: Configurar especialidades y sillón habitual
+**Como** administrador **quiero** indicar qué prestaciones hace cada profesional y cuál es su sillón habitual **para** que la reserva asigne bien.
+**Reglas relacionadas**: RN-AG-15, RN-RO-06
+
+### US-019: Extender un turno por complicaciones
+**Como** odontólogo **quiero** extender el turno en curso si surge una complicación **para** terminar la atención sin perder el control de la agenda.
+**Criterios de aceptación**:
+- [ ] CA-1: si la extensión no choca, se registra con su motivo.
+- [ ] CA-2: si choca con el turno siguiente, el sistema avisa y ofrece reprogramar el siguiente o registrar la extensión como sobreturno.
+**Reglas relacionadas**: RN-AG-14
+
 ### US-015: Bloquear horarios
 **Como** odontólogo **quiero** bloquear franjas de mi agenda **para** que no me asignen turnos.
 **Reglas relacionadas**: RN-AG-10
@@ -85,13 +102,20 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 - [ ] CA-2: no se exponen datos de otros pacientes.
 **Reglas relacionadas**: RN-RO-01, RN-RO-02
 
+### US-024: Crear una cuenta de paciente e iniciar sesión
+**Como** paciente **quiero** tener una cuenta **para** reservar, ver mis turnos y cancelarlos o reprogramarlos con mi número de reserva.
+**Criterios de aceptación**:
+- [ ] CA-1: con la cuenta veo **solo mis** turnos y datos.
+- [ ] CA-2: para cancelar o reprogramar ingreso el número de reserva, y el sistema verifica que el turno sea mío.
+**Reglas relacionadas**: RN-RO-08, RN-AG-07
+
 ### US-023: Elegir un profesional o "sin preferencia"
 **Como** paciente **quiero** elegir con qué profesional atenderme, o indicar que me da igual, **para** conseguir el horario que más me convenga.
 **Criterios de aceptación**:
 - [ ] CA-1: con un profesional elegido, veo solo sus horarios libres dentro de su horario de trabajo.
 - [ ] CA-2: con "sin preferencia", veo la unión de los horarios libres de todos los profesionales que trabajan ese día, sin horarios repetidos.
-- [ ] CA-3: al reservar "sin preferencia", el sistema me asigna un profesional libre y me informa cuál es.
-- [ ] CA-4: nunca elijo sillón; el sistema asigna uno libre.
+- [ ] CA-3: al reservar "sin preferencia", el sistema me asigna un profesional libre y habilitado para la prestación, el que tenga menos turnos ese día (si hay empate, al azar), y me informa cuál es.
+- [ ] CA-4: nunca elijo sillón; el sistema asigna el sillón habitual del profesional o, si está ocupado, otro libre.
 **Reglas relacionadas**: RN-RO-04 a RN-RO-07, RN-AG-13
 
 ### US-021: Reservar un turno online

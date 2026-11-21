@@ -17,7 +17,11 @@
 **Trade-offs aceptados**: el TP entrega un núcleo de dominio y no un producto completo.
 
 ### DD-03: Doble garantía contra solapamientos: dominio y restricción de exclusión en PostgreSQL
-**Decisión**: la regla se evalúa en el dominio (mensajes de error claros y tests por escenario) **y** en la base con `EXCLUDE USING gist (sillon_id WITH =, tstzrange(inicio, fin + interval '10 minutes') WITH &&) WHERE (estado IN ('RESERVADO','CONFIRMADO') AND NOT es_sobreturno)`, más la restricción equivalente por `profesional_id`.
+**Decisión**: la regla se evalúa en el dominio (mensajes de error claros y tests por escenario) **y** en la base con dos restricciones de exclusión:
+- **por sillón**: `EXCLUDE USING gist (sillon_id WITH =, tstzrange(inicio, fin_con_margen) WITH &&) WHERE (estado IN ('RESERVADO','CONFIRMADO'))`. **Incluye los sobreturnos**, porque la limpieza del sillón es obligatoria (RN-AG-06);
+- **por profesional**: la misma con `profesional_id`, agregando `AND NOT es_sobreturno`.
+
+Como el margen es configurable (con mínimo 10), se guarda la columna `fin_con_margen = fin + margen vigente al crear el turno`.
 **Contexto**: dos reservas concurrentes, una del personal y otra online, pueden pasar las dos la verificación en memoria.
 **Alternativas consideradas**: bloqueo pesimista (`SELECT ... FOR UPDATE`) o aislamiento serializable.
 **Justificación**: la restricción es declarativa, atómica y no depende de la disciplina del código.
@@ -49,13 +53,29 @@
 **Justificación**: (a) obliga a bloquear a mano cada semana; (b) le quita al paciente la opción de "el primer horario libre", que es lo más cómodo.
 **Trade-offs aceptados**: suma una entidad (`HorarioTrabajo`) y un change al roadmap. **No amplía el change C-01** ("crear turno sin solapamientos"), que sigue enfocado en RN-AG-01 a RN-AG-05. La validación de horario se implementa en un change aparte que depende de C-01.
 
+### DD-09: Respuestas de la líder a las preguntas abiertas (2026-11-20)
+**Decisión**: se incorporan a las reglas las respuestas a PA-01 a PA-05, PA-07, PA-09, PA-12 y PA-14 a PA-16:
+- el margen es configurable con un **mínimo de 10 min** (RN-AG-04);
+- el **sobreturno** puede pisar la agenda del profesional, **nunca la limpieza del sillón** (RN-AG-06), y exige motivo;
+- el paciente cancela o reprograma **desde su cuenta con el número de reserva**; por el consultorio, con **DNI y número de reserva** (RN-AG-07);
+- se registran **ausencias y licencias del profesional** (RN-AG-16);
+- la duración es **la misma para todos los profesionales**, con **extensión por complicaciones** (RN-AG-01, RN-AG-14);
+- hay **especialidades** (RN-AG-15) y **sillón habitual** (RN-RO-06);
+- en "sin preferencia" se asigna el profesional con **menos turnos** y, si hay empate, **al azar** (RN-RO-05).
+
+**Contexto**: Ajustar de la líder sobre la KB v1.
+**Trade-offs aceptados**: crece el modelo (cuentas de paciente, especialidades, ausencias). Nada de esto amplía el change C-01; cada punto va a su change del roadmap.
+
 ## Supuestos inferidos
 
-### SU-07: Todos los profesionales pueden hacer todas las prestaciones
-**Supuesto**: en v1 no hay relación entre profesional y prestación; cualquier profesional puede atender cualquier prestación.
-**Origen**: el Discovery no menciona especialidades.
-**Riesgo si es falso**: "sin preferencia" podría asignar, por ejemplo, un tratamiento de conducto a alguien que no lo hace.
-**Cómo validar**: PA-16.
+### ~~SU-07: Todos los profesionales pueden hacer todas las prestaciones~~ (refutado)
+**Refutado el 2026-11-20**: hay especialidades (DD-09, RN-AG-15).
+
+### SU-08: La reserva online requiere cuenta de paciente
+**Supuesto**: como el paciente cancela y reprograma "desde su cuenta", también **reserva** con la cuenta iniciada. No hay reserva anónima.
+**Origen**: respuesta a PA-03.
+**Riesgo si es falso**: se pierden reservas de pacientes que no quieren registrarse.
+**Cómo validar**: PA-18.
 
 ### SU-01: Los consultorios chicos sufren solapamientos y desorden de turnos
 **Supuesto**: el problema existe y vale la pena resolverlo.
@@ -68,7 +88,7 @@
 **Riesgo si es falso**: baja adopción de la reserva online.
 **Cómo validar**: medir el `origen` de los turnos una vez en uso.
 
-### SU-03: Zona horaria única `America/Argentina/Buenos_Aires`
+### SU-03: Zona horaria única `America/Argentina/Buenos_Aires` (**confirmado el 2026-11-20**)
 **Origen**: el mercado objetivo es Argentina.
 **Riesgo si es falso**: errores de hora en el cálculo de las 24 h y los recordatorios.
 **Cómo validar**: confirmarlo con el equipo (PA-09).
@@ -76,7 +96,11 @@
 ### SU-04: Tests de integración con PostgreSQL real (Testcontainers o una instancia local)
 **Origen**: DD-03 exige `btree_gist`, que H2 no soporta.
 **Riesgo si es falso**: si el equipo no tiene Docker, los tests de integración no corren en todas las máquinas.
-**Cómo validar**: confirmar si los 5 integrantes tienen Docker (PA-11). Plan B: los tests de dominio son puros y corren siempre; los de integración se marcan con un tag aparte.
+**Cómo validar**: confirmar si los 5 integrantes tienen Docker (PA-11). La líder sí lo tiene.
+**Alternativas si alguien no tiene Docker**:
+1. **Tests de dominio puros** (sin base): cubren **todos los escenarios del spec** y corren en cualquier máquina con Java. Son los que exige la consigna.
+2. **PostgreSQL instalado localmente** (instalador oficial para Windows): los tests de integración apuntan a esa base con variables de entorno.
+3. Tests de integración con un **tag aparte** (`@Tag("integration")`): quien no tenga base los saltea, y los corre al menos la líder antes de cada merge.
 
 ### SU-05: El frontend usa Vite como bundler de TypeScript vanilla
 **Origen**: "TypeScript vanilla" no define cómo se compila; Vite tiene una plantilla `vanilla-ts` sin framework.
