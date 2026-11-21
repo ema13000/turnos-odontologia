@@ -1,0 +1,5 @@
+# Scripts de shell con LF para que corran en Mac y Linux; los .bat con CRLF para Windows.
+gradlew text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+*.jar binary

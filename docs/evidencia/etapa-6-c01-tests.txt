@@ -1,0 +1,21 @@
+# Etapa 6: evidencia de C-01 (crear-turno-sin-solapamientos), 2026-11-21 12:45
+
+$ ./gradlew test --rerun-tasks
+TurnosOdontologiaApplicationTest > El contexto de la aplicación arranca PASSED
+CrearTurnoTest > Inicio anterior al momento actual PASSED
+CrearTurnoTest > El profesional ya atiende en otro sillón PASSED
+CrearTurnoTest > Turno contiguo sin recursos compartidos PASSED
+CrearTurnoTest > Inicio igual al momento actual PASSED
+CrearTurnoTest > Un turno cancelado no bloquea el horario PASSED
+CrearTurnoTest > Turno que respeta el margen exacto PASSED
+CrearTurnoTest > Turno sin conflictos PASSED
+CrearTurnoTest > Turno contiguo sin margen PASSED
+CrearTurnoTest > Margen mayor al mínimo PASSED
+CrearTurnoTest > El sillón ya está ocupado por otro profesional PASSED
+CrearTurnoTest > Choque por profesional y por sillón a la vez PASSED
+MargenTest > El margen predeterminado es de 10 minutos PASSED
+MargenTest > Margen menor al mínimo PASSED
+BUILD SUCCESSFUL in 5s
+
+$ openspec validate crear-turno-sin-solapamientos --strict
+Change 'crear-turno-sin-solapamientos' is valid
