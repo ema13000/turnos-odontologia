@@ -6,6 +6,10 @@ node_modules/
 dist/
 coverage/
 
+# Gradle (backend)
+backend/build/
+backend/.gradle/
+
 # Secretos y variables de entorno
 .env
 .env.*

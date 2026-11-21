@@ -2,9 +2,9 @@
 
 ## 1. Scaffolding del backend (merge temprano a `master`)
 
-- [ ] 1.1 Crear `backend/` con el Gradle wrapper 9.x, `settings.gradle` (con `foojay-resolver-convention`) y `build.gradle` (toolchain de Java 21, Spring Boot 3.5.x, `spring-boot-starter` y `spring-boot-starter-test`); verificar que `./gradlew --version` corre y que el wrapper queda commiteado
-- [ ] 1.2 Agregar `ar.turnos.odontologia.TurnosOdontologiaApplication` y un test de arranque del contexto; verificar que `./gradlew test` termina en verde
-- [ ] 1.3 Agregar al `.gitignore` las carpetas `backend/build/` y `backend/.gradle/`; verificar que `git status` no las muestra después de compilar
+- [x] 1.1 Crear `backend/` con el Gradle wrapper 9.x, `settings.gradle` (con `foojay-resolver-convention`) y `build.gradle` (toolchain de Java 21, Spring Boot 3.5.x, `spring-boot-starter` y `spring-boot-starter-test`); verificar que `./gradlew --version` corre y que el wrapper queda commiteado
+- [x] 1.2 Agregar `ar.turnos.odontologia.TurnosOdontologiaApplication` y un test de arranque del contexto; verificar que `./gradlew test` termina en verde
+- [x] 1.3 Agregar al `.gitignore` las carpetas `backend/build/` y `backend/.gradle/`; verificar que `git status` no las muestra después de compilar
 - [ ] 1.4 Abrir un PR solo con el grupo 1 y mergearlo a `master`, para desbloquear C-03; verificar que `master` compila con `./gradlew test`
 
 ## 2. Dominio de agenda
