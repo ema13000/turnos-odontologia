@@ -237,7 +237,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
   - `knowledge-base/09_decisiones_y_supuestos.md` §DD-02, §DD-03
 
 ### [C-02] `frontend-base-ts`
-- **Estado**: `[x]` completo (2026-11-21, verificación técnica: 21 tests en verde). Rama `change/C-02-frontend-base-ts`, pendiente de merge; change en `openspec/changes/frontend-base-ts/`
+- **Estado**: `[x]` completo (2026-11-21, PR #11). Specs: `openspec/specs/frontend-cliente-api/spec.md` y `openspec/specs/frontend-navegacion/spec.md`; change archivado en `openspec/changes/archive/2026-11-21-frontend-base-ts/`
 - **Responsable**: Enzo
 - **Scope**:
   - `frontend/` con Vite (plantilla `vanilla-ts`), `tsconfig.json` estricto, scripts `dev`, `build`, `test`.
