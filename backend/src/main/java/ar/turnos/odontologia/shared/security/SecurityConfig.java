@@ -1,0 +1,109 @@
+package ar.turnos.odontologia.shared.security;
+
+import ar.turnos.odontologia.usuarios.domain.Rol;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.config.Customizer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+
+/**
+ * Seguridad de la API: sesión del servidor con cookie HttpOnly (sin tokens firmados), CSRF activo con cookie legible y
+ * encabezado, y acceso denegado por defecto.
+ */
+@Configuration
+@EnableMethodSecurity
+@EnableConfigurationProperties(SeguridadProperties.class)
+public class SecurityConfig {
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    /** CORS con credenciales solo desde los orígenes configurados (app.seguridad.cors-origenes). */
+    @Bean
+    CorsConfigurationSource corsConfigurationSource(SeguridadProperties propiedades) {
+        CorsConfiguration cors = new CorsConfiguration();
+        cors.setAllowedOrigins(propiedades.corsOrigenes());
+        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+        cors.setAllowedHeaders(List.of("Content-Type", "X-XSRF-TOKEN"));
+        cors.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource fuente = new UrlBasedCorsConfigurationSource();
+        fuente.registerCorsConfiguration("/api/**", cors);
+        return fuente;
+    }
+
+    @Bean
+    CsrfTokenRepository csrfTokenRepository() {
+        return CookieCsrfTokenRepository.withHttpOnlyFalse();
+    }
+
+    @Bean
+    SecurityContextRepository securityContextRepository() {
+        return new DelegatingSecurityContextRepository(
+                new RequestAttributeSecurityContextRepository(), new HttpSessionSecurityContextRepository());
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(UsuarioDetailsService usuarios, PasswordEncoder encoder) {
+        DaoAuthenticationProvider proveedor = new DaoAuthenticationProvider();
+        proveedor.setUserDetailsService(usuarios);
+        proveedor.setPasswordEncoder(encoder);
+        return new ProviderManager(proveedor);
+    }
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http, CsrfTokenRepository csrfTokenRepository,
+                                    SecurityContextRepository contextRepository,
+                                    ProblemDetailAuthenticationEntryPoint entryPoint,
+                                    ProblemDetailAccessDeniedHandler accessDeniedHandler) throws Exception {
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(csrfTokenRepository)
+                        .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()))
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .securityContext(contexto -> contexto.securityContextRepository(contextRepository))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .exceptionHandling(errores -> errores
+                        .authenticationEntryPoint(entryPoint)
+                        .accessDeniedHandler(accessDeniedHandler))
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
+                .authorizeHttpRequests(reglas -> reglas
+                        .requestMatchers("/api/v1/public/**").permitAll()
+                        // /api/v1/logout lo atiende LogoutFilter, antes de llegar acá, para cualquier rol
+                        .requestMatchers("/api/v1/paciente/**").hasRole(Rol.PACIENTE.name())
+                        .requestMatchers("/api/v1/**").hasAnyRole(
+                                Rol.ADMIN.name(), Rol.RECEPCIONISTA.name(), Rol.ODONTOLOGO.name())
+                        .anyRequest().denyAll());
+        return http.build();
+    }
+}

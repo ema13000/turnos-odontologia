@@ -21,8 +21,16 @@ public class PacienteEntity {
         this.dni = dni;
     }
 
+    public PacienteEntity(String nombre, String apellido, String dni, String email, String telefono) {
+        this(nombre, apellido, dni);
+        this.email = email;
+        this.telefono = telefono;
+    }
+
     public Long getId() { return id; }
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
     public String getDni() { return dni; }
+    public String getEmail() { return email; }
+    public String getTelefono() { return telefono; }
 }
