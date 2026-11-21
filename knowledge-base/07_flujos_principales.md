@@ -65,7 +65,7 @@ Recepción → Frontend → API → CrearTurno → Agenda(dominio) → TurnoRepo
 **Disparador**: una tarea programada (`@Scheduled`) cada N minutos.
 
 **Pasos**:
-1. Busca los turnos `RESERVADO` cuyo inicio cae en la ventana de recordatorio (PA-08; propuesto: 24 h).
+1. Busca los turnos activos (`RESERVADO` o `CONFIRMADO`) que empiezan dentro de **24 h** y todavía no tienen recordatorio enviado (RN-NO-04).
 2. Filtra los pacientes con consentimiento (RN-NO-03).
 3. Elige el canal: WhatsApp si `tiene_whatsapp`; si no, email (RN-NO-02).
 4. Arma el mensaje **sin datos de salud** (RN-NO-01), con el link de confirmar, cancelar o reprogramar.

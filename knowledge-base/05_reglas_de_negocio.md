@@ -8,6 +8,7 @@ Cada regla tiene un código `RN-{DOMINIO}-{NN}`. Entre paréntesis va el código
 - **Margen**: 10 minutos (`MARGEN = 10 min`).
 - **Recurso**: el profesional o el sillón de un turno.
 - **Turno activo**: un turno en estado `RESERVADO` o `CONFIRMADO`. Los `CANCELADO` no ocupan agenda. La consideración de `ATENDIDO` y `AUSENTE` es irrelevante para turnos futuros.
+- **Varios profesionales**: el consultorio puede tener **varios profesionales trabajando al mismo tiempo**, cada uno con su agenda, siempre que usen **sillones distintos**. El sillón es el recurso compartido. *Que cada profesional tenga **horarios de trabajo distintos** (por ejemplo, uno a la mañana y otro a la tarde) todavía no está modelado: ver PA-06.*
 - **Conflicto**: un turno nuevo `N` está en conflicto con un turno activo existente `E` que comparte **profesional o sillón** si
   `N.inicio < E.fin + MARGEN` **y** `E.inicio < N.fin + MARGEN`.
 
@@ -40,7 +41,7 @@ Cada regla tiene un código `RN-{DOMINIO}-{NN}`. Entre paréntesis va el código
 - **RN-NO-01** (RN-09): los recordatorios **no incluyen datos de salud**. Solo llevan el nombre del paciente, la fecha, la hora, el profesional y la dirección del consultorio, más los links de confirmar, cancelar o reprogramar.
 - **RN-NO-02** (RN-09): el canal es **WhatsApp** si `tiene_whatsapp = true`; si no, **email**.
 - **RN-NO-03**: solo se envían comunicaciones a pacientes con `consentimiento_comunicaciones = true` (Ley 25.326; ver DD-07).
-- **RN-NO-04**: la anticipación del recordatorio es **a definir** (PA-08). Valor propuesto: 24 h antes.
+- **RN-NO-04**: se envía **un recordatorio 24 h antes** del inicio de cada turno activo (`RESERVADO` o `CONFIRMADO`). *(Decisión del equipo, 2026-11-20; Ajustar sobre la KB v1.)* Si el turno se reserva con menos de 24 h de anticipación, no se envía recordatorio; alcanza con la confirmación de la reserva.
 
 ## Dominio: Clínica (RN-CL)
 

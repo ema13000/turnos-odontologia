@@ -30,7 +30,7 @@
 | PA-05 | Media | ¿El **sobreturno** exige un **motivo** obligatorio? | Sobreturno | Equipo |
 | PA-06 | Media | ¿Hay **horario de atención** del consultorio o de cada profesional? ¿Se rechazan los turnos fuera de horario? | Disponibilidad | Equipo |
 | PA-07 | Media | ¿La duración de una prestación puede **variar según el profesional**? | Modelo de datos | Equipo |
-| PA-08 | Media | ¿Con cuánta anticipación se envía el **recordatorio** (24 h, 48 h, ambos)? | Notificaciones | Equipo |
+| PA-08 | ~~Media~~ | ~~¿Con cuánta anticipación se envía el recordatorio?~~ **Resuelta (2026-11-20)**: 24 h antes (RN-NO-04). | — | Equipo |
 | PA-09 | Baja | ¿Se confirma la zona horaria única `America/Argentina/Buenos_Aires`? (SU-03) | Fechas | Equipo |
 | PA-10 | Media | Autenticación del personal: ¿sesión o **JWT**? | Change de base | Equipo técnico |
 | PA-11 | Media | ¿Los 5 integrantes tienen **Docker** para los tests de integración con PostgreSQL? (SU-04) | Verify y README | Equipo técnico |
