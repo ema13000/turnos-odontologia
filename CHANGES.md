@@ -574,7 +574,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
 - **Dependencias**: `C-06`
 - **Governance**: CRITICO (dinero)
 - **Leer antes**:
-  - `docs/discovery/informe-discovery.md` §A.3, §C.1
+  - `knowledge-base/06_funcionalidades.md` §Backlog (US-207)
   - `knowledge-base/03_actores_y_roles.md` §RBAC
 
 ### [C-23] `senas-mercado-pago`
@@ -640,7 +640,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
 - **Dependencias**: `C-13`
 - **Governance**: CRITICO (validez legal)
 - **Leer antes**:
-  - `docs/discovery/sources/relevamiento-fuentes.md` §Bilog, §Odonthia
+  - `docs/discovery/sources/relevamiento-fuentes.md` §Bilog
   - `knowledge-base/05_reglas_de_negocio.md` §Clínica
 
 ### [C-28] `exportacion-hl7-fhir`

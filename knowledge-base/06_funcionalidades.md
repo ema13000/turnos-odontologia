@@ -169,13 +169,21 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 
 ## Backlog: v1.x y posteriores (fuera del MVP)
 
-| ID | Funcionalidad | Etapa | Origen |
-|---|---|---|---|
-| US-100 | Lista de espera automática al liberarse un horario | v1.x | Vacío del mercado: 0 de 16 sistemas (informe, C.3) |
-| US-101 | Política de cancelación configurable por consultorio | v1.x | Informe, C.4 |
-| US-102 | Registro de consentimiento para comunicaciones con una pantalla propia | v1.x | Informe, D.3 |
-| US-200 | Obras sociales y prepagas (nomencladores, liquidaciones) | Posterior | Informe, D.3 |
-| US-201 | Facturación electrónica ARCA | Posterior | Informe, D.3 |
-| US-202 | Señas con Mercado Pago | Posterior | Informe, D.3 |
-| US-203 | Periodontograma, imágenes y radiografías | Posterior | Informe, D.3 |
-| US-204 | Asistente con IA, multisucursal, exportación HL7 FHIR | Posterior | Informe, D.3 |
+> Cada fila se vincula con su change de `CHANGES.md`. Las reglas detalladas se escriben en esta KB **antes de empezar** el change, cuando el MVP esté completo.
+
+| ID | Funcionalidad | Etapa | Change | Origen |
+|---|---|---|---|---|
+| US-100 | Lista de espera automática al liberarse un horario | v1.x | C-15 | Vacío del mercado: 0 de 16 sistemas (informe, C.3) |
+| US-101 | Política de cancelación configurable por consultorio | v1.x | C-16 | Informe, C.4 |
+| US-102 | Registro de consentimiento para comunicaciones con una pantalla propia | v1.x | C-17 | Informe, D.3 |
+| US-200 | Obras sociales y prepagas (planes, nomencladores, liquidaciones) | Posterior | C-18, C-20 | Informe, D.3 |
+| US-205 | Presupuestos con cobertura y copago | Posterior | C-19 | Informe, A.3 |
+| US-206 | Validación online de la cobertura con la obra social | Posterior | C-21 | Informe, C.2 (DentalTec) |
+| US-207 | Caja diaria, cobros y cuenta corriente del paciente | Posterior | C-22 | Roadmap (Ajustar de la líder, 2026-11-21); base de C-23 y C-24 |
+| US-202 | Señas con Mercado Pago | Posterior | C-23 | Informe, D.3 |
+| US-201 | Facturación electrónica ARCA | Posterior | C-24 | Informe, D.3 |
+| US-203 | Periodontograma, imágenes y radiografías | Posterior | C-25, C-26 | Informe, D.3 |
+| US-208 | Consentimiento informado con firma electrónica | Posterior | C-27 | Informe, D.3; relevamiento: Bilog (Ley 25.506) |
+| US-204 | Asistente con IA, multisucursal, exportación HL7 FHIR | Posterior | C-28, C-29, C-31 | Informe, D.3 |
+| US-209 | Sincronización de la agenda del profesional con Google Calendar | Posterior | C-30 | Roadmap (Ajustar de la líder, 2026-11-21) |
+| US-210 | Reportes de ocupación, ausencias y cancelaciones | Posterior | C-32 | `01_vision_y_objetivos.md` §Métricas de éxito |
