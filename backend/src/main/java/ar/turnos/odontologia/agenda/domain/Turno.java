@@ -1,22 +1,23 @@
 package ar.turnos.odontologia.agenda.domain;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Turno de la agenda. Ocupa el intervalo {@code [inicio, fin)} de un profesional y un sillón.
+ *
+ * <p>Los identificadores son {@code BIGINT} en la base (DD-12). Un turno recién creado no tiene
+ * {@code id} hasta que se guarda: lo asigna la base al insertarlo.
  */
 public record Turno(
-        UUID id,
-        UUID pacienteId,
-        UUID profesionalId,
-        UUID sillonId,
-        UUID prestacionId,
+        Long id,
+        Long pacienteId,
+        Long profesionalId,
+        Long sillonId,
+        Long prestacionId,
         Intervalo intervalo,
         EstadoTurno estado) {
 
     public Turno {
-        Objects.requireNonNull(id, "id");
         Objects.requireNonNull(pacienteId, "pacienteId");
         Objects.requireNonNull(profesionalId, "profesionalId");
         Objects.requireNonNull(sillonId, "sillonId");
@@ -25,11 +26,17 @@ public record Turno(
         Objects.requireNonNull(estado, "estado");
     }
 
-    /** Crea un turno nuevo en estado {@link EstadoTurno#RESERVADO}. */
-    public static Turno reservar(UUID pacienteId, UUID profesionalId, UUID sillonId,
-            UUID prestacionId, Intervalo intervalo) {
-        return new Turno(UUID.randomUUID(), pacienteId, profesionalId, sillonId, prestacionId,
+    /** Crea un turno nuevo, todavía sin guardar, en estado {@link EstadoTurno#RESERVADO}. */
+    public static Turno reservar(Long pacienteId, Long profesionalId, Long sillonId,
+            Long prestacionId, Intervalo intervalo) {
+        return new Turno(null, pacienteId, profesionalId, sillonId, prestacionId,
                 intervalo, EstadoTurno.RESERVADO);
+    }
+
+    /** El mismo turno con el identificador que le asignó la base al guardarlo. */
+    public Turno conId(Long nuevoId) {
+        return new Turno(Objects.requireNonNull(nuevoId, "nuevoId"), pacienteId, profesionalId,
+                sillonId, prestacionId, intervalo, estado);
     }
 
     public boolean esActivo() {

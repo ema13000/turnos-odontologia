@@ -50,7 +50,6 @@ public class CrearTurno {
                 comando.sillonId(), intervalo.ampliadoPor(margen));
         agenda.verificar(nuevo, cercanos);
 
-        turnos.guardar(nuevo);
-        return nuevo;
+        return turnos.guardar(nuevo);
     }
 }
