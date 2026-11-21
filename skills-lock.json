@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "skills": {
+    "java-junit": {
+      "source": "github/awesome-copilot",
+      "commit": "f10fdb8b2660ce85c98f220b2f1ca24653768a5c",
+      "sourceType": "github",
+      "skillPath": "skills/java-junit/SKILL.md",
+      "computedHash": "53d2be39e3fe25b0d3b5f2aa5fee78689b8e1c63d31bb96150190d31429b60fd"
+    },
+    "java-springboot": {
+      "source": "github/awesome-copilot",
+      "commit": "f10fdb8b2660ce85c98f220b2f1ca24653768a5c",
+      "sourceType": "github",
+      "skillPath": "skills/java-springboot/SKILL.md",
+      "computedHash": "7a3a5343773c126e788966041eca919180e3347f01b66d5dea8dd9923cafd897"
+    },
+    "postgresql-table-design": {
+      "source": "wshobson/agents",
+      "commit": "91ff75307f5668916f3eb77d5ba556266c961376",
+      "sourceType": "github",
+      "skillPath": "plugins/database-design/skills/postgresql-table-design/SKILL.md",
+      "computedHash": "c2d9f4b5037b4320be0cc2489eeb287d3147477ae1f48b33f5f897e2c562ed06"
+    },
+    "springboot-security": {
+      "source": "affaan-m/ecc",
+      "commit": "4adeee6732a12d1540f49a4d50a38ce8c97f9a53",
+      "sourceType": "github",
+      "skillPath": "skills/springboot-security/SKILL.md",
+      "computedHash": "0d3a005019c4fb8512303a71b30850765f59e03b4a495181aaf6e4477287444c"
+    },
+    "vite": {
+      "source": "antfu/skills",
+      "commit": "4a6bb39e7b45e26402eb215393c51ccf5df1ca4c",
+      "sourceType": "github",
+      "skillPath": "skills/vite/SKILL.md",
+      "computedHash": "db9eea82d8bf6ce0f60a4a1d94a626c718df7d97160b5f1d5b150647e0c401b3"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "step": "find-skill",
+  "step": "agents",
   "owner": "active-orchestrator",
   "foundation": {
     "version": 1,
@@ -110,15 +110,19 @@
       },
       "find-skill": {
         "variant": "install-selected",
-        "status": "pending",
+        "status": "done",
         "requires": [
           "kb"
         ],
-        "outputs": []
+        "outputs": [
+          "skills-lock.json",
+          ".agents/skills/",
+          ".claude/skills/"
+        ]
       },
       "registry": {
         "variant": "index",
-        "status": "pending",
+        "status": "done",
         "requires": [
           "find-skill"
         ],
@@ -419,5 +423,107 @@
       "C-31",
       "C-32"
     ]
+  },
+  "skills": {
+    "recommended": [
+      {
+        "name": "java-springboot",
+        "source": "github/awesome-copilot",
+        "installs": "22.2K"
+      },
+      {
+        "name": "java-junit",
+        "source": "github/awesome-copilot",
+        "installs": "12K"
+      },
+      {
+        "name": "springboot-security",
+        "source": "affaan-m/ecc",
+        "installs": "14K"
+      },
+      {
+        "name": "postgresql-table-design",
+        "source": "wshobson/agents",
+        "installs": "29.3K"
+      },
+      {
+        "name": "hexagonal-architecture",
+        "source": "affaan-m/ecc",
+        "installs": "11.6K"
+      },
+      {
+        "name": "springboot-patterns",
+        "source": "affaan-m/ecc",
+        "installs": "15.3K"
+      },
+      {
+        "name": "vite",
+        "source": "antfu/skills",
+        "installs": "42.6K"
+      },
+      {
+        "name": "postgresql-code-review",
+        "source": "github/awesome-copilot",
+        "installs": "12.9K"
+      }
+    ],
+    "installed": [
+      {
+        "name": "java-springboot",
+        "source": "github/awesome-copilot",
+        "scope": "project",
+        "paths": [
+          ".agents/skills/java-springboot",
+          ".claude/skills/java-springboot"
+        ],
+        "date": "2026-11-21"
+      },
+      {
+        "name": "java-junit",
+        "source": "github/awesome-copilot",
+        "scope": "project",
+        "paths": [
+          ".agents/skills/java-junit",
+          ".claude/skills/java-junit"
+        ],
+        "date": "2026-11-21"
+      },
+      {
+        "name": "springboot-security",
+        "source": "affaan-m/ecc",
+        "scope": "project",
+        "paths": [
+          ".agents/skills/springboot-security",
+          ".claude/skills/springboot-security"
+        ],
+        "date": "2026-11-21"
+      },
+      {
+        "name": "postgresql-table-design",
+        "source": "wshobson/agents",
+        "scope": "project",
+        "paths": [
+          ".agents/skills/postgresql-table-design",
+          ".claude/skills/postgresql-table-design"
+        ],
+        "date": "2026-11-21"
+      },
+      {
+        "name": "vite",
+        "source": "antfu/skills",
+        "scope": "project",
+        "paths": [
+          ".agents/skills/vite",
+          ".claude/skills/vite"
+        ],
+        "date": "2026-11-21"
+      }
+    ],
+    "lock_file": "skills-lock.json"
+  },
+  "registry": {
+    "path": ".atl/skill-registry.md",
+    "engram_topic": "skill-registry",
+    "date": "2026-11-21"
   }
 }
