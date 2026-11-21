@@ -6,9 +6,9 @@
 |---|---|
 | **Materia** | Desarrollo de Software (Trabajo Global de Integración) |
 | **Integrantes** | Sofia Indovino (líder), Emanuel Mateo, Juan Sebastián Cabrera, Juan Cruz Grivel, Enzo Mellimaci |
-| **Fecha** | 2026-11-19 |
-| **Estado** | Borrador v1. Pendiente de la verificación manual de fuentes por el equipo. |
-| **Uso de IA** | Relevamiento y redacción asistidos por un agente de IA (Claude Code). Las afirmaciones se tomaron de las páginas oficiales citadas y el equipo debe verificarlas (ver "Verificación de fuentes"). |
+| **Fecha** | Relevamiento: 2026-11-19. Verificación manual: 2026-11-20 y 2026-11-21 |
+| **Estado** | Versión final (v2). Incluye las correcciones de la verificación manual de 5 fuentes por el equipo. |
+| **Uso de IA** | Relevamiento y redacción asistidos por un agente de IA (Claude Code). Las afirmaciones se tomaron de las páginas oficiales citadas. El equipo verificó personalmente 5 fuentes y el informe se corrigió con sus hallazgos (ver "Verificación de fuentes"). |
 
 ---
 
