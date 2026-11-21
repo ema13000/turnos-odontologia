@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Tag("integration")
 class RestriccionesTurnoIntegrationTest {
 
-    private static final String URL = env("DB_URL", "jdbc:postgresql://localhost:5432/turnos");
+    private static final String URL = env("DB_TEST_URL", "jdbc:postgresql://localhost:5432/turnos_test");
     private static final String USER = env("DB_USER", "turnos");
     private static final String PASSWORD = env("DB_PASSWORD", "turnos_dev");
 
