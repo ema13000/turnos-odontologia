@@ -15,7 +15,8 @@ public record Turno(
         Long sillonId,
         Long prestacionId,
         Intervalo intervalo,
-        EstadoTurno estado) {
+        EstadoTurno estado,
+        NumeroReserva numeroReserva) {
 
     public Turno {
         Objects.requireNonNull(pacienteId, "pacienteId");
@@ -24,19 +25,26 @@ public record Turno(
         Objects.requireNonNull(prestacionId, "prestacionId");
         Objects.requireNonNull(intervalo, "intervalo");
         Objects.requireNonNull(estado, "estado");
+        Objects.requireNonNull(numeroReserva, "numeroReserva");
     }
 
     /** Crea un turno nuevo, todavía sin guardar, en estado {@link EstadoTurno#RESERVADO}. */
     public static Turno reservar(Long pacienteId, Long profesionalId, Long sillonId,
-            Long prestacionId, Intervalo intervalo) {
+            Long prestacionId, Intervalo intervalo, NumeroReserva numeroReserva) {
         return new Turno(null, pacienteId, profesionalId, sillonId, prestacionId,
-                intervalo, EstadoTurno.RESERVADO);
+                intervalo, EstadoTurno.RESERVADO, numeroReserva);
     }
 
     /** El mismo turno con el identificador que le asignó la base al guardarlo. */
     public Turno conId(Long nuevoId) {
         return new Turno(Objects.requireNonNull(nuevoId, "nuevoId"), pacienteId, profesionalId,
-                sillonId, prestacionId, intervalo, estado);
+                sillonId, prestacionId, intervalo, estado, numeroReserva);
+    }
+
+    /** El mismo turno en estado {@link EstadoTurno#CANCELADO}: deja de ocupar la agenda (RN-AG-08). */
+    public Turno cancelado() {
+        return new Turno(id, pacienteId, profesionalId, sillonId, prestacionId, intervalo,
+                EstadoTurno.CANCELADO, numeroReserva);
     }
 
     public boolean esActivo() {

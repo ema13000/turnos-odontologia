@@ -28,9 +28,11 @@ public class TurnoEntity {
     private Instant inicio;
     private Instant fin;
     private Instant finConMargen;
-    private String estado = "CONFIRMADO";
+    // C-06 (V4): los turnos nuevos arrancan en RESERVADO, como en el dominio de C-01
+    private String estado = "RESERVADO";
     private boolean esSobreturno;
     private String motivoSobreturno;
+    private String codigoReserva;
 
     @Version
     private long version;
@@ -38,7 +40,8 @@ public class TurnoEntity {
     protected TurnoEntity() {}
 
     public TurnoEntity(ProfesionalEntity profesional, SillonEntity sillon, PrestacionEntity prestacion,
-                       PacienteEntity paciente, Instant inicio, Instant fin, Instant finConMargen) {
+                       PacienteEntity paciente, Instant inicio, Instant fin, Instant finConMargen,
+                       String codigoReserva) {
         this.profesional = profesional;
         this.sillon = sillon;
         this.prestacion = prestacion;
@@ -46,8 +49,17 @@ public class TurnoEntity {
         this.inicio = inicio;
         this.fin = fin;
         this.finConMargen = finConMargen;
+        this.codigoReserva = codigoReserva;
     }
 
+    /** C-06: cancelar o reprogramar cambia el estado del turno. */
+    public void cambiarEstado(String nuevoEstado) { this.estado = nuevoEstado; }
+
+    public ProfesionalEntity getProfesional() { return profesional; }
+    public SillonEntity getSillon() { return sillon; }
+    public PrestacionEntity getPrestacion() { return prestacion; }
+    public PacienteEntity getPaciente() { return paciente; }
+    public String getCodigoReserva() { return codigoReserva; }
     public Long getId() { return id; }
     public Instant getInicio() { return inicio; }
     public Instant getFin() { return fin; }
