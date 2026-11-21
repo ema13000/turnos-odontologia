@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: turnos-postgres
+    environment:
+      POSTGRES_DB: turnos
+      POSTGRES_USER: ${DB_USER:?definí DB_USER en .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?definí DB_PASSWORD en .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - turnos-pgdata:/var/lib/postgresql/data
+
+volumes:
+  turnos-pgdata:

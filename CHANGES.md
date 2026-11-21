@@ -253,7 +253,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
   - `knowledge-base/09_decisiones_y_supuestos.md` §DD-10, §SU-05
 
 ### [C-03] `persistencia-base-postgres`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[X]` completo (2026-11-21, PR pendiente). Evidencia: `docs/evidencia/etapa-c03-tests.txt`
 - **Responsable**: Juan Cruz
 - **Scope**:
   - `docker-compose.yml` con PostgreSQL 15+. `.env.example` (`DB_URL`, `DB_USER`, `DB_PASSWORD`).
