@@ -4,15 +4,15 @@ import ar.turnos.odontologia.agenda.domain.Intervalo;
 import ar.turnos.odontologia.agenda.domain.Turno;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-/** Doble de prueba de {@link TurnoRepository}. */
+/** Doble de prueba de {@link TurnoRepository}. Asigna ids correlativos, como una identidad BIGINT. */
 class TurnoRepositoryEnMemoria implements TurnoRepository {
 
     private final List<Turno> turnos = new ArrayList<>();
+    private long proximoId = 1;
 
     @Override
-    public List<Turno> buscarQueIntersecan(UUID profesionalId, UUID sillonId, Intervalo ventana) {
+    public List<Turno> buscarQueIntersecan(Long profesionalId, Long sillonId, Intervalo ventana) {
         return turnos.stream()
                 .filter(t -> t.profesionalId().equals(profesionalId) || t.sillonId().equals(sillonId))
                 .filter(t -> t.intervalo().seSuperponeCon(ventana))
@@ -20,8 +20,10 @@ class TurnoRepositoryEnMemoria implements TurnoRepository {
     }
 
     @Override
-    public void guardar(Turno turno) {
-        turnos.add(turno);
+    public Turno guardar(Turno turno) {
+        Turno guardado = turno.id() == null ? turno.conId(proximoId++) : turno;
+        turnos.add(guardado);
+        return guardado;
     }
 
     List<Turno> todos() {

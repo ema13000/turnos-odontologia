@@ -15,7 +15,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.UUID;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,12 +30,14 @@ class CrearTurnoTest {
     private static final ZoneId BUENOS_AIRES = ZoneId.of("America/Argentina/Buenos_Aires");
     private static final LocalDate DIA = LocalDate.of(2026, 12, 1);
 
-    private static final UUID PACIENTE = UUID.randomUUID();
-    private static final UUID DRA_A = UUID.randomUUID();
-    private static final UUID DR_B = UUID.randomUUID();
-    private static final UUID SILLON_1 = UUID.randomUUID();
-    private static final UUID SILLON_2 = UUID.randomUUID();
-    private static final UUID CONSULTA = UUID.randomUUID();
+    // Identificadores BIGINT ficticios (DD-12).
+    private static final Long PACIENTE = 1L;
+    private static final Long OTRO_PACIENTE = 2L;
+    private static final Long DRA_A = 1L;
+    private static final Long DR_B = 2L;
+    private static final Long SILLON_1 = 1L;
+    private static final Long SILLON_2 = 2L;
+    private static final Long CONSULTA = 1L;
 
     private TurnoRepositoryEnMemoria turnos;
     private PrestacionRepositoryEnMemoria prestaciones;
@@ -61,6 +62,7 @@ class CrearTurnoTest {
         assertThat(turno.estado()).isEqualTo(EstadoTurno.RESERVADO);
         assertThat(turno.intervalo().inicio()).isEqualTo(a(10, 0));
         assertThat(turno.intervalo().fin()).isEqualTo(a(10, 30));
+        assertThat(turno.id()).isNotNull();
         assertThat(turnos.todos()).containsExactly(turno);
     }
 
@@ -217,20 +219,20 @@ class CrearTurnoTest {
     }
 
     /** Crea un turno de "Consulta" con el reloj a las 08:00 y el margen de 10 minutos. */
-    private Turno crear(UUID profesional, UUID sillon, Instant inicio) {
+    private Turno crear(Long profesional, Long sillon, Instant inicio) {
         return casoDeUso(relojALas(8, 0), Margen.PREDETERMINADO).ejecutar(comando(profesional, sillon, inicio));
     }
 
-    private static CrearTurnoCommand comando(UUID profesional, UUID sillon, Instant inicio) {
+    private static CrearTurnoCommand comando(Long profesional, Long sillon, Instant inicio) {
         return new CrearTurnoCommand(PACIENTE, profesional, sillon, CONSULTA, inicio);
     }
 
-    private void existenteActivo(UUID profesional, UUID sillon, Instant inicio, Instant fin) {
+    private void existenteActivo(Long profesional, Long sillon, Instant inicio, Instant fin) {
         existente(profesional, sillon, inicio, fin, EstadoTurno.RESERVADO);
     }
 
-    private void existente(UUID profesional, UUID sillon, Instant inicio, Instant fin, EstadoTurno estado) {
-        turnos.guardar(new Turno(UUID.randomUUID(), UUID.randomUUID(), profesional, sillon, CONSULTA,
+    private void existente(Long profesional, Long sillon, Instant inicio, Instant fin, EstadoTurno estado) {
+        turnos.guardar(new Turno(null, OTRO_PACIENTE, profesional, sillon, CONSULTA,
                 new Intervalo(inicio, fin), estado));
     }
 

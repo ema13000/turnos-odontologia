@@ -77,6 +77,17 @@ Como el margen es configurable (con mínimo 10), se guarda la columna `fin_con_m
 **Decisión**: (a) los turnos afectados por la ausencia o licencia de un profesional se **reasignan** a otro profesional habilitado o se reprograman, **avisando al paciente** (RN-AG-16). (b) El odontólogo marca la **ausencia del paciente desde la ficha clínica**, y el tiempo restante del turno queda libre (RN-AG-17).
 **Contexto**: PA-17 y PA-19, decididas por la líder el 2026-11-21.
 
+### DD-12: Identificadores BIGINT en todo el proyecto (no UUID)
+**Decisión**: todas las tablas usan `id BIGINT GENERATED ALWAYS AS IDENTITY`, y el código Java usa `Long`. El id lo asigna la base al insertar; un `Turno` nuevo no tiene id hasta que se guarda.
+**Contexto**: el 2026-11-21, el agente de Emanuel detectó, mientras trabajaba en C-04, que las migraciones V1 (C-03) y V3 (C-05) usaban `BIGINT`, mientras que esta KB y el dominio de C-01 usaban `UUID`. Las dos fuentes se habían escrito por separado y nadie las había comparado.
+**Alternativas consideradas**: pasar todo a UUID.
+**Justificación**:
+- V1 y V3 ya estaban mergeadas, y no se editan migraciones mergeadas (regla dura 3). Pasar a UUID exigía migraciones nuevas sobre todas las tablas y referencias.
+- C-03 y C-05 ya usaban `Long`; solo el dominio de C-01 y esta KB usaban UUID.
+- `BIGINT` identity es lo que recomienda la skill `postgresql-table-design`. UUID solo aporta si hay que ocultar los ids, y el paciente no los ve: usa el número de reserva (RN-RO-08).
+**Trade-offs aceptados**: los ids son correlativos y se pueden adivinar. Por eso la API nunca debe autorizar solo por el id: siempre por sesión y rol (DD-10, regla dura 8).
+**Impacto**: el dominio de C-01 pasó de `UUID` a `Long`, sin cambios en el spec `agenda-turnos`, que no menciona el tipo de id. El design archivado de C-01 (D6) dice UUID y queda como registro histórico.
+
 ## Supuestos inferidos
 
 ### ~~SU-07: Todos los profesionales pueden hacer todas las prestaciones~~ (refutado)

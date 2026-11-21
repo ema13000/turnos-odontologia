@@ -36,8 +36,10 @@ Un despliegue corresponde a **un consultorio** (single-tenant en v1, ver DD-05).
 
 ## Entidades
 
+> **Identificadores** (DD-12, 2026-11-21): todas las tablas usan `id BIGINT GENERATED ALWAYS AS IDENTITY` y las claves foráneas son `BIGINT`. En Java se representan con `Long`, y el id lo asigna la base al insertar. El paciente nunca ve estos ids: se identifica con su **número de reserva** (RN-RO-08).
+
 ### Profesional
-- `id` UUID (PK), `nombre` varchar(120), `matricula` varchar(30) (único, ficticio en seed), `sillon_habitual_id` FK nullable → `Sillon` (RN-RO-06), `activo` boolean.
+- `id` BIGINT identity (PK), `nombre` varchar(120), `matricula` varchar(30) (único, ficticio en seed), `sillon_habitual_id` FK nullable → `Sillon` (RN-RO-06), `activo` boolean.
 - Relaciones: 1:N `Turno`, 1:N `BloqueoAgenda`, 1:N `HorarioTrabajo`, 1:N `AusenciaProfesional`, N:M `Prestacion` (vía `ProfesionalPrestacion`); 0..1 `Usuario`.
 
 ### ProfesionalPrestacion (especialidades)
@@ -45,24 +47,24 @@ Un despliegue corresponde a **un consultorio** (single-tenant en v1, ver DD-05).
 - RN-AG-15: un profesional solo recibe turnos de las prestaciones en las que está habilitado.
 
 ### AusenciaProfesional
-- `id` UUID, `profesional_id` FK, `tipo` enum (`AUSENCIA`, `LICENCIA`), `inicio` timestamptz, `fin` timestamptz, `motivo` varchar(255), `registrado_por` (usuario ADMIN o RECEPCIONISTA), `registrado_en`.
+- `id` BIGINT identity, `profesional_id` FK, `tipo` enum (`AUSENCIA`, `LICENCIA`), `inicio` timestamptz, `fin` timestamptz, `motivo` varchar(255), `registrado_por` (usuario ADMIN o RECEPCIONISTA), `registrado_en`.
 - RN-AG-16: bloquea la agenda del profesional en ese período.
 
 ### Sillon
-- `id` UUID (PK), `nombre` varchar(60) (único, por ejemplo "Sillón 1"), `activo` boolean.
+- `id` BIGINT identity (PK), `nombre` varchar(60) (único, por ejemplo "Sillón 1"), `activo` boolean.
 - Relaciones: 1:N `Turno`.
 
 ### Prestacion
-- `id` UUID (PK), `nombre` varchar(120) (único), `duracion_minutos` int, `activa` boolean.
+- `id` BIGINT identity (PK), `nombre` varchar(120) (único), `duracion_minutos` int, `activa` boolean.
 - Constraints: `duracion_minutos > 0` y múltiplo de 5 (supuesto SU-06).
 - RN-AG-01: la duración del turno se toma de acá.
 
 ### Paciente
-- `id` UUID (PK), `dni` varchar(15) (único), `nombre` varchar(120), `telefono` varchar(30) (nullable), `email` varchar(160) (nullable), `tiene_whatsapp` boolean, `consentimiento_comunicaciones` boolean, `consentimiento_fecha` timestamptz.
+- `id` BIGINT identity (PK), `dni` varchar(15) (único), `nombre` varchar(120), `telefono` varchar(30) (nullable), `email` varchar(160) (nullable), `tiene_whatsapp` boolean, `consentimiento_comunicaciones` boolean, `consentimiento_fecha` timestamptz.
 - Constraints: `telefono` o `email` presente (al menos un canal de contacto).
 
 ### Turno
-- `id` UUID (PK)
+- `id` BIGINT identity (PK)
 - `paciente_id` FK, `profesional_id` FK, `sillon_id` FK, `prestacion_id` FK
 - `inicio` timestamptz, `fin` timestamptz (= inicio + duración de la prestación; RN-AG-01)
 - `estado` enum: `RESERVADO`, `CONFIRMADO`, `CANCELADO`, `ATENDIDO`, `AUSENTE`
@@ -79,27 +81,27 @@ Un despliegue corresponde a **un consultorio** (single-tenant en v1, ver DD-05).
 - Índices: `(profesional_id, inicio)`, `(sillon_id, inicio)`, `(paciente_id)`, `(estado, inicio)` para los recordatorios.
 
 ### HorarioTrabajo
-- `id` UUID, `profesional_id` FK, `dia_semana` smallint (1 = lunes … 7 = domingo), `hora_desde` time, `hora_hasta` time.
+- `id` BIGINT identity, `profesional_id` FK, `dia_semana` smallint (1 = lunes … 7 = domingo), `hora_desde` time, `hora_hasta` time.
 - Constraints: `hora_hasta > hora_desde`; las franjas de un mismo profesional y día no se superponen. Un profesional puede tener varias franjas por día (por ejemplo, 8–12 y 16–20).
 - RN-AG-13: un turno solo se acepta dentro de una franja.
 
 ### BloqueoAgenda
-- `id` UUID, `profesional_id` FK, `inicio`, `fin`, `motivo`.
+- `id` BIGINT identity, `profesional_id` FK, `inicio`, `fin`, `motivo`.
 - Un turno nuevo no puede caer dentro de un bloqueo del profesional (RN-AG-10).
 
 ### Notificacion
-- `id` UUID, `turno_id` FK, `canal` enum (`WHATSAPP`, `EMAIL`), `tipo` enum (`RECORDATORIO`, `CONFIRMACION`, `CANCELACION`), `estado` enum (`PENDIENTE`, `ENVIADA`, `FALLIDA`), `programada_para`, `enviada_en`, `token_confirmacion` (único).
+- `id` BIGINT identity, `turno_id` FK, `canal` enum (`WHATSAPP`, `EMAIL`), `tipo` enum (`RECORDATORIO`, `CONFIRMACION`, `CANCELACION`), `estado` enum (`PENDIENTE`, `ENVIADA`, `FALLIDA`), `programada_para`, `enviada_en`, `token_confirmacion` (único).
 - RN-NO-01: el contenido no incluye datos de salud.
 
 ### FichaClinica
-- `id` UUID, `paciente_id` FK (único), `antecedentes` text, `alergias` text, `medicacion` text, `actualizado_por`, `actualizado_en`.
+- `id` BIGINT identity, `paciente_id` FK (único), `antecedentes` text, `alergias` text, `medicacion` text, `actualizado_por`, `actualizado_en`.
 
 ### OdontogramaRegistro
-- `id` UUID, `ficha_id` FK, `pieza` smallint (notación FDI: 11–48 permanentes, 51–85 temporales), `cara` enum (`O`, `M`, `D`, `V`, `L`/`P`), `estado` varchar(40) (por ejemplo `CARIES`, `OBTURADO`, `AUSENTE`, `A_TRATAR`), `profesional_id`, `registrado_en`.
+- `id` BIGINT identity, `ficha_id` FK, `pieza` smallint (notación FDI: 11–48 permanentes, 51–85 temporales), `cara` enum (`O`, `M`, `D`, `V`, `L`/`P`), `estado` varchar(40) (por ejemplo `CARIES`, `OBTURADO`, `AUSENTE`, `A_TRATAR`), `profesional_id`, `registrado_en`.
 - Historial: se agrega un registro nuevo en lugar de sobrescribir el anterior (trazabilidad).
 
 ### Usuario
-- `id` UUID, `username` (único), `password_hash`, `rol` enum (`ADMIN`, `RECEPCIONISTA`, `ODONTOLOGO`, `PACIENTE`), `profesional_id` FK nullable, `paciente_id` FK nullable, `activo`.
+- `id` BIGINT identity, `username` (único), `password_hash`, `rol` enum (`ADMIN`, `RECEPCIONISTA`, `ODONTOLOGO`, `PACIENTE`), `profesional_id` FK nullable, `paciente_id` FK nullable, `activo`.
 - Constraint: `rol = PACIENTE` ⇒ `paciente_id` obligatorio y `profesional_id` nulo. El rol `PACIENTE` solo accede a `/api/v1/paciente/**` y a sus propios turnos (RN-RO-08).
 
 ### Configuracion
