@@ -29,7 +29,7 @@ Trabajo Global de Integración de **Desarrollo de Software**: del Discovery al p
 | 4. Roadmap (`CHANGES.md`) | Hecho: 32 changes (MVP C-01 a C-14) |
 | 5. Skills y reglas del agente (`AGENTS.md`, `CLAUDE.md`) | Hecho: 5 skills en el repo, [registro](.atl/skill-registry.md) y 10 reglas duras |
 | 6. Ciclo OPSX sobre un change | Hecho: C-01 `crear-turno-sin-solapamientos` (explore → propose → apply → verify → archive), 12 escenarios con su test. [Evidencia](docs/evidencia/etapa-6-c01-tests.txt) |
-| 7. Memoria del agente (Engram) | Pendiente |
+| 7. Memoria del agente (Engram) | Hecho: 13 memorias y consulta real ([evidencia y guion del video](docs/evidencia/etapa-7-engram.md)) |
 
 El estado detallado de la fundación está en [`.active-orchestrator-state.json`](.active-orchestrator-state.json).
 
