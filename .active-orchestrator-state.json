@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "step": "visual-design",
+  "step": "find-skill",
   "owner": "active-orchestrator",
   "foundation": {
     "version": 1,
@@ -74,35 +74,39 @@
           "docs/discovery/sources/relevamiento-fuentes.md"
         ],
         "completed": "2026-11-20",
-        "review": "pendiente de Continuar/Ajustar de la líder"
+        "review": "Ajustar x4 (2026-11-20/21), luego Continuar"
       },
       "visual-design": {
         "variant": "off",
-        "status": "pending",
+        "status": "done",
         "requires": [],
         "outputs": [
           "design-system/README.md"
-        ]
+        ],
+        "completed": "2026-11-21"
       },
       "roadmap": {
         "variant": "local-markdown",
-        "status": "pending",
+        "status": "done",
         "requires": [
           "kb"
         ],
         "outputs": [
           "CHANGES.md"
-        ]
+        ],
+        "completed": "2026-11-21",
+        "review": "pendiente de Continuar/Ajustar de la líder"
       },
       "task-management": {
         "variant": "local",
-        "status": "pending",
+        "status": "done",
         "requires": [
           "roadmap"
         ],
         "outputs": [
           ".active-stack/roadmap.json"
-        ]
+        ],
+        "completed": "2026-11-21"
       },
       "find-skill": {
         "variant": "install-selected",
@@ -333,6 +337,33 @@
       "knowledge-base/09_decisiones_y_supuestos.md",
       "knowledge-base/10_preguntas_abiertas.md",
       "knowledge-base/README.md"
+    ]
+  },
+  "visual_design": {
+    "created_by": "design-system",
+    "mode": "off",
+    "status": "skipped",
+    "path": "design-system/README.md"
+  },
+  "roadmap": {
+    "created_by": "roadmap-generator",
+    "source": "CHANGES.md",
+    "changes_file": "CHANGES.md",
+    "changes": [
+      "C-01",
+      "C-02",
+      "C-03",
+      "C-04",
+      "C-05",
+      "C-06",
+      "C-07",
+      "C-08",
+      "C-09",
+      "C-10",
+      "C-11",
+      "C-12",
+      "C-13",
+      "C-14"
     ]
   }
 }
