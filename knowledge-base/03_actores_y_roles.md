@@ -25,6 +25,7 @@ C = crear, R = leer, U = modificar, D = eliminar o desactivar. "Propio" = solo s
 | Turno (cancelar o reprogramar) | U | U (siempre) | U (siempre) | U propio, **hasta 24 h antes** (RN-AG-07) |
 | Agenda (ver) | R | R | R (puede filtrar la propia) | **Solo disponibilidad**: horarios libres, sin datos de otros pacientes |
 | Bloqueo de agenda | CRUD | — | CRUD propio | — |
+| Horarios de trabajo | CRUD | R | R (propios) | R indirecta (solo ve los huecos libres resultantes) |
 | Paciente (datos de contacto) | CRUD | CRUD | R | R/U propio (al reservar) |
 | Ficha clínica y odontograma | R | **—** | CRUD | — |
 | Estadísticas o dashboard | R | R (operativas) | R (propias) | **—** |

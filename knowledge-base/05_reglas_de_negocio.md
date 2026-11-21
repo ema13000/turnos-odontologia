@@ -8,7 +8,7 @@ Cada regla tiene un código `RN-{DOMINIO}-{NN}`. Entre paréntesis va el código
 - **Margen**: 10 minutos (`MARGEN = 10 min`).
 - **Recurso**: el profesional o el sillón de un turno.
 - **Turno activo**: un turno en estado `RESERVADO` o `CONFIRMADO`. Los `CANCELADO` no ocupan agenda. La consideración de `ATENDIDO` y `AUSENTE` es irrelevante para turnos futuros.
-- **Varios profesionales**: el consultorio puede tener **varios profesionales trabajando al mismo tiempo**, cada uno con su agenda, siempre que usen **sillones distintos**. El sillón es el recurso compartido. *Que cada profesional tenga **horarios de trabajo distintos** (por ejemplo, uno a la mañana y otro a la tarde) todavía no está modelado: ver PA-06.*
+- **Varios profesionales**: el consultorio puede tener **varios profesionales trabajando al mismo tiempo**, cada uno con su agenda, siempre que usen **sillones distintos**. El sillón es el recurso compartido. Cada profesional tiene sus **horarios de trabajo** semanales (por ejemplo, la Dra. A de lunes a viernes de 8 a 13 y el Dr. B de 14 a 20). Ver RN-AG-13.
 - **Conflicto**: un turno nuevo `N` está en conflicto con un turno activo existente `E` que comparte **profesional o sillón** si
   `N.inicio < E.fin + MARGEN` **y** `E.inicio < N.fin + MARGEN`.
 
@@ -29,12 +29,19 @@ Cada regla tiene un código `RN-{DOMINIO}-{NN}`. Entre paréntesis va el código
 - **RN-AG-10**: no se puede crear un turno que se superponga con un **bloqueo de agenda** del profesional.
 - **RN-AG-11**: no se puede asignar un turno a un profesional, sillón o prestación **inactivos**.
 - **RN-AG-12**: la verificación de conflicto y la creación del turno son **atómicas**. Si dos reservas compiten por el mismo hueco, solo una se confirma (DD-03).
+- **RN-AG-13**: un turno debe quedar **completo dentro de un horario de trabajo** del profesional: `inicio` y `fin` dentro de la misma franja de ese día de la semana. Un turno fuera de horario se rechaza con `FUERA_DE_HORARIO`. Solo un **sobreturno** cargado por el personal puede quedar fuera de horario (RN-AG-06). *(Decisión del equipo, 2026-11-20.)*
 
 ## Dominio: Reserva online (RN-RO)
 
 - **RN-RO-01**: el paciente solo ve **horarios libres** para una prestación. Nunca ve nombres ni datos de otros pacientes, ni estadísticas del consultorio.
 - **RN-RO-02**: la disponibilidad que ve el paciente aplica las mismas reglas que la reserva del personal: RN-AG-01 a RN-AG-05, RN-AG-09 y RN-AG-10.
 - **RN-RO-03**: el paciente **no puede** generar sobreturnos.
+- **RN-RO-04**: al reservar, el paciente **elige un profesional en particular** o marca **"sin preferencia"**. *(Decisión del equipo, 2026-11-20.)*
+  - **Con profesional elegido**: ve solo los horarios libres de ese profesional, dentro de su horario de trabajo.
+  - **Sin preferencia**: ve la **unión** de los horarios libres de todos los profesionales activos que trabajan ese día. Cada horario aparece una sola vez, aunque haya varios profesionales libres.
+- **RN-RO-05**: en una reserva **sin preferencia**, el sistema **asigna el profesional automáticamente** al confirmar, entre los que están libres en ese horario. El criterio de desempate está pendiente (PA-14); se propone "el que tenga menos turnos ese día" para repartir la carga.
+- **RN-RO-06**: en toda reserva online, el sistema **asigna el sillón automáticamente**: el primer sillón activo que esté libre (con margen, RN-AG-04) en ese horario. El paciente nunca elige sillón. Si hay un sillón habitual por profesional, está pendiente (PA-15).
+- **RN-RO-07**: un horario se muestra como disponible solo si existe **al menos una combinación de profesional y sillón** libre que cumpla RN-AG-01 a RN-AG-05, RN-AG-10 y RN-AG-13.
 
 ## Dominio: Notificaciones (RN-NO)
 

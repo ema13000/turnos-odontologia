@@ -65,6 +65,13 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 - [ ] CA-1: se distinguen visualmente los sobreturnos y los turnos confirmados.
 - [ ] CA-2: el diseño es responsivo y se usa desde el celular.
 
+### US-016: Configurar los horarios de trabajo de cada profesional
+**Como** administrador **quiero** cargar las franjas semanales en que atiende cada profesional **para** que solo se den turnos cuando hay alguien trabajando.
+**Criterios de aceptación**:
+- [ ] CA-1: un profesional puede tener varias franjas por día, sin que se superpongan entre sí.
+- [ ] CA-2: un turno fuera de horario se rechaza con `FUERA_DE_HORARIO`, salvo un sobreturno del personal.
+**Reglas relacionadas**: RN-AG-13
+
 ### US-015: Bloquear horarios
 **Como** odontólogo **quiero** bloquear franjas de mi agenda **para** que no me asignen turnos.
 **Reglas relacionadas**: RN-AG-10
@@ -77,6 +84,15 @@ Están organizadas por **épica** y, dentro de cada una, por **historia de usuar
 - [ ] CA-1: solo se muestran horarios que cumplen las reglas de la agenda.
 - [ ] CA-2: no se exponen datos de otros pacientes.
 **Reglas relacionadas**: RN-RO-01, RN-RO-02
+
+### US-023: Elegir un profesional o "sin preferencia"
+**Como** paciente **quiero** elegir con qué profesional atenderme, o indicar que me da igual, **para** conseguir el horario que más me convenga.
+**Criterios de aceptación**:
+- [ ] CA-1: con un profesional elegido, veo solo sus horarios libres dentro de su horario de trabajo.
+- [ ] CA-2: con "sin preferencia", veo la unión de los horarios libres de todos los profesionales que trabajan ese día, sin horarios repetidos.
+- [ ] CA-3: al reservar "sin preferencia", el sistema me asigna un profesional libre y me informa cuál es.
+- [ ] CA-4: nunca elijo sillón; el sistema asigna uno libre.
+**Reglas relacionadas**: RN-RO-04 a RN-RO-07, RN-AG-13
 
 ### US-021: Reservar un turno online
 **Como** paciente **quiero** reservar sin llamar **para** ahorrar tiempo.

@@ -27,6 +27,7 @@ Un despliegue corresponde a **un consultorio** (single-tenant en v1, ver DD-05).
                     └──*─ TurnoAuditoria
 
  Profesional ─1──*─ BloqueoAgenda
+ Profesional ─1──*─ HorarioTrabajo
 ```
 
 ## Entidades
@@ -64,6 +65,11 @@ Un despliegue corresponde a **un consultorio** (single-tenant en v1, ver DD-05).
   - **Exclusión por profesional**: la misma restricción con `profesional_id`.
 - Índices: `(profesional_id, inicio)`, `(sillon_id, inicio)`, `(paciente_id)`, `(estado, inicio)` para los recordatorios.
 
+### HorarioTrabajo
+- `id` UUID, `profesional_id` FK, `dia_semana` smallint (1 = lunes … 7 = domingo), `hora_desde` time, `hora_hasta` time.
+- Constraints: `hora_hasta > hora_desde`; las franjas de un mismo profesional y día no se superponen. Un profesional puede tener varias franjas por día (por ejemplo, 8–12 y 16–20).
+- RN-AG-13: un turno solo se acepta dentro de una franja.
+
 ### BloqueoAgenda
 - `id` UUID, `profesional_id` FK, `inicio`, `fin`, `motivo`.
 - Un turno nuevo no puede caer dentro de un bloqueo del profesional (RN-AG-10).
@@ -93,6 +99,7 @@ Un despliegue corresponde a **un consultorio** (single-tenant en v1, ver DD-05).
 |---|---|
 | Profesionales | "Dra. Ana Ejemplo" (MP-0001), "Dr. Bruno Prueba" (MP-0002) |
 | Sillones | "Sillón 1", "Sillón 2" |
+| Horarios de trabajo | Dra. Ana Ejemplo: lunes a viernes de 08:00 a 13:00. Dr. Bruno Prueba: lunes a viernes de 10:00 a 18:00 (se superponen de 10 a 13, para probar "sin preferencia") |
 | Prestaciones | Consulta o control (30 min), Limpieza (profilaxis) (45 min), Tratamiento de conducto (60 min), Extracción simple (30 min) |
 | Usuarios | `admin`, `recepcion`, `ana.ejemplo` (contraseñas solo en el seed de desarrollo, nunca en producción) |
 | Pacientes | 3 pacientes ficticios con DNI de la forma `99000001` y emails `@example.com` |

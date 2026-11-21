@@ -35,14 +35,18 @@ Recepción → Frontend → API → CrearTurno → Agenda(dominio) → TurnoRepo
 **Actor**: paciente.
 
 **Pasos**:
-1. Elige una prestación y una fecha.
-2. `GET /public/disponibilidad` calcula los huecos libres con las mismas reglas que el Flujo 1 (RN-RO-02) y devuelve solo los horarios.
+1. Elige una prestación, una fecha y **un profesional en particular o "sin preferencia"** (RN-RO-04).
+2. `GET /public/disponibilidad` calcula los huecos libres con las mismas reglas que el Flujo 1, más el horario de trabajo (RN-AG-13):
+   - con profesional: los huecos de ese profesional;
+   - sin preferencia: la unión de los huecos de todos los profesionales que trabajan ese día, sin repetir horarios.
+   Un horario aparece solo si hay al menos un par de profesional y sillón libre (RN-RO-07). Se devuelven solo horarios, sin datos de otros pacientes.
 3. El paciente elige un horario y completa sus datos (DNI, nombre, contacto, canal, consentimiento).
-4. `POST /public/reservas` ejecuta el mismo caso de uso que el Flujo 1, con `origen = ONLINE` y sin opción de sobreturno.
+4. `POST /public/reservas` **asigna el profesional** (si eligió "sin preferencia", RN-RO-05) y **el sillón** (RN-RO-06), y ejecuta el mismo caso de uso que el Flujo 1, con `origen = ONLINE` y sin opción de sobreturno.
 5. Se devuelve el **código de reserva** y se envía la confirmación por el canal que corresponde.
 
 **Casos de error**:
-- El horario se ocupó entre la consulta y la reserva → `409` con alternativas.
+- El horario se ocupó entre la consulta y la reserva → `409` con alternativas. Si era "sin preferencia", se intenta primero con otro profesional o sillón libre en ese mismo horario.
+- No queda ningún profesional o sillón libre → `409 SIN_DISPONIBILIDAD`.
 - Datos de contacto faltantes → `422`.
 
 ## Flujo 3: Cancelar o reprogramar

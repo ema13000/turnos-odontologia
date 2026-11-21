@@ -28,7 +28,10 @@
 | PA-03 | **Alta** | ¿El paciente necesita **login**, o alcanza con DNI y un código o token de reserva para cancelar o reprogramar? | Reserva online | Equipo |
 | PA-04 | Media | ¿Se registra el **ausentismo** (estado `AUSENTE`) y quién lo marca? | Métricas | Equipo |
 | PA-05 | Media | ¿El **sobreturno** exige un **motivo** obligatorio? | Sobreturno | Equipo |
-| PA-06 | Media | ¿Hay **horario de atención** del consultorio o de cada profesional? ¿Se rechazan los turnos fuera de horario? | Disponibilidad | Equipo |
+| PA-06 | ~~Media~~ | ~~¿Hay horario de atención?~~ **Resuelta (2026-11-20)**: cada profesional tiene horarios de trabajo semanales y los turnos fuera de horario se rechazan (RN-AG-13, DD-08). | — | Equipo |
+| PA-14 | **Alta** | Con "sin preferencia", si hay **varios profesionales libres** en el mismo horario, ¿a cuál se asigna? Propuesta: el que tenga menos turnos ese día. Alternativas: orden fijo o al azar. | Reserva online | Equipo |
+| PA-15 | Media | ¿Cada profesional tiene un **sillón habitual**, o se asigna cualquier sillón libre? | Reserva online | Equipo |
+| PA-16 | Media | ¿Todos los profesionales hacen **todas las prestaciones**, o hay especialidades (por ejemplo, solo uno hace conductos)? (SU-07) | Modelo de datos | Equipo |
 | PA-07 | Media | ¿La duración de una prestación puede **variar según el profesional**? | Modelo de datos | Equipo |
 | PA-08 | ~~Media~~ | ~~¿Con cuánta anticipación se envía el recordatorio?~~ **Resuelta (2026-11-20)**: 24 h antes (RN-NO-04). | — | Equipo |
 | PA-09 | Baja | ¿Se confirma la zona horaria única `America/Argentina/Buenos_Aires`? (SU-03) | Fechas | Equipo |

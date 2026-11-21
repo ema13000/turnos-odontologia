@@ -42,7 +42,20 @@
 **Decisión**: los recordatorios no llevan datos de salud y requieren consentimiento.
 **Contexto**: Ley 25.326 (los datos de salud son sensibles); el informe (C.3) muestra que ningún competidor dice qué datos viajan por WhatsApp.
 
+### DD-08: Horarios de trabajo por profesional y reserva "con profesional" o "sin preferencia"
+**Decisión**: cada profesional tiene franjas semanales de trabajo (RN-AG-13). El paciente elige un profesional o "sin preferencia". En ese caso ve la unión de los horarios libres y el sistema asigna el profesional y el sillón (RN-RO-04 a RN-RO-07).
+**Contexto**: Ajustar de la líder sobre la KB v1 (2026-11-20). Sin horarios, el sistema ofrecía turnos en momentos en que nadie atiende, y la reserva online no definía qué sillón ni qué profesional le tocaba al paciente.
+**Alternativas consideradas**: (a) usar solo bloqueos de agenda para cerrar las franjas sin atención; (b) que el paciente siempre elija profesional.
+**Justificación**: (a) obliga a bloquear a mano cada semana; (b) le quita al paciente la opción de "el primer horario libre", que es lo más cómodo.
+**Trade-offs aceptados**: suma una entidad (`HorarioTrabajo`) y un change al roadmap. **No amplía el change C-01** ("crear turno sin solapamientos"), que sigue enfocado en RN-AG-01 a RN-AG-05. La validación de horario se implementa en un change aparte que depende de C-01.
+
 ## Supuestos inferidos
+
+### SU-07: Todos los profesionales pueden hacer todas las prestaciones
+**Supuesto**: en v1 no hay relación entre profesional y prestación; cualquier profesional puede atender cualquier prestación.
+**Origen**: el Discovery no menciona especialidades.
+**Riesgo si es falso**: "sin preferencia" podría asignar, por ejemplo, un tratamiento de conducto a alguien que no lo hace.
+**Cómo validar**: PA-16.
 
 ### SU-01: Los consultorios chicos sufren solapamientos y desorden de turnos
 **Supuesto**: el problema existe y vale la pena resolverlo.

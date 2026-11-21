@@ -24,7 +24,7 @@ Hoy, en los consultorios chicos, los turnos llegan por WhatsApp y por teléfono,
 3. **Cancelar y reprogramar** turnos, liberando el horario.
 4. **Sobreturno**, que solo puede cargar el personal, registrado como excepción.
 5. **Agenda diaria y semanal** por profesional y por sillón.
-6. **Reserva online** por el paciente según la disponibilidad real.
+6. **Reserva online** por el paciente según la disponibilidad real, eligiendo **un profesional en particular o "sin preferencia"**. Cada profesional tiene sus **horarios de trabajo** semanales.
 7. **Recordatorio y confirmación** por WhatsApp, o por email si el paciente no tiene WhatsApp, sin datos de salud en el mensaje.
 8. **Ficha básica del paciente con odontograma.**
 

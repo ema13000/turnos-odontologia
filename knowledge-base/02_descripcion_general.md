@@ -59,9 +59,10 @@ Base: `/api/v1`. Formato JSON. Fechas en ISO-8601 con zona horaria.
 | Prestaciones | `GET/POST /prestaciones`, `PUT/DELETE /prestaciones/{id}` | ADMIN |
 | Turnos | `POST /turnos` (crear), `GET /turnos?desde&hasta&profesionalId&sillonId`, `POST /turnos/{id}/cancelar`, `POST /turnos/{id}/reprogramar`, `POST /turnos/sobreturno` | RECEPCIONISTA, ODONTOLOGO |
 | Bloqueos | `POST /profesionales/{id}/bloqueos`, `DELETE /bloqueos/{id}` | ODONTOLOGO, ADMIN |
-| Disponibilidad (pública) | `GET /public/disponibilidad?prestacionId&fecha` | Público |
+| Horarios de trabajo | `GET/PUT /profesionales/{id}/horarios` | ADMIN |
+| Disponibilidad (pública) | `GET /public/disponibilidad?prestacionId&fecha[&profesionalId]` (sin `profesionalId` = "sin preferencia") | Público |
 | Reserva online (pública) | `POST /public/reservas`, `POST /public/reservas/{codigo}/cancelar`, `POST /public/reservas/{codigo}/reprogramar` | Paciente (identificación a definir, ver PA-03) |
 | Confirmación | `POST /public/confirmaciones/{token}` (y el webhook de WhatsApp) | Paciente |
 | Pacientes y ficha | `GET/POST /pacientes`, `GET/PUT /pacientes/{id}/ficha`, `PUT /pacientes/{id}/odontograma` | ODONTOLOGO (la ficha), RECEPCIONISTA (los datos de contacto) |
 
-**Errores de negocio**: `409 Conflict` con un código estable (`SOLAPAMIENTO_PROFESIONAL`, `SOLAPAMIENTO_SILLON`, `MARGEN_INSUFICIENTE`, `CANCELACION_FUERA_DE_PLAZO`). `422` para validaciones de entrada.
+**Errores de negocio**: `409 Conflict` con un código estable (`SOLAPAMIENTO_PROFESIONAL`, `SOLAPAMIENTO_SILLON`, `MARGEN_INSUFICIENTE`, `FUERA_DE_HORARIO`, `SIN_DISPONIBILIDAD`, `CANCELACION_FUERA_DE_PLAZO`). `422` para validaciones de entrada.
