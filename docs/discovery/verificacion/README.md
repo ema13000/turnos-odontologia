@@ -6,7 +6,7 @@ Cada integrante **abre personalmente** su fuente en el navegador y registra lo q
 
 | # | Tipo | URL | Qué afirma el informe | Responsable | Archivo |
 |---|---|---|---|---|---|
-| 1 | Sitio oficial | https://bilog.com.ar/ | +1.500 clínicas; reserva y cancelación online; recordatorios por WhatsApp; sin precios publicados | Emanuel | `emanuel.md` |
+| 1 | Sitio oficial | https://bilog.com.ar/ | +1.500 clínicas; reserva y cancelación online; recordatorios por WhatsApp; sin precios publicados | Emanuel | `ema.md` |
 | 2 | Página de precios | https://dentalsoft.com.ar/ (sección planes) | Plan Gratis de 50 turnos/mes; Gestión $30.000 y Pro $60.000 por profesional; costo de Meta de USD 0,026 por mensaje | Juan Sebastián | `juan-sebastian.md` |
 | 3 | Centro de ayuda | https://ayuda.softwaredentalink.com/es/collections/19196578-modulo-exclusivo-para-argentina | Módulo para Argentina: obras sociales, conciliaciones, receta electrónica | Juan Cruz | `juan-cruz.md` |
 | 4 | Video oficial | https://odonthia.com/ (video "Mirá Odonthia por dentro") | Odontograma FDI con dientes temporales; plan gratuito permanente | Enzo | `enzo.md` |

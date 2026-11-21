@@ -49,14 +49,14 @@
           "docs/discovery/sources/relevamiento-fuentes.md"
         ],
         "pending": [
-          "verificación de Bilog (Emanuel)",
-          "verificación de DentalSoft (Juan Sebastián)",
           "informe-discovery.pdf"
         ],
         "verified_sources": [
           "Dentalink (Juan Cruz, PR #1)",
           "Odonthia (Enzo, PR #2)",
-          "VecDent (Sofia, PR #3)"
+          "VecDent (Sofia, PR #3)",
+          "Bilog (Emanuel, PR #5)",
+          "DentalSoft (Juan Sebastián, PR #4)"
         ]
       },
       "kb": {

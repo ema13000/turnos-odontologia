@@ -37,7 +37,7 @@ El caso de uso **1** bloquea a todos los demás: es la base del MVP y el candida
 | Competidor | País | Puntaje (matriz B) | Pricing publicado | Diferenciador evidenciado |
 |---|---|---|---|---|
 | DentalCore | AR | 4,45 | ARS 75.000 o USD 50/mes (inconsistente) | Paquete local completo afirmado: WhatsApp API, ARCA, Mercado Pago, obras sociales, FHIR |
-| DentalSoft | AR | 4,05 | Gratis (50 turnos) / $30.000 / $60.000 por profesional | Detección de solapamiento en sobreturnos; reserva del paciente en 4 pasos (demo) |
+| DentalSoft | AR | 4,00 | Prueba gratis de 3 meses (50 turnos/mes) / $30.000 / $60.000 con 1 profesional, +$10.000 por profesional extra | Detección de solapamiento en sobreturnos; reserva del paciente en 4 pasos (demo) |
 | AgendaPro | CL (página AR) | 3,85 | Desde ARS 13.900/mes | Agenda por sillón y duración por práctica (mockup); asistente IA multicanal |
 | Bilog | AR | 3,35 | No publicado | Mayor base declarada en AR (+1.500 clínicas) |
 | Dentalink | CL (módulo AR) | 3,30 | Cotización | Módulo de obras sociales argentinas (centro de ayuda) |

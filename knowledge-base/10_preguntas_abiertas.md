@@ -26,7 +26,6 @@
 | ID | Prioridad | Pregunta | Bloquea | Decisor |
 |---|---|---|---|---|
 | PA-11 | Media | ¿Quiénes del equipo tienen **Docker**? La líder sí. Sin Docker hay alternativas (SU-04). | Verify y README | Cada integrante |
-| PA-13 | Baja | Verificaciones pendientes de **Bilog** (Emanuel) y **DentalSoft** (Juan Sebastián): si encuentran errores, se aplica *Ajustar* al informe y a esta KB. | Cierre del Discovery | Emanuel, Juan Sebastián |
 
 ### Resueltas (2026-11-20, respuestas de la líder)
 
@@ -49,6 +48,7 @@
 | PA-17 | ¿Turnos dados durante la ausencia de un profesional? *(2026-11-21)* | Se **reasignan**, avisando a los pacientes | RN-AG-16 |
 | PA-18 | ¿La reserva exige cuenta? *(2026-11-21)* | **Sí**, el paciente se registra solo la primera vez | RN-RO-08 |
 | PA-19 | ¿Ausencia del paciente? *(2026-11-21)* | La marca el odontólogo **desde la ficha clínica** y el turno queda **liberado** | RN-AG-17 |
+| PA-13 | ¿Verificaciones de Bilog y DentalSoft? *(2026-11-21)* | **Bilog coincide** (Emanuel). **DentalSoft**: el plan gratis dura 3 meses y el precio suma $10.000 por profesional extra (Juan Sebastián). Se corrigieron el informe y la matriz; **no afecta reglas ni MVP** | Informe, verificación de fuentes |
 
 ## Puntos "No evidenciado" del Discovery
 

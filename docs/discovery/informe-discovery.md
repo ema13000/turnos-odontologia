@@ -97,7 +97,7 @@ Todas las fuentes se consultaron el **2026-11-19**.
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | Bilog | Afirmado (mockup) | No evidenciado | Afirmado | Afirmado (liquidaciones) | No evidenciado | No evidenciado | No evidenciado | No evidenciado |
 | 2 | DentalTec | Afirmado (CIE-10) | No evidenciado | No evidenciado | Afirmado (+15, validación online) | Afirmado | No evidenciado | No evidenciado | Demo a pedido |
-| 3 | DentalSoft | Comprobado (captura) | No evidenciado | Afirmado | Afirmado | No evidenciado | Afirmado | $30.000 y $60.000/mes por profesional (moneda no explícita) | Plan gratis (50 turnos/mes) |
+| 3 | DentalSoft | Comprobado (captura) | No evidenciado | Afirmado | Afirmado | No evidenciado | Afirmado | Gestión $30.000 y Pro $60.000/mes con 1 profesional, +$10.000/mes por cada profesional extra (hasta 10; más, a cotizar). Moneda e IVA no explícitos (verificado el 2026-11-20) | Plan gratis de 50 turnos/mes **durante 3 meses**; el alta se pide por WhatsApp |
 | 4 | DentalCore | Afirmado | Afirmado | Afirmado | Afirmado (65 cargadas) | Afirmado | Afirmado | ARS 75.000/mes **o** USD 50/mes (inconsistente) | Prueba de 7 días |
 | 5 | AgendaPro | Afirmado | No evidenciado | Afirmado | No evidenciado | No evidenciado | Afirmado (señas) | Desde ARS 13.900/mes | Prueba de 14 días |
 | 6 | Dentalink | Afirmado | Afirmado | Afirmado | Comprobado (centro de ayuda, módulo AR) | No evidenciado | No evidenciado | No evidenciado (cotización) | No evidenciado |
@@ -133,7 +133,7 @@ El detalle por sistema (roles, auditoría, exportación, seguridad, cifras de ad
 | # | Producto | T | C | I | A | P | S | $ | **Total ponderado** |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | DentalCore | 4 | 5 | 5 | 5 | 3 | 5 | 3 | **4,45** |
-| 2 | DentalSoft | 4 | 4 | 4 | 4 | 5 | 3 | 5 | **4,05** |
+| 2 | DentalSoft | 4 | 4 | 4 | 4 | 5 | 3 | 4 | **4,00** ✱ |
 | 3 | AgendaPro | 4 | 4 | 3 | 4 | 5 | 3 | 4 | **3,85** |
 | 4 | Bilog | 4 | 4 | 3 | 3 | 4 | 2 | 1 | **3,35** |
 | 5 | Dentalink | 3 | 4 | 3 | 3 | 4 | 4 | 1 | **3,30** |
@@ -151,7 +151,7 @@ El detalle por sistema (roles, auditoría, exportación, seguridad, cifras de ad
 
 Fórmula: Total = (T·25 + C·20 + I·15 + A·15 + P·10 + S·10 + $·5) / 100.
 
-✱ **Ajuste por verificación manual (2026-11-20)**: VecDent bajó en "Experiencia del paciente" de 3 a 1, y su total pasó de 2,25 a 2,05, porque la demo no tiene reserva por el paciente (ver "Verificación de fuentes", fila 5).
+✱ **Ajuste por verificación manual (2026-11-20)**: VecDent bajó en "Experiencia del paciente" de 3 a 1, y su total pasó de 2,25 a 2,05, porque la demo no tiene reserva por el paciente (ver "Verificación de fuentes", fila 5). DentalSoft bajó en "Precio" de 5 a 4, y su total pasó de 4,05 a 4,00, porque el plan gratis es una prueba de 3 meses y no un plan permanente (fila 2). Con el mismo criterio que AgendaPro (precio publicado y prueba), queda en 4. El orden de la matriz no cambia.
 
 ### Nota metodológica
 
@@ -253,12 +253,12 @@ Aparecen en la mayoría de los sistemas, así que **no diferencian a nadie**: so
 
 ## Verificación de fuentes
 
-> **Pendiente de completar por el equipo.** La consigna exige que **ustedes** abran y comprueben personalmente como mínimo 5 fuentes de tipos distintos. El agente no puede hacer esta parte. Abajo están las 5 fuentes sugeridas, una de cada tipo, con lo que **afirma el informe**. Completen "Qué encontramos" y "Corrección".
+> **Completada por el equipo (2026-11-20 y 2026-11-21).** La consigna exige que el equipo abra y compruebe personalmente como mínimo 5 fuentes de tipos distintos. Cada integrante verificó una fuente y dejó el detalle en `docs/discovery/verificacion/`. El agente solo consolidó los resultados en esta tabla y aplicó las correcciones.
 
 | # | Tipo de fuente | URL | Qué afirma el informe | Responsable | Qué encontramos (fecha) | Corrección aplicada |
 |---|---|---|---|---|---|---|
-| 1 | Sitio oficial | https://bilog.com.ar/ | +1.500 clínicas; reserva y cancelación online; recordatorios por WhatsApp; sin precios publicados | Emanuel | | |
-| 2 | Página de precios | https://dentalsoft.com.ar/ (sección planes) | Plan Gratis de 50 turnos/mes; Gestión $30.000; Pro $60.000 por profesional; costo de Meta de USD 0,026 por mensaje | Juan Sebastian | | |
+| 1 | Sitio oficial | https://bilog.com.ar/ | +1.500 clínicas; reserva y cancelación online; recordatorios por WhatsApp; sin precios publicados | Emanuel | **Coincide** (2026-11-21 11:20). Las 4 afirmaciones están respaldadas. La fuente agrega detalle: también reservan los pacientes nuevos, que completan sus datos desde el celular con un QR en la recepción; los recordatorios también salen por email; el precio se pide a los proveedores. Detalle en `verificacion/ema.md` (PR #5). | Ninguna. |
+| 2 | Página de precios | https://dentalsoft.com.ar/ (sección planes) | Plan Gratis de 50 turnos/mes; Gestión $30.000; Pro $60.000 por profesional; costo de Meta de USD 0,026 por mensaje | Juan Sebastián | (2026-11-20 21:07) **Plan gratis: parcial**: el límite de 50 turnos/mes coincide, pero dura **3 meses** y después hay que pasar a Gestión o Pro; no incluye imágenes ni dominio propio, y el alta se pide por WhatsApp. **Precios: NO coinciden**: $30.000 y $60.000 son con 1 profesional, y cada profesional extra suma $10.000/mes (por ejemplo, Gestión con 10 profesionales cuesta $120.000), hasta 10; más, a cotizar. No aclara IVA. **Costo de Meta: coincide**, y aplica solo a los recordatorios automáticos del plan Pro. Detalle en `verificacion/juan-sebastian.md` (PR #4). | **Ajustar**: A.3 corrige el precio y la duración del plan gratis. Matriz B: el puntaje de precio baja de 5 a 4 y el total, de 4,05 a 4,00. |
 | 3 | Centro de ayuda | https://ayuda.softwaredentalink.com/es/collections/19196578-modulo-exclusivo-para-argentina | Módulo para Argentina con obras sociales, conciliaciones y receta electrónica | Juan Cruz | **Coincide** (2026-11-20 14:36). Las 3 afirmaciones están respaldadas, y la fuente agrega detalle: convenios, planes y aranceles, simulación de presupuesto, recaudación de pago y conciliaciones con estado. Detalle en `verificacion/juan-cruz.md` (PR #1). | Ninguna en el informe. La ficha de Dentalink en A.3 pasa de mencionar solo los títulos a tener **contenido verificado**. |
 | 4 | Video oficial | https://odonthia.com/ (video "Mirá Odonthia por dentro") | Odontograma FDI con dientes temporales; plan gratuito permanente | Enzo | **Coincide** (2026-11-20 16:45). Odontograma FDI (ISO 3950) en el video (min 2:44) con controles de dentición primaria, mixta y edéntulo (min 2:49). Los dientes temporales se confirman en el texto de la página, no en el video. El plan gratis no vence. **Los precios cambiaron**: IA ARS 77.100 y Max ARS 159.100 (el informe decía 76.600 y 158.100). Detalle en `verificacion/enzo.md` (PR #2). | **Ajustar**: se actualizan los precios de Odonthia en A.3 y se aclara que el plan gratis cubre la gestión del consultorio, mientras que la IA, el WhatsApp automático y los mensajes internos son pagos. |
 | 5 | Demo pública | https://vectora.ar/pages/vecdent/ (demo sin registro) | Periodontograma de 6 puntos; portal del paciente; ARS 30.000, 50.000 y 80.000 | Sofia | (2026-11-20 19:29) **Periodontograma: coincide**, con 3 puntos vestibulares (MV, V, DV) y 3 palatinos/linguales (ML, L, DL), más recesión, sangrado, placa, movilidad y furcación; está incluido desde el plan Profesional. **Portal del paciente: NO coincide**: solo administrador, odontólogo y recepcionista crean turnos. Un rol personalizado "paciente" **no pudo crear turnos** y además ve el dashboard con estadísticas de la clínica y el menú Configuración, así que no es autogestión. **Precios: coinciden** ($30.000, $50.000 y $80.000 por mes), pero el sitio no aclara la moneda. Detalle en `verificacion/sofia.md` (PR #3). | **Ajustar**: A.2 VecDent / Reserva online pasa a "No evidenciado". A.3 aclara la moneda y que el periodontograma va desde el plan Profesional. Matriz B: P baja de 3 a 1 y el total, de 2,25 a 2,05. |
@@ -277,6 +277,8 @@ Aparecen en la mayoría de los sistemas, así que **no diferencian a nadie**: so
 - **VecDent: el agente marcó como "Comprobado" algo falso.** El relevamiento automático puso "Comprobado (portal en demo)" en la reserva del paciente porque la página de venta muestra una captura del "portal". Al probar la demo, solo el personal puede crear turnos, y un rol "paciente" armado a mano ve datos internos de la clínica. **Una captura de marketing no es una demostración de la función.** (Sofia)
 - **Odonthia: los precios cambiaron de un día al otro**, o la lectura automática no fue exacta (ARS 76.600 a 77.100 y 158.100 a 159.100). Confirma por qué la consigna exige la fecha de consulta. (Enzo)
 - **Moneda implícita**: VecDent, como DentalSoft, publica precios con "$" sin aclarar la moneda. El informe había escrito "ARS" deduciéndolo. (Sofia)
+- **DentalSoft: el agente leyó mal una tabla de precios interactiva.** La página tiene un selector de cantidad de profesionales, y el relevamiento automático solo vio el valor inicial (1 profesional). De ahí sacó "por profesional", cuando en realidad cada profesional extra suma $10.000. Además, llamó "gratis" a lo que es una **prueba de 3 meses**. **Lo que cambia con la interacción del usuario no se ve en una lectura automática de la página.** (Juan Sebastián)
+- **Bilog: la verificación confirmó todo** y sumó un dato que no estaba (el registro del paciente nuevo con QR en la recepción). No todo hallazgo es un error: también sirve para dar por buena la fuente. (Emanuel)
 
 ---
 

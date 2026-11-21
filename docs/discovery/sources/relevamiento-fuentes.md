@@ -42,7 +42,7 @@ Convención de evidencia:
 - Clínica: odontograma con 18 estados, notación FDI e historial por profesional; imágenes de 5 a 10 GB; presupuestos con cobertura de obra social; planes de tratamiento. **Comprobado** (captura) y Afirmado.
 - Administración: caja, Mercado Pago (links y señas), obras sociales, liquidaciones y reportes. **Afirmado**. ARCA: **No evidenciado**.
 - Seguridad: roles configurables, backups y exportación. **Afirmado**. Normativa: **No evidenciado**.
-- Comercial: plan Gratis ($0, 50 turnos por mes); Gestión $30.000/mes y Pro $60.000/mes por profesional (moneda no explícita, sitio argentino).
+- Comercial: plan Gratis ($0, 50 turnos por mes) **durante 3 meses**; Gestión $30.000/mes y Pro $60.000/mes con 1 profesional, +$10.000/mes por cada profesional extra hasta 10 (moneda e IVA no explícitos, sitio argentino). *Corregido el 2026-11-21 por la verificación de Juan Sebastián: el relevamiento automático decía "por profesional" y "gratis" sin plazo.*
 
 ### 4. DentalCore. https://dentalcore.app/
 - País: Argentina (La Plata). Opera en 8 países de LatAm. Nube y app de escritorio para Windows.
