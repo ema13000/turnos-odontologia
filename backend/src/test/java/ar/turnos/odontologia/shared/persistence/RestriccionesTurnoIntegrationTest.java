@@ -13,7 +13,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Tag("integration")
 class RestriccionesTurnoIntegrationTest {
 
-    private static final String URL = env("DB_URL", "jdbc:postgresql://localhost:5432/turnos");
+    // C-04: usa la base de tests, porque el TRUNCATE de abajo vaciaba la de desarrollo y su seed.
+    private static final String URL = env("DB_TEST_URL", "jdbc:postgresql://localhost:5432/turnos_test");
     private static final String USER = env("DB_USER", "turnos");
     private static final String PASSWORD = env("DB_PASSWORD", "turnos_dev");
 
@@ -40,7 +41,7 @@ class RestriccionesTurnoIntegrationTest {
 
     @BeforeEach
     void datosFicticios() throws SQLException {
-        // OJO: vacía las tablas de la base local de desarrollo
+        // OJO: vacía las tablas de la base de tests (DB_TEST_URL)
         try (Statement st = conn.createStatement()) {
             st.execute("TRUNCATE turno, paciente, prestacion, sillon, profesional RESTART IDENTITY CASCADE");
         }
