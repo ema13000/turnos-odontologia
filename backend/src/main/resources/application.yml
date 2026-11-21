@@ -16,3 +16,23 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+    # C-04: el seed ficticio (db/seed) se carga solo en desarrollo.
+    locations: classpath:db/migration,classpath:db/seed
+---
+# C-04: perfil de los tests de integración. Usa una base aparte (recomendado turnos_test)
+# porque los tests vacían las tablas, y no carga el seed de desarrollo.
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: ${DB_TEST_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

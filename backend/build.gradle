@@ -20,6 +20,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // C-04: primeros endpoints REST y validación de entrada.
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     runtimeOnly 'org.postgresql:postgresql'
@@ -27,6 +30,12 @@ dependencies {
     // Incluye JUnit 5, AssertJ y Mockito.
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// C-04: en Windows con la hora de Argentina, Java usa el alias viejo "America/Buenos_Aires",
+// que PostgreSQL 16 rechaza al conectarse. Se fija la zona canónica de la KB.
+tasks.withType(Test).configureEach {
+    systemProperty 'user.timezone', 'America/Argentina/Buenos_Aires'
 }
 
 tasks.named('test', Test) {
