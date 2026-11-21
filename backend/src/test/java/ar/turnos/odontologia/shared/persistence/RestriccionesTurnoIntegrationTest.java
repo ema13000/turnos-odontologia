@@ -128,4 +128,19 @@ class RestriccionesTurnoIntegrationTest {
         assertThatThrownBy(() -> insertarTurno(profB, sillon1, DIEZ, "CONFIRMADO", true, "Urgencia"))
                 .satisfies(e -> assertSqlState(e, "23P01"));
     }
+
+    // Agregados por C-06 (V4): solo RESERVADO y CONFIRMADO ocupan la agenda.
+
+    @Test
+    void turno_ausente_no_bloquea_el_horario() throws SQLException {
+        insertarTurno(profA, sillon1, DIEZ, "AUSENTE", false, null);
+        insertarTurno(profA, sillon1, DIEZ);
+    }
+
+    @Test
+    void turno_reservado_bloquea_el_horario() throws SQLException {
+        insertarTurno(profA, sillon1, DIEZ, "RESERVADO", false, null);
+        assertThatThrownBy(() -> insertarTurno(profB, sillon1, DIEZ.plusMinutes(15)))
+                .satisfies(e -> assertSqlState(e, "23P01"));
+    }
 }

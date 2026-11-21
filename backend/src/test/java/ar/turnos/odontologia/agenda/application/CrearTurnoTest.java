@@ -40,13 +40,15 @@ class CrearTurnoTest {
     private static final Long CONSULTA = 1L;
 
     private TurnoRepositoryEnMemoria turnos;
-    private PrestacionRepositoryEnMemoria prestaciones;
+    private RecursosAgendaEnMemoria recursos;
+    private GeneradorNumeroReservaSecuencial numeros;
 
     @BeforeEach
     void prepararAgenda() {
         turnos = new TurnoRepositoryEnMemoria();
-        prestaciones = new PrestacionRepositoryEnMemoria();
-        prestaciones.agregar(CONSULTA, Duration.ofMinutes(30));
+        recursos = new RecursosAgendaEnMemoria();
+        recursos.agregarPrestacion(CONSULTA, Duration.ofMinutes(30));
+        numeros = new GeneradorNumeroReservaSecuencial();
     }
 
     // ---------- Requirement: Intervalo del turno ----------
@@ -204,6 +206,71 @@ class CrearTurnoTest {
         assertThat(turno.estado()).isEqualTo(EstadoTurno.RESERVADO);
     }
 
+    // ---------- Requirement: Número de reserva (C-06) ----------
+
+    @Test
+    @DisplayName("Turno nuevo con número de reserva")
+    void turnoNuevoConNumeroDeReserva() {
+        // GIVEN una agenda sin turnos
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        Turno turno = crear(DRA_A, SILLON_1, a(10, 0));
+
+        // THEN el turno tiene un número de reserva con el formato XXXX-XXXX y sin caracteres ambiguos
+        assertThat(turno.numeroReserva().valor())
+                .matches("[A-Z2-9]{4}-[A-Z2-9]{4}")
+                .doesNotContain("0", "O", "1", "I", "L");
+    }
+
+    @Test
+    @DisplayName("Dos turnos tienen números de reserva distintos")
+    void dosTurnosTienenNumerosDistintos() {
+        // GIVEN una agenda sin turnos
+        // WHEN se crean un turno con la Dra. A en el Sillón 1 y otro con el Dr. B en el Sillón 2 a las 10:00
+        Turno primero = crear(DRA_A, SILLON_1, a(10, 0));
+        Turno segundo = crear(DR_B, SILLON_2, a(10, 0));
+
+        // THEN los dos turnos tienen números de reserva distintos
+        assertThat(primero.numeroReserva()).isNotEqualTo(segundo.numeroReserva());
+    }
+
+    // ---------- Requirement: Sin turnos con recursos inactivos (C-06) ----------
+
+    @Test
+    @DisplayName("Profesional inactivo")
+    void profesionalInactivo() {
+        // GIVEN que la Dra. A está inactiva
+        recursos.desactivarProfesional(DRA_A);
+
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        // THEN el turno se rechaza con RECURSO_INACTIVO
+        assertRechazo(() -> crear(DRA_A, SILLON_1, a(10, 0)), CodigoRechazo.RECURSO_INACTIVO);
+        assertThat(turnos.todos()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Sillón inactivo")
+    void sillonInactivo() {
+        // GIVEN que el Sillón 1 está inactivo
+        recursos.desactivarSillon(SILLON_1);
+
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        // THEN el turno se rechaza con RECURSO_INACTIVO
+        assertRechazo(() -> crear(DRA_A, SILLON_1, a(10, 0)), CodigoRechazo.RECURSO_INACTIVO);
+        assertThat(turnos.todos()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Prestación inactiva")
+    void prestacionInactiva() {
+        // GIVEN que la prestación "Consulta" está inactiva
+        recursos.desactivarPrestacion(CONSULTA);
+
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        // THEN el turno se rechaza con RECURSO_INACTIVO
+        assertRechazo(() -> crear(DRA_A, SILLON_1, a(10, 0)), CodigoRechazo.RECURSO_INACTIVO);
+        assertThat(turnos.todos()).isEmpty();
+    }
+
     // ---------- Ayudas del fixture ----------
 
     private static Instant a(int hora, int minuto) {
@@ -215,7 +282,7 @@ class CrearTurnoTest {
     }
 
     private CrearTurno casoDeUso(Clock reloj, Margen margen) {
-        return new CrearTurno(turnos, prestaciones, reloj, margen);
+        return new CrearTurno(turnos, recursos, numeros, reloj, margen);
     }
 
     /** Crea un turno de "Consulta" con el reloj a las 08:00 y el margen de 10 minutos. */
@@ -233,7 +300,7 @@ class CrearTurnoTest {
 
     private void existente(Long profesional, Long sillon, Instant inicio, Instant fin, EstadoTurno estado) {
         turnos.guardar(new Turno(null, OTRO_PACIENTE, profesional, sillon, CONSULTA,
-                new Intervalo(inicio, fin), estado));
+                new Intervalo(inicio, fin), estado, numeros.generar()));
     }
 
     private static void assertRechazo(ThrowingCallable accion, CodigoRechazo esperado) {
