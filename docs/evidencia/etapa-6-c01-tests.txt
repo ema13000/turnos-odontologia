@@ -19,3 +19,12 @@ BUILD SUCCESSFUL in 5s
 
 $ openspec validate crear-turno-sin-solapamientos --strict
 Change 'crear-turno-sin-solapamientos' is valid
+
+## Verify (2026-11-21, sobre master después del PR #6)
+
+- master (29ab47e): ./gradlew test --rerun-tasks -> 14 tests, 0 fallas.
+- Tareas: 16/16 (openspec instructions apply -> all_done).
+- Trazabilidad: los 12 escenarios de specs/agenda-turnos/spec.md tienen un test con @DisplayName idéntico; 0 escenarios sin test. Test extra: "El margen predeterminado es de 10 minutos".
+- agenda/domain sin imports de org.springframework ni jakarta.persistence.
+- Mutaciones de control: quitar la verificación de margen hace fallar "Turno contiguo sin margen" y "Margen mayor al mínimo"; invertir la prioridad sillón/profesional hace fallar "Choque por profesional y por sillón a la vez".
+- Desvíos: (1) el scaffolding se mergeó junto con el change en el PR #6, no en un PR aparte; (2) Agenda recibe el margen en el constructor y no en verificar(...), según design D3. Ninguno cambia el comportamiento del spec.

@@ -218,7 +218,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
 > C-01 y C-02 arrancan en paralelo (backend y frontend no comparten archivos). C-03 arranca apenas el scaffolding de C-01 está en `master`.
 
 ### [C-01] `crear-turno-sin-solapamientos`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completo (2026-11-21, PR #6). Spec: `openspec/specs/agenda-turnos/spec.md`; change archivado en `openspec/changes/archive/2026-11-21-crear-turno-sin-solapamientos/`
 - **Responsable**: Sofia Indovino (líder). **Change del ciclo OPSX** (Etapa 6 de la consigna).
 - **Scope**:
   - Tarea 1 (merge temprano a `master`): scaffolding `backend/` con Gradle wrapper, `build.gradle` (Java 21, Spring Boot 3.x, JUnit 5, AssertJ), `settings.gradle`, paquetes base `ar.turnos.odontologia.{agenda,shared}`, `./gradlew test` en verde.
