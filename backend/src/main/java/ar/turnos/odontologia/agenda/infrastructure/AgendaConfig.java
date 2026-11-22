@@ -1,6 +1,7 @@
 package ar.turnos.odontologia.agenda.infrastructure;
 
 import ar.turnos.odontologia.agenda.application.CancelarTurno;
+import ar.turnos.odontologia.agenda.application.ConfirmarTurno;
 import ar.turnos.odontologia.agenda.application.CrearSobreturno;
 import ar.turnos.odontologia.agenda.application.CrearTurno;
 import ar.turnos.odontologia.agenda.application.ExtenderTurno;
@@ -67,6 +68,11 @@ class AgendaConfig {
     @Bean
     CancelarTurno cancelarTurno(TurnoRepository turnos) {
         return new CancelarTurno(turnos);
+    }
+
+    @Bean
+    ConfirmarTurno confirmarTurno(TurnoRepository turnos) {
+        return new ConfirmarTurno(turnos);
     }
 
     @Bean

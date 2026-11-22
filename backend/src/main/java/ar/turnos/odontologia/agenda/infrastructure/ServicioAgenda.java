@@ -4,6 +4,7 @@ import ar.turnos.odontologia.agenda.application.AuditoriaTurnos;
 import ar.turnos.odontologia.agenda.application.AuditoriaTurnos.Accion;
 import ar.turnos.odontologia.agenda.application.CancelarTurno;
 import ar.turnos.odontologia.agenda.application.CancelarTurnoCommand;
+import ar.turnos.odontologia.agenda.application.ConfirmarTurno;
 import ar.turnos.odontologia.agenda.application.ConsultaAgenda;
 import ar.turnos.odontologia.agenda.application.CrearSobreturno;
 import ar.turnos.odontologia.agenda.application.CrearSobreturnoCommand;
@@ -43,19 +44,21 @@ public class ServicioAgenda {
     private final ExtenderTurno extenderTurno;
     private final CancelarTurno cancelarTurno;
     private final ReprogramarTurno reprogramarTurno;
+    private final ConfirmarTurno confirmarTurno;
     private final ConsultaAgenda consulta;
     private final AuditoriaTurnos auditoria;
     private final TransactionTemplate transaccion;
     private final TransactionTemplate lectura;
 
     ServicioAgenda(CrearTurno crearTurno, CrearSobreturno crearSobreturno, ExtenderTurno extenderTurno,
-                   CancelarTurno cancelarTurno, ReprogramarTurno reprogramarTurno, ConsultaAgenda consulta,
-                   AuditoriaTurnos auditoria, PlatformTransactionManager transacciones) {
+                   CancelarTurno cancelarTurno, ReprogramarTurno reprogramarTurno, ConfirmarTurno confirmarTurno,
+                   ConsultaAgenda consulta, AuditoriaTurnos auditoria, PlatformTransactionManager transacciones) {
         this.crearTurno = crearTurno;
         this.crearSobreturno = crearSobreturno;
         this.extenderTurno = extenderTurno;
         this.cancelarTurno = cancelarTurno;
         this.reprogramarTurno = reprogramarTurno;
+        this.confirmarTurno = confirmarTurno;
         this.consulta = consulta;
         this.auditoria = auditoria;
         this.transaccion = new TransactionTemplate(transacciones);
@@ -112,6 +115,19 @@ public class ServicioAgenda {
             auditoria.registrar(resultado.original().id(), Accion.REPROGRAMAR, actor, resultado.nuevo().id());
             auditoria.registrar(resultado.nuevo().id(), Accion.CREAR, actor, null);
             return resultado.nuevo();
+        });
+    }
+
+    /**
+     * Confirma un turno {@code RESERVADO} (C-11) y registra la auditoría {@code CONFIRMAR} en la misma transacción.
+     * Si el turno no está reservado el caso de uso lo rechaza y no queda ningún registro. Si ya hay una
+     * transacción abierta (la confirmación por token), participa de ella.
+     */
+    public Turno confirmar(Long turnoId, String actor) {
+        return enTransaccion(() -> {
+            Turno turno = confirmarTurno.ejecutar(turnoId);
+            auditoria.registrar(turno.id(), Accion.CONFIRMAR, actor, null);
+            return turno;
         });
     }
 

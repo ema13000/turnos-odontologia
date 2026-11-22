@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import ar.turnos.odontologia.agenda.application.AuditoriaTurnos;
 import ar.turnos.odontologia.agenda.application.AuditoriaTurnos.Accion;
 import ar.turnos.odontologia.agenda.application.CancelarTurno;
+import ar.turnos.odontologia.agenda.application.ConfirmarTurno;
 import ar.turnos.odontologia.agenda.application.ConsultaAgenda;
 import ar.turnos.odontologia.agenda.application.CrearSobreturno;
 import ar.turnos.odontologia.agenda.application.CrearSobreturnoCommand;
@@ -50,6 +51,7 @@ class ServicioAgendaTest {
     private final ExtenderTurno extender = mock(ExtenderTurno.class);
     private final CancelarTurno cancelar = mock(CancelarTurno.class);
     private final ReprogramarTurno reprogramar = mock(ReprogramarTurno.class);
+    private final ConfirmarTurno confirmar = mock(ConfirmarTurno.class);
     private final ConsultaAgenda consulta = mock(ConsultaAgenda.class);
     private final AuditoriaTurnos auditoria = mock(AuditoriaTurnos.class);
     private final PlatformTransactionManager transacciones = mock(PlatformTransactionManager.class);
@@ -60,7 +62,7 @@ class ServicioAgendaTest {
     void armarServicio() {
         when(transacciones.getTransaction(any())).thenReturn(new SimpleTransactionStatus());
         servicio = new ServicioAgenda(crear, crearSobreturno, extender, cancelar, reprogramar,
-                consulta, auditoria, transacciones);
+                confirmar, consulta, auditoria, transacciones);
     }
 
     @Test
