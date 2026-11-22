@@ -47,6 +47,19 @@ public record Turno(
                 EstadoTurno.CANCELADO, numeroReserva);
     }
 
+    /**
+     * El mismo turno en estado {@link EstadoTurno#CONFIRMADO} (C-11): no cambia el horario, el sillón, el
+     * profesional ni el número de reserva, y sigue ocupando la agenda. Solo un turno RESERVADO se confirma.
+     */
+    public Turno confirmado() {
+        if (estado != EstadoTurno.RESERVADO) {
+            throw new TurnoRechazadoException(CodigoRechazo.TURNO_NO_ACTIVO,
+                    "El turno no está reservado: está " + estado);
+        }
+        return new Turno(id, pacienteId, profesionalId, sillonId, prestacionId, intervalo,
+                EstadoTurno.CONFIRMADO, numeroReserva);
+    }
+
     public boolean esActivo() {
         return estado.esActivo();
     }
