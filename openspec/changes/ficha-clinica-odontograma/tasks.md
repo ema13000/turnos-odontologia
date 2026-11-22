@@ -9,14 +9,14 @@
   - `ficha_clinica` y `odontograma_registro`, con sus `CHECK` de pieza FDI, cara y estado;
   - el índice `(paciente_id, pieza, cara, registrado_en DESC)`;
   - el trigger de solo agregado;
-  - el `CHECK` de `turno_auditoria` borrado y vuelto a crear con la lista completa: `CREAR`, `CANCELAR`, `REPROGRAMAR`, `SOBRETURNO`, `EXTENDER` y `AUSENTE`, con un comentario que pida copiar la lista entera en futuras migraciones (design D8).
+  - el `CHECK` de `turno_auditoria` borrado y vuelto a crear con la lista completa de siete acciones, igual a la de la V7 de C-11: `CREAR`, `CANCELAR`, `REPROGRAMAR`, `SOBRETURNO`, `EXTENDER`, `CONFIRMAR` y `AUSENTE`, con un comentario que pida copiar la lista entera en futuras migraciones (design D8).
 
   Verificar con `./gradlew integrationTest` que Flyway migra y que los tests de C-03, C-04, C-05, C-06 y C-08 siguen en verde.
 - [ ] 1.2 Verificar en la base, con SQL directo:
   - que rechaza un `UPDATE` y un `DELETE` sobre `odontograma_registro`;
   - que rechaza la pieza 19;
   - que rechaza la cara `P` en la pieza 31;
-  - que `turno_auditoria` acepta las seis acciones y rechaza una desconocida.
+  - que `turno_auditoria` acepta las siete acciones y rechaza una desconocida.
 
   Dejarlo como test de integración del esquema.
 
