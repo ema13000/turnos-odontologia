@@ -8,7 +8,10 @@ import ar.turnos.odontologia.agenda.domain.NumeroReserva;
 import ar.turnos.odontologia.agenda.domain.ReferenciaInexistenteException;
 import ar.turnos.odontologia.agenda.domain.Turno;
 import ar.turnos.odontologia.agenda.domain.TurnoRechazadoException;
+import ar.turnos.odontologia.agenda.domain.reglas.ReglasDisponibilidad;
 import java.time.Clock;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -18,6 +21,9 @@ import java.util.stream.Stream;
  * Caso de uso: alta de un sobreturno (US-013, RN-AG-06). El sillón lo elige el servidor entre los activos
  * libres con margen, en orden determinista; se relaja solo la restricción del profesional. El rechazo por
  * sillón se informa siempre como {@code SIN_SILLON_DISPONIBLE}, incluso si lo detecta la base (D4).
+ *
+ * <p>C-07: el sobreturno puede quedar fuera de las franjas de trabajo, pero no durante una ausencia, licencia o
+ * bloqueo del profesional, sin importar el sillón.
  */
 public class CrearSobreturno {
 
@@ -28,10 +34,22 @@ public class CrearSobreturno {
     private final Clock reloj;
     private final Margen margen;
     private final Agenda agenda;
+    private final DisponibilidadProfesional disponibilidad;
+    private final ZoneId zona;
 
+    /** Sin reglas de disponibilidad: es el constructor anterior a C-07 y lo usan sus tests (design D2). */
     public CrearSobreturno(TurnoRepository turnos, RecursosAgenda recursos,
             SillonesDisponibles sillonesDisponibles, GeneradorNumeroReserva numeros,
             Clock reloj, Margen margen) {
+        this(turnos, recursos, sillonesDisponibles, numeros, reloj, margen,
+                DisponibilidadProfesional.SIN_RESTRICCIONES, ZoneOffset.UTC);
+    }
+
+    public CrearSobreturno(TurnoRepository turnos, RecursosAgenda recursos,
+            SillonesDisponibles sillonesDisponibles, GeneradorNumeroReserva numeros,
+            Clock reloj, Margen margen, DisponibilidadProfesional disponibilidad, ZoneId zona) {
+        this.disponibilidad = Objects.requireNonNull(disponibilidad, "disponibilidad");
+        this.zona = Objects.requireNonNull(zona, "zona");
         this.turnos = Objects.requireNonNull(turnos, "turnos");
         this.recursos = Objects.requireNonNull(recursos, "recursos");
         this.sillonesDisponibles = Objects.requireNonNull(sillonesDisponibles, "sillonesDisponibles");
@@ -53,6 +71,8 @@ public class CrearSobreturno {
         validar(comando);
         RecursosAgenda.Prestacion prestacion = verificarRecursos(comando);
         Intervalo intervalo = new Intervalo(comando.inicio(), comando.inicio().plus(prestacion.duracion()));
+        ReglasDisponibilidad.verificar(intervalo, disponibilidad.periodos(comando.profesionalId(), intervalo),
+                zona, false);
         NumeroReserva numero = numeros.generar();
 
         for (Long sillonId : candidatos(comando.profesionalId())) {

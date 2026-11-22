@@ -22,6 +22,7 @@ import ar.turnos.odontologia.agenda.application.CrearTurno;
 import ar.turnos.odontologia.agenda.application.CrearTurnoCommand;
 import ar.turnos.odontologia.agenda.application.ExtenderTurno;
 import ar.turnos.odontologia.agenda.application.ExtenderTurnoCommand;
+import ar.turnos.odontologia.agenda.application.ReasignarTurno;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurno;
 import ar.turnos.odontologia.agenda.application.SillonTomadoException;
 import ar.turnos.odontologia.agenda.domain.Intervalo;
@@ -52,6 +53,7 @@ class ServicioAgendaTest {
     private final CancelarTurno cancelar = mock(CancelarTurno.class);
     private final ReprogramarTurno reprogramar = mock(ReprogramarTurno.class);
     private final ConfirmarTurno confirmar = mock(ConfirmarTurno.class);
+    private final ReasignarTurno reasignar = mock(ReasignarTurno.class);
     private final ConsultaAgenda consulta = mock(ConsultaAgenda.class);
     private final AuditoriaTurnos auditoria = mock(AuditoriaTurnos.class);
     private final PlatformTransactionManager transacciones = mock(PlatformTransactionManager.class);
@@ -62,7 +64,7 @@ class ServicioAgendaTest {
     void armarServicio() {
         when(transacciones.getTransaction(any())).thenReturn(new SimpleTransactionStatus());
         servicio = new ServicioAgenda(crear, crearSobreturno, extender, cancelar, reprogramar,
-                confirmar, consulta, auditoria, transacciones);
+                confirmar, reasignar, consulta, auditoria, transacciones);
     }
 
     @Test

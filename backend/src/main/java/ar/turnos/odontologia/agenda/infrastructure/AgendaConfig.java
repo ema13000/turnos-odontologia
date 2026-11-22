@@ -4,13 +4,16 @@ import ar.turnos.odontologia.agenda.application.CancelarTurno;
 import ar.turnos.odontologia.agenda.application.ConfirmarTurno;
 import ar.turnos.odontologia.agenda.application.CrearSobreturno;
 import ar.turnos.odontologia.agenda.application.CrearTurno;
+import ar.turnos.odontologia.agenda.application.DisponibilidadProfesional;
 import ar.turnos.odontologia.agenda.application.ExtenderTurno;
 import ar.turnos.odontologia.agenda.application.GeneradorNumeroReserva;
+import ar.turnos.odontologia.agenda.application.ReasignarTurno;
 import ar.turnos.odontologia.agenda.application.RecursosAgenda;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurno;
 import ar.turnos.odontologia.agenda.application.SillonesDisponibles;
 import ar.turnos.odontologia.agenda.application.TurnoRepository;
 import ar.turnos.odontologia.agenda.domain.Margen;
+import ar.turnos.odontologia.configuracion.application.HabilitacionProfesional;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.ZoneId;
@@ -20,7 +23,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Arma los casos de uso de la agenda, que no dependen de Spring (design D5, D8). El margen y la zona horaria
- * salen de propiedades hasta que C-04 agregue la tabla {@code configuracion}.
+ * salen de propiedades hasta que C-04 agregue la tabla {@code configuracion}. Desde C-07, crear, reprogramar,
+ * extender y el sobreturno aplican las franjas, ausencias y bloqueos del profesional (design D2).
  */
 @Configuration
 class AgendaConfig {
@@ -49,15 +53,16 @@ class AgendaConfig {
 
     @Bean
     CrearTurno crearTurno(TurnoRepository turnos, RecursosAgenda recursos, GeneradorNumeroReserva numeros,
-                          Clock reloj, Margen margen) {
-        return new CrearTurno(turnos, recursos, numeros, reloj, margen);
+                          Clock reloj, Margen margen, DisponibilidadProfesional disponibilidad, ZoneId zonaHoraria) {
+        return new CrearTurno(turnos, recursos, numeros, reloj, margen, disponibilidad, zonaHoraria);
     }
 
     @Bean
     CrearSobreturno crearSobreturno(TurnoRepository turnos, RecursosAgenda recursos,
                                     SillonesDisponibles sillones, GeneradorNumeroReserva numeros,
-                                    Clock reloj, Margen margen) {
-        return new CrearSobreturno(turnos, recursos, sillones, numeros, reloj, margen);
+                                    Clock reloj, Margen margen, DisponibilidadProfesional disponibilidad,
+                                    ZoneId zonaHoraria) {
+        return new CrearSobreturno(turnos, recursos, sillones, numeros, reloj, margen, disponibilidad, zonaHoraria);
     }
 
     @Bean
@@ -78,5 +83,10 @@ class AgendaConfig {
     @Bean
     ReprogramarTurno reprogramarTurno(TurnoRepository turnos, CrearTurno crearTurno) {
         return new ReprogramarTurno(turnos, crearTurno);
+    }
+
+    @Bean
+    ReasignarTurno reasignarTurno(TurnoRepository turnos, CrearTurno crearTurno, HabilitacionProfesional habilitacion) {
+        return new ReasignarTurno(turnos, crearTurno, habilitacion);
     }
 }

@@ -53,6 +53,10 @@ public abstract class IntegracionAgendaBase extends IntegracionSeguridadBase {
         crearPersonal("recepcion", "RECEPCIONISTA", clave);
         jdbc.update("INSERT INTO usuario(username, password_hash, rol, profesional_id) VALUES ('ana.ejemplo',?,'ODONTOLOGO',?)",
                 passwordEncoder.encode(clave), draA);
+
+        // C-07: los escenarios de C-06 y C-08 suponen profesionales que atienden todo el día (design D11).
+        jdbc.update("INSERT INTO horario_trabajo(profesional_id, dia_semana, hora_desde, hora_hasta) "
+                + "SELECT p.id, d, TIME '00:00', TIME '23:59' FROM profesional p, generate_series(1, 7) d");
     }
 
     private long id(String sql) {

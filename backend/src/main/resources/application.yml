@@ -55,6 +55,11 @@ spring:
     url: ${DB_TEST_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    # Cada contexto de test que Spring guarda en caché retiene su pool. Con el pool de 10 por defecto, los
+    # contextos de C-06 a C-11 superan las 100 conexiones de PostgreSQL. Los tests usan como máximo 2 hilos.
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
   jpa:
     open-in-view: false
     hibernate:

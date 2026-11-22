@@ -12,6 +12,8 @@ import ar.turnos.odontologia.agenda.application.CrearTurno;
 import ar.turnos.odontologia.agenda.application.CrearTurnoCommand;
 import ar.turnos.odontologia.agenda.application.ExtenderTurno;
 import ar.turnos.odontologia.agenda.application.ExtenderTurnoCommand;
+import ar.turnos.odontologia.agenda.application.ReasignarTurno;
+import ar.turnos.odontologia.agenda.application.ReasignarTurnoCommand;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurno;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurnoCommand;
 import ar.turnos.odontologia.agenda.application.SillonTomadoException;
@@ -45,6 +47,7 @@ public class ServicioAgenda {
     private final CancelarTurno cancelarTurno;
     private final ReprogramarTurno reprogramarTurno;
     private final ConfirmarTurno confirmarTurno;
+    private final ReasignarTurno reasignarTurno;
     private final ConsultaAgenda consulta;
     private final AuditoriaTurnos auditoria;
     private final TransactionTemplate transaccion;
@@ -52,6 +55,7 @@ public class ServicioAgenda {
 
     ServicioAgenda(CrearTurno crearTurno, CrearSobreturno crearSobreturno, ExtenderTurno extenderTurno,
                    CancelarTurno cancelarTurno, ReprogramarTurno reprogramarTurno, ConfirmarTurno confirmarTurno,
+                   ReasignarTurno reasignarTurno,
                    ConsultaAgenda consulta, AuditoriaTurnos auditoria, PlatformTransactionManager transacciones) {
         this.crearTurno = crearTurno;
         this.crearSobreturno = crearSobreturno;
@@ -59,6 +63,7 @@ public class ServicioAgenda {
         this.cancelarTurno = cancelarTurno;
         this.reprogramarTurno = reprogramarTurno;
         this.confirmarTurno = confirmarTurno;
+        this.reasignarTurno = reasignarTurno;
         this.consulta = consulta;
         this.auditoria = auditoria;
         this.transaccion = new TransactionTemplate(transacciones);
@@ -128,6 +133,19 @@ public class ServicioAgenda {
             Turno turno = confirmarTurno.ejecutar(turnoId);
             auditoria.registrar(turno.id(), Accion.CONFIRMAR, actor, null);
             return turno;
+        });
+    }
+
+    /**
+     * C-07: reasigna un turno afectado por una ausencia, con la misma auditoría que una reprogramación
+     * ({@code REPROGRAMAR} en el original y {@code CREAR} en el nuevo, design D10). Devuelve el turno nuevo.
+     */
+    public Turno reasignar(ReasignarTurnoCommand comando, String actor) {
+        return enTransaccion(() -> {
+            ReprogramarTurno.Reprogramacion resultado = reasignarTurno.ejecutar(comando);
+            auditoria.registrar(resultado.original().id(), Accion.REPROGRAMAR, actor, resultado.nuevo().id());
+            auditoria.registrar(resultado.nuevo().id(), Accion.CREAR, actor, null);
+            return resultado.nuevo();
         });
     }
 
