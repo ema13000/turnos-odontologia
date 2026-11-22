@@ -112,7 +112,7 @@ El `motivo` puede contener información sensible ("enfermedad"):
 ### D6. Turnos afectados
 Al registrar un período, el caso de uso consulta los turnos activos del profesional que se cruzan con él, con `TurnoRepository.buscarQueIntersecan`, pasándole el profesional y un sillón nulo, y filtra los activos. La respuesta `201` incluye el período creado y una lista con `turnoId`, `inicio`, `fin` y `prestacionId`, sin paciente.
 
-Ya existe la API para reasignar y reprogramar (`POST /turnos/{id}/reprogramar` acepta otro profesional). C-07 no la duplica.
+Para mover esos turnos, la recepción usa la reasignación de D10. El reprogramar de C-06 no sirve para esto: exige el DNI y el número de reserva del paciente.
 
 ### D7. Horarios: reemplazo completo y doble garantía
 - **El dominio valida primero**: `HorarioSemanal.de(franjas)` rechaza `HORARIO_INVALIDO` y `FRANJAS_SUPERPUESTAS` antes de tocar la base.
@@ -127,7 +127,7 @@ Ya existe la API para reasignar y reprogramar (`POST /turnos/{id}/reprogramar` a
   - `api`: tres controladores y un `DisponibilidadExceptionHandler` limitado al paquete.
 - **Rutas** bajo `/api/v1/profesionales/{id}/`:
   - `horarios`: `GET` y `PUT`.
-  - `ausencias`: `GET` y `POST`, y `DELETE /ausencias/{ausenciaId}`.
+  - `ausencias`: `GET` y `POST`, `DELETE /ausencias/{ausenciaId}` y `POST /ausencias/{ausenciaId}/turnos/{turnoId}/reasignar` (D10).
   - `bloqueos`: `GET` y `POST`, y `DELETE /bloqueos/{bloqueoId}`.
 - **Permisos**: `@PreAuthorize` por rol. Cuando el permiso depende de que sea "el propio profesional", el caso de uso compara `profesionalId()` de la sesión con el `{id}` de la ruta y lanza `AccessDeniedException`, que sale como `403 ACCESO_DENEGADO`.
 - **Profesional inexistente**: `404 RECURSO_NO_ENCONTRADO`, con el mismo código que C-04.
@@ -136,7 +136,36 @@ Ya existe la API para reasignar y reprogramar (`POST /turnos/{id}/reprogramar` a
 - **`V5__horarios_ausencias_bloqueos.sql`** crea `horario_trabajo`, `ausencia_profesional` y `bloqueo_agenda` con sus `CHECK`, el `EXCLUDE` de D7 y los índices.
 - **`db/seed/V5_1__seed_horarios_dev.sql`** se carga solo en `dev`. Tiene los horarios de la KB: Dra. Ana Ejemplo de lunes a viernes de 8 a 13 y Dr. Bruno Prueba de lunes a viernes de 10 a 18. Busca a cada profesional por matrícula, como el seed `V2_1`.
 
-### D10. Tests
+### D10. Reasignación de un turno afectado y aviso al paciente
+RN-AG-16 pide reasignar los turnos afectados a otro profesional habilitado o reprogramarlos, avisando al paciente. El proposal de C-11 deja el caso de uso `AvisarReasignacion` listo y dice que conectarlo es trabajo de C-07.
+
+**Por qué no se reutiliza el reprogramar de C-06.** `ReprogramarTurno` exige el DNI y el número de reserva (RN-AG-07), porque ahí el pedido viene del paciente. Una reasignación por ausencia la inicia el consultorio, con el paciente ausente.
+
+**Caso de uso `ReasignarTurno`**, en `agenda/application` con aviso a Sofia. Tiene que estar en ese paquete para usar `CrearTurno.preparar`, que es de paquete. Recibe `ReasignarTurnoCommand(turnoId, profesionalId, inicio, sillonId)`: los tres últimos son opcionales y, si faltan, se toman del turno original. Hace esto:
+1. Busca el turno con `buscarParaModificar`, que bloquea la fila, y verifica que esté activo (`TURNO_NO_ACTIVO`).
+2. Verifica la habilitación del profesional destino para la prestación con el puerto `HabilitacionProfesional` de C-04: `409 PROFESIONAL_NO_HABILITADO`, un código nuevo en `CodigoRechazo`.
+3. Arma el turno nuevo con `CrearTurno.preparar(comando, turnoOriginal)`. Aplica todas las reglas (pasado, recursos, ausencia, bloqueo, horario y solapamientos) e ignora al original como conflicto.
+4. Guarda el original `CANCELADO` y el nuevo, como en `ReprogramarTurno`.
+
+**`ServicioAgenda.reasignar`** lo ejecuta en la transacción con auditoría `REPROGRAMAR` y `CREAR`, igual que una reprogramación. No hace falta una acción de auditoría nueva ni tocar el `CHECK` de `turno_auditoria`.
+
+**El caso de uso de C-07** (`agenda/disponibilidad/application`) agrega lo propio de la ausencia antes de llamar a la agenda:
+- La ausencia existe y es del profesional de la ruta; si no, `404 RECURSO_NO_ENCONTRADO`.
+- El turno es de ese profesional y se cruza con la ausencia; si no, `409 TURNO_NO_AFECTADO`.
+
+**Aviso al paciente.** El puerto `AvisoReasignacion` (`agenda/disponibilidad/application`) tiene un solo método, `void avisar(Long turnoId)`. Se llama **después** de confirmar la transacción, con el id del turno nuevo, y cualquier excepción se registra y se descarta. Así un aviso que falla no deshace la reasignación. C-11 ya guarda el aviso como `FALLIDA` y lo reintenta.
+
+**Dirección de la dependencia** (acordada con Juan Cruz, dueño de `notificaciones/`): agenda define el puerto y `notificaciones` lo implementa. `agenda` nunca importa clases de `notificaciones`, igual que el dominio de agenda no conoce sus adaptadores.
+- **Adaptador real**: `AvisoReasignacionNotificaciones` vive en `notificaciones/infrastructure`, es de Juan Cruz y delega en `ServicioNotificaciones.avisarReasignacion(turnoId)`.
+- **Adaptador inactivo**: C-07 publica `AvisoReasignacionInactivo` con `@ConditionalOnMissingBean(AvisoReasignacion.class)`. No envía nada y deja una línea de log con el id del turno, sin datos del paciente. Mientras no exista el adaptador real, la reasignación funciona igual. Cuando aparece, Spring usa ese y el inactivo se descarta solo, sin tocar código de C-07.
+- **Quién escribe el adaptador real**: el que se mergee segundo, porque necesita el puerto (C-07) y el servicio (C-11).
+  - Si C-07 entra primero, Juan Cruz lo suma en C-11.
+  - Si C-11 entra primero, C-07 lo agrega en `notificaciones/infrastructure`, con aviso a Juan Cruz en el PR.
+- **Tests**: los de C-07 usan un doble que registra los pedidos. La prueba de punta a punta con una notificación `REASIGNACION` real va con el adaptador real.
+
+*Alternativa descartada*: enganchar el aviso en el reprogramar de C-06. Toca el módulo de Sofia, avisaría en cualquier reprogramación aunque no venga de una ausencia, y no resuelve el DNI.
+
+### D11. Tests
 - **Unitarios (sin base)**:
   - `FranjaHoraria`, `HorarioSemanal` y `ReglasDisponibilidad`: bordes de franja, días sin franja, franjas contiguas, cruce exacto con períodos y prioridad.
   - `CrearTurno` y `CrearSobreturno` con una `DisponibilidadProfesional` en memoria, para los escenarios de `agenda-turnos`.
@@ -149,6 +178,8 @@ Ya existe la API para reasignar y reprogramar (`POST /turnos/{id}/reprogramar` a
 
 - **[Después del merge, una base sin horarios no acepta turnos]** → Es la regla elegida. En dev lo cubre el seed `V5_1`, y los tests cargan franjas en sus bases. Hay que avisar al equipo en el PR, sobre todo a Enzo (C-09) y a Juan Sebastián (C-10), que van a probar contra dev.
 - **[El cambio en `CrearTurno` choca con trabajo en curso de Sofia o Juan Cruz]** → Es un solo punto de llamada y constructores nuevos, sin cambiar firmas existentes. Va en un commit separado para que Sofia lo revise aparte.
+- **[C-07 y C-11 se mergean en cualquier orden]** → El puerto `AvisoReasignacion` y el adaptador inactivo condicional desacoplan los dos changes. La reasignación funciona sola, y el aviso empieza a salir cuando se suma el adaptador de `notificaciones`, sin cambios en C-07 (D10). Mientras falte, el aviso no sale, y queda dicho en el PR.
+- **[La habilitación solo se valida en la reasignación]**: crear y reprogramar por la API de C-06 todavía no validan RN-AG-15. → Está fuera de alcance de C-07 y figura como pendiente de C-06, que tiene el puerto de C-04 disponible.
 - **[Licencia registrada después de dar un turno]**: el turno queda dado. → RN-AG-16 lo resuelve: se lista y la recepción lo reasigna. Una extensión de ese turno sí se rechaza, porque se valida contra la ausencia.
 - **[Consultas por cada turno creado]**: se suman una lectura de franjas y dos de períodos por turno. → Hay índices por profesional. El volumen de un consultorio chico es de decenas de turnos por día.
 - **[Zona horaria]** → Se usa el `ZoneId` de `AgendaConfig`. Argentina no tiene horario de verano hoy. Si lo volviera a tener, la conversión a hora local con `ZoneId` lo resuelve.

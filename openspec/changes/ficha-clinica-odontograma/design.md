@@ -10,7 +10,8 @@
   - `AgendaConfig` publica un `Clock` como bean.
 - **Base**:
   - V4 dejó los `EXCLUDE` de `turno` limitados a `estado IN ('RESERVADO','CONFIRMADO')`: un turno `AUSENTE` ya no ocupa la agenda en la base.
-  - El `CHECK` `turno_auditoria_accion_valida` acepta hoy `CREAR`, `CANCELAR`, `REPROGRAMAR`, `SOBRETURNO` y `EXTENDER`. Lo creó V4 con las tres primeras, y la V6 de C-08, ya mergeada, lo redefinió con las otras dos.
+  - El `CHECK` `turno_auditoria_accion_valida` acepta hoy en master `CREAR`, `CANCELAR`, `REPROGRAMAR`, `SOBRETURNO` y `EXTENDER`. Lo creó V4 con las tres primeras, y la V6 de C-08, ya mergeada, lo redefinió con las otras dos.
+  - La V7 de C-11 (Juan Cruz, todavía sin mergear) lo redefine con siete acciones: suma `CONFIRMAR` y, a pedido de C-13, también `AUSENTE`.
   - Los perfiles `dev` y `test` usan `out-of-order` en Flyway, y `build.gradle` fija `user.timezone`. Los dos vinieron con C-04, ya mergeado.
 - **Seguridad (C-05)**:
   - `/api/v1/**` permite solo a los tres roles del personal, y `@EnableMethodSecurity` está activo.
@@ -116,9 +117,13 @@ Se crea `V8__ficha_clinica.sql` con cuatro partes:
    - `estado` en el catálogo.
 
    Lleva un índice `(paciente_id, pieza, cara, registrado_en DESC)` y el trigger de solo agregado (D3).
-3. **El `CHECK` de `turno_auditoria`** se borra y se vuelve a crear con la lista completa: `accion IN ('CREAR','CANCELAR','REPROGRAMAR','SOBRETURNO','EXTENDER','AUSENTE')`. PostgreSQL no permite ampliar un `CHECK` existente. Es el mismo procedimiento que usó V6 sobre V4, sin editar ninguna migración mergeada.
-   - **V8 siempre se aplica después de V6.** V6 ya está en master y V8 se escribe sobre una rama que la contiene. En una base nueva Flyway aplica por número, y una base existente ya tiene V6. Por eso no hace falta coordinar con C-08: ninguna aplicación de V6 posterior a V8 puede borrar `AUSENTE`.
-   - **Una migración futura que sume otra acción** tiene que copiar la lista entera, incluido `AUSENTE`.
+3. **El `CHECK` de `turno_auditoria`** se borra y se vuelve a crear con la lista completa de siete acciones, la misma que deja la V7 de C-11: `accion IN ('CREAR','CANCELAR','REPROGRAMAR','SOBRETURNO','EXTENDER','CONFIRMAR','AUSENTE')`. PostgreSQL no permite ampliar un `CHECK` existente, así que es el mismo procedimiento que usaron V6 y V7, sin editar ninguna migración mergeada.
+   - **Con V6** no hay riesgo: ya está en master, y V8 siempre se aplica después.
+   - **Con V7 el orden no importa**, porque las dos migraciones dejan exactamente la misma lista:
+     - si C-11 entra primero, V8 reescribe lo mismo que ya había;
+     - si C-13 entra primero, en una base nueva Flyway aplica V7 y después V8;
+     - en una base existente V7 llega después, por `out-of-order`, y tampoco borra `AUSENTE`.
+   - **Una migración futura que sume otra acción** tiene que copiar la lista entera, incluidos `CONFIRMAR` y `AUSENTE`.
 4. Los `CHECK` repiten en la base las reglas del dominio, como hace la agenda con los `EXCLUDE`.
 
 ### D9. Sin datos de salud en logs ni errores
@@ -141,7 +146,7 @@ Se crea `V8__ficha_clinica.sql` con cuatro partes:
 ## Risks / Trade-offs
 
 - **[`ausente()` pierde los campos de C-08]**: si `Turno.ausente()` no copia `esSobreturno`, `motivoSobreturno`, `extendido` y `motivoExtension`, la base no los pierde, porque `TurnoRepositoryJpa.guardar` de un turno existente solo actualiza el estado y, si `extendido` es verdadero, la extensión. Pero el turno que devuelve el caso de uso diría que no es sobreturno ni está extendido, y cualquier cambio futuro en `guardar` los borraría de la base. → `ausente()` construye el turno con el constructor completo, como `cancelado()`. Un test de unidad marca como ausente un sobreturno y un turno extendido y verifica que conservan esos campos.
-- **[Otro change agrega una acción de auditoría después de V8]**: si su migración no copia `AUSENTE` en la lista, la ausencia deja de poder auditarse y la operación falla. → Queda anotado en D8 y en el comentario de V8. Además, el test de esquema de V8 comprueba que la lista tiene las seis acciones.
+- **[Otro change agrega una acción de auditoría después de V8]**: si su migración no copia `AUSENTE` en la lista, la ausencia deja de poder auditarse y la operación falla. → Queda anotado en D8 y en el comentario de V8. Además, el test de esquema de V8 comprueba que la lista tiene las siete acciones.
 - **[El trigger de solo agregado bloquea un borrado legítimo futuro]**: por ejemplo, el derecho de supresión de la Ley 25.326. → Para la Ley 26.529, la historia clínica se conserva. Si hiciera falta, una migración posterior reemplaza el trigger.
 - **[Un odontólogo puede leer la ficha de cualquier paciente]**: no solo la de sus pacientes. → Es lo que define la matriz RBAC de la KB (`ODONTOLOGO`: CRUD). Restringirlo por turnos atendidos es una regla nueva que tendría que decidir la líder.
 - **[El margen de limpieza no se aplica al hueco liberado]**: tras una ausencia a las 10:10, se puede dar un turno a las 10:15 en el mismo sillón, sin el margen respecto del turno ausente. → Es lo que pide RN-AG-17: el paciente no vino, no hay nada que limpiar.

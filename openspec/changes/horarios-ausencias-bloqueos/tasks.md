@@ -83,19 +83,43 @@
   - "Los turnos afectados no muestran al paciente".
 - [ ] 5.3 Escribir tests de integración de punta a punta: crear un turno por la API durante una licencia y durante un bloqueo registrados por la API. Verificar `409 PROFESIONAL_AUSENTE` y `409 AGENDA_BLOQUEADA`.
 
-## 6. Verificación integral
+## 6. Reasignación de turnos afectados (revisión de Sofia; aviso de C-11)
 
-- [ ] 6.1 Correr `./gradlew test integrationTest` completo y verificar:
-  - que los 39 escenarios (22 de `disponibilidad-profesional` y 17 de `agenda-turnos`, incluido el escenario existente "Choque por profesional y por sillón a la vez", que se vuelve a probar con las reglas conectadas) tienen un test con `@DisplayName` igual a su nombre, todos en verde;
+- [ ] 6.1 Agregar `PROFESIONAL_NO_HABILITADO` a `CodigoRechazo` y el caso de uso `ReasignarTurno` con su comando en `agenda/application`, y `ServicioAgenda.reasignar` con auditoría `REPROGRAMAR` y `CREAR` (design D10). Verificar con tests de unidad:
+  - mismo horario con otro profesional;
+  - otro horario;
+  - profesional no habilitado;
+  - turno no activo;
+  - nuevo horario en ausencia;
+  - que el original solo se cancela si el nuevo es válido.
+
+  Los tests de C-06 y C-08 tienen que seguir en verde. Va en el commit aparte para la revisión de Sofia.
+- [ ] 6.2 Agregar el puerto `AvisoReasignacion`, el caso de uso de C-07 (la ausencia es del profesional, el turno está afectado, se reasigna y se pide el aviso después de confirmar) y el endpoint `POST /profesionales/{id}/ausencias/{ausenciaId}/turnos/{turnoId}/reasignar` para `ADMIN` y `RECEPCIONISTA`. Agregar también el adaptador `AvisoReasignacionInactivo` con `@ConditionalOnMissingBean`. `agenda` no importa nada de `notificaciones` (design D10). Verificar que compila y que, sin otro adaptador, el contexto usa el inactivo.
+- [ ] 6.3 Escribir los tests de integración, con un doble del aviso, de estos escenarios y verificar que pasan:
+  - "Reasignar a otro profesional en el mismo horario";
+  - "Reprogramar con el mismo profesional después de la licencia";
+  - "Profesional no habilitado para la prestación";
+  - "El nuevo horario también cae en la licencia";
+  - "Turno que no está afectado por la ausencia";
+  - "El odontólogo intenta reasignar";
+  - "Se pide el aviso para el turno nuevo";
+  - "Un aviso que falla no deshace la reasignación".
+- [ ] 6.4 Solo si C-11 ya está en master al hacer el apply: agregar `AvisoReasignacionNotificaciones` en `notificaciones/infrastructure`, con aviso a Juan Cruz. Delega en `ServicioNotificaciones.avisarReasignacion`. Verificar con un test de integración que una reasignación de un paciente con consentimiento deja una notificación `REASIGNACION` para el turno nuevo. Si C-11 todavía no está, marcar esta tarea como hecha anotando que el adaptador lo suma Juan Cruz en C-11, como se acordó.
+
+## 7. Verificación integral
+
+- [ ] 7.1 Correr `./gradlew test integrationTest` completo y verificar:
+  - que los 47 escenarios (30 de `disponibilidad-profesional` y 17 de `agenda-turnos`, incluido el escenario existente "Choque por profesional y por sillón a la vez", que se vuelve a probar con las reglas conectadas) tienen un test con `@DisplayName` igual a su nombre, todos en verde;
   - que los tests de C-01, C-03, C-04, C-05, C-06 y C-08 siguen pasando.
-- [ ] 6.2 Verificar con `grep` que `agenda/domain/reglas` no importa `org.springframework` ni `jakarta.persistence`, y que ningún controlador devuelve una entidad JPA.
-- [ ] 6.3 Correr `openspec validate horarios-ausencias-bloqueos --strict` y verificar que es válido.
+- [ ] 7.2 Verificar con `grep` que `agenda/domain/reglas` no importa `org.springframework` ni `jakarta.persistence`, y que ningún controlador devuelve una entidad JPA.
+- [ ] 7.3 Correr `openspec validate horarios-ausencias-bloqueos --strict` y verificar que es válido.
 
 ## Workflow follow-up
 
 - Abrir el PR de `change/C-07-horarios-ausencias-bloqueos` a `master` con estos avisos:
-  - a **Sofia**, por `CrearTurno`, `CodigoRechazo`, `AgendaConfig` e `IntegracionAgendaBase`;
-  - a **Juan Cruz**, por `CrearSobreturno`;
+  - a **Sofia**, por `CrearTurno`, `CodigoRechazo`, `AgendaConfig`, `IntegracionAgendaBase`, `ReasignarTurno` y `ServicioAgenda.reasignar`;
+  - a **Juan Cruz**, por `CrearSobreturno` y por el puerto `AvisoReasignacion`, que implementa su módulo;
+  - si C-11 no estaba en master, aclarar que el aviso de reasignación queda inactivo hasta que C-11 sume `AvisoReasignacionNotificaciones`;
   - a **todo el equipo**: sin horarios cargados no se crean turnos.
 - Marcar `[x]` en C-07 de `CHANGES.md`.
 - Al archivar, actualizar el `## Purpose` de `openspec/specs/agenda-turnos/spec.md` para decir que en sus escenarios los profesionales trabajan todo el día, salvo que el escenario diga otra cosa.

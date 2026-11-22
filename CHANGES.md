@@ -346,7 +346,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
   - `knowledge-base/09_decisiones_y_supuestos.md` §DD-08, §DD-11
 
 ### [C-08] `sobreturno-y-extension`
-- **Estado**: `[x]` completo (2026-11-22, PR #21). Migración V6. Falta el archive del change (`openspec/changes/sobreturno-y-extension/`)
+- **Estado**: `[x]` completo (2026-11-22, PR #21; archive en PR #28). Specs: `openspec/specs/agenda-api/`, `agenda-turnos/` y `auditoria-turnos/` (actualizados); change archivado en `openspec/changes/archive/2026-11-22-sobreturno-y-extension/`. Migración V6
 - **Responsable**: Juan Cruz
 - **Scope**:
   - `POST /api/v1/turnos/sobreturno` con motivo obligatorio. Puede pisar la agenda del profesional, **nunca la limpieza del sillón**; si no hay sillón libre, `409 SIN_SILLON_DISPONIBLE` (RN-AG-06; US-013).
