@@ -143,7 +143,7 @@ RN-AG-16 pide reasignar los turnos afectados a otro profesional habilitado o rep
 
 **Caso de uso `ReasignarTurno`**, en `agenda/application` con aviso a Sofia. Tiene que estar en ese paquete para usar `CrearTurno.preparar`, que es de paquete. Recibe `ReasignarTurnoCommand(turnoId, profesionalId, inicio, sillonId)`: los tres últimos son opcionales y, si faltan, se toman del turno original. Hace esto:
 1. Busca el turno con `buscarParaModificar`, que bloquea la fila, y verifica que esté activo (`TURNO_NO_ACTIVO`).
-2. Verifica la habilitación del profesional destino para la prestación con el puerto `HabilitacionProfesional` de C-04: `409 PROFESIONAL_NO_HABILITADO`, un código nuevo en `CodigoRechazo`.
+2. Si el profesional cambia, verifica la habilitación del destino para la prestación con el puerto `HabilitacionProfesional` de C-04: `409 PROFESIONAL_NO_HABILITADO`, un código nuevo en `CodigoRechazo`. Con el mismo profesional no se verifica: el turno ya estaba dado con él, y crear y reprogramar todavía no validan RN-AG-15 (ver Risks).
 3. Arma el turno nuevo con `CrearTurno.preparar(comando, turnoOriginal)`. Aplica todas las reglas (pasado, recursos, ausencia, bloqueo, horario y solapamientos) e ignora al original como conflicto.
 4. Guarda el original `CANCELADO` y el nuevo, como en `ReprogramarTurno`.
 
@@ -157,7 +157,8 @@ RN-AG-16 pide reasignar los turnos afectados a otro profesional habilitado o rep
 
 **Dirección de la dependencia** (acordada con Juan Cruz, dueño de `notificaciones/`): agenda define el puerto y `notificaciones` lo implementa. `agenda` nunca importa clases de `notificaciones`, igual que el dominio de agenda no conoce sus adaptadores.
 - **Adaptador real**: `AvisoReasignacionNotificaciones` vive en `notificaciones/infrastructure`, es de Juan Cruz y delega en `ServicioNotificaciones.avisarReasignacion(turnoId)`.
-- **Adaptador inactivo**: C-07 publica `AvisoReasignacionInactivo` con `@ConditionalOnMissingBean(AvisoReasignacion.class)`. No envía nada y deja una línea de log con el id del turno, sin datos del paciente. Mientras no exista el adaptador real, la reasignación funciona igual. Cuando aparece, Spring usa ese y el inactivo se descarta solo, sin tocar código de C-07.
+- **Adaptador inactivo**: `AvisoReasignacionInactivo` no envía nada y deja una línea de log con el id del turno, sin datos del paciente. No es un bean: `ServicioReasignacion` recibe un `ObjectProvider<AvisoReasignacion>` y, en cada reasignación, usa el adaptador publicado o, si no hay ninguno, el inactivo. Mientras no exista el adaptador real, la reasignación funciona igual. Cuando aparece, se usa ese, sin tocar código de C-07.
+  - *Cambio en el apply*: se descartó `@ConditionalOnMissingBean` sobre un bean común, porque Spring lo evalúa según el orden en que registra los beans de cada paquete (`agenda` antes que `notificaciones`) y podía dejar dos adaptadores. El contrato para `notificaciones` no cambia: publicar un `@Component` que implemente el puerto.
 - **Quién escribe el adaptador real**: el que se mergee segundo, porque necesita el puerto (C-07) y el servicio (C-11).
   - Si C-07 entra primero, Juan Cruz lo suma en C-11.
   - Si C-11 entra primero, C-07 lo agrega en `notificaciones/infrastructure`, con aviso a Juan Cruz en el PR.
