@@ -2,7 +2,7 @@
 
 ## Context
 
-- **Hoy no existe nada de notificaciones.** `backend/.../` tiene `agenda`, `shared` y `usuarios`. La migración más alta en `master` es V4; V6 (C-08) está en revisión y V7 está reservada para este change.
+- **Hoy no existe nada de notificaciones.** `backend/.../` tiene `agenda`, `shared` y `usuarios`. La migración más alta en `master` es V4; V6 (C-08) ya está mergeado y V7 está reservada para este change.
 - **`paciente` no tiene datos de comunicación**: solo `nombre`, `apellido`, `dni`, `email` y `telefono` (V1). Faltan `tiene_whatsapp` y el consentimiento (RN-NO-02, RN-NO-03).
 - **`turno` no guarda cuándo se reservó.** El único registro de ese momento es `turno_auditoria.fecha` de la acción `CREAR` (V4).
 - **`/api/v1/public/**` ya es `permitAll`** en `SecurityConfig`, con CSRF activo. No hace falta tocar `shared/security`.
@@ -76,14 +76,14 @@ Un objeto de dominio (`MensajeRecordatorio`) arma el texto desde un registro que
 `WhatsAppAdapter` y `EmailAdapter` registran una línea con canal, id de notificación y resultado, y nada más (ni cuerpo, ni token, ni contacto). Se prueba capturando el log. Un adaptador se puede configurar para fallar (propiedad de prueba), de modo que los reintentos tengan un camino real de integración sin un proveedor.
 
 ### D10. Migración V7, hecha para convivir con V6
-`V7__notificaciones.sql` crea `notificacion` con sus índices, agrega a `paciente` `tiene_whatsapp` (`BOOLEAN NOT NULL DEFAULT FALSE`), `consentimiento_comunicaciones` (`BOOLEAN NOT NULL DEFAULT FALSE`) y `consentimiento_fecha` (`TIMESTAMPTZ`), y reescribe el `CHECK` de `turno_auditoria.accion` con `DROP CONSTRAINT IF EXISTS` y las seis acciones (`CREAR`, `CANCELAR`, `REPROGRAMAR`, `SOBRETURNO`, `EXTENDER`, `CONFIRMAR`). Los valores por defecto hacen que nadie reciba mensajes hasta que dé su consentimiento.
+`V7__notificaciones.sql` crea `notificacion` con sus índices, agrega a `paciente` `tiene_whatsapp` (`BOOLEAN NOT NULL DEFAULT FALSE`), `consentimiento_comunicaciones` (`BOOLEAN NOT NULL DEFAULT FALSE`) y `consentimiento_fecha` (`TIMESTAMPTZ`), y reescribe el `CHECK` de `turno_auditoria.accion` con `DROP CONSTRAINT IF EXISTS` y las siete acciones (`CREAR`, `CANCELAR`, `REPROGRAMAR`, `SOBRETURNO`, `EXTENDER`, `CONFIRMAR`, `AUSENTE`; esta última la usa C-13). Los valores por defecto hacen que nadie reciba mensajes hasta que dé su consentimiento.
 
 `notificaciones` lee esas columnas con su propia consulta, por lo que `PacienteEntity` y `usuarios` no cambian.
 
-**Orden de merge obligatorio**: C-08 antes que C-11. Si V6 entrara después, volvería a escribir el `CHECK` sin `CONFIRMAR`. Queda escrito en el PR.
+**Orden de merge**: C-08 (V6) ya está en `master`. V7 y el V8 de C-13 dejan el `CHECK` con las mismas siete acciones, así que no importa cuál de los dos se mergee primero.
 
 ### D11. Aviso de reasignación detrás de un caso de uso
-`AvisarReasignacion.ejecutar(turnoId)` crea una notificación `REASIGNACION` con las mismas reglas de consentimiento, canal y contenido, leyendo el turno ya reasignado. Sin token y sin link. C-07 lo llamará al reasignar; acá se prueba con un doble.
+`AvisarReasignacion.ejecutar(turnoId)` crea una notificación `REASIGNACION` con las mismas reglas de consentimiento, canal y contenido, leyendo el turno ya reasignado. Sin token y sin link. El punto de entrada para otros módulos es `ServicioNotificaciones.avisarReasignacion(turnoId)`, que devuelve vacío si el paciente no puede recibir comunicaciones. Quien llama se define con C-07: la propuesta es que C-07 agregue la operación "reasignar turno afectado" y que, después de guardar el turno con su nueva fecha, hora y profesional, llame a este aviso a través de un puerto propio de `agenda`, implementado por un adaptador de `notificaciones`, para que `agenda` no dependa de `notificaciones/infrastructure`. Acá se prueba con un doble.
 
 ## Risks / Trade-offs
 
@@ -93,7 +93,7 @@ Un objeto de dominio (`MensajeRecordatorio`) arma el texto desde un registro que
 - **[Recordatorio de madrugada]** Un turno a las 07:30 se recuerda a las 07:30 del día anterior; uno a las 02:00 de madrugada no es realista. → Se acepta en v1; ventanas horarias de envío quedan para después.
 - **[Recuperación "al menos una vez"]** Una notificación `PENDIENTE` con más de 10 minutos se reprocesa, y cada intento de un recordatorio genera un token nuevo (el anterior no se guarda en claro y no se puede recuperar). Si el primer intento sí llegó a salir y solo se cortó el registro, el paciente puede recibir dos mensajes, y el link viejo queda invalidado: solo sirve el último. → Se prefiere repetir un mensaje a perder un recordatorio. Una excepción sobre una fila ya reclamada cuenta como intento fallido (tope de 3), así una fila "venenosa" no se reprocesa para siempre.
 - **[Plazo de 10 minutos]** Evita que dos corridas reclamen la misma fila solo si un envío termina antes de ese plazo. → El proveedor real (C-posterior a DD-04) debe tener un *timeout* de envío bien menor a 10 minutos; con los adaptadores simulados no hay espera.
-- **[Cambio del `CHECK` compartido]** V6 y V7 tocan la misma restricción. → V7 es idempotente y el orden de merge queda escrito; un test de migración comprueba las seis acciones.
+- **[Cambio del `CHECK` compartido]** V6 y V7 tocan la misma restricción. → V7 es idempotente y el orden de merge queda escrito; un test de migración comprueba las siete acciones.
 
 ## Migration Plan
 

@@ -35,8 +35,8 @@ CREATE UNIQUE INDEX notificacion_recordatorio_unico ON notificacion (turno_id) W
 CREATE INDEX notificacion_turno_idx ON notificacion (turno_id);
 CREATE INDEX notificacion_reintento_idx ON notificacion (proximo_intento) WHERE estado = 'FALLIDA';
 
--- 3. La auditoría suma CONFIRMAR. C-08 (V6) reescribe esta misma restricción: por eso se hace idempotente y con
---    las seis acciones, y C-08 tiene que mergearse antes que C-11.
+-- 3. La auditoría suma CONFIRMAR y AUSENTE (esta última la usa C-13 para la ausencia del paciente). C-08 (V6)
+--    reescribe esta misma restricción: por eso se hace idempotente y con las siete acciones.
 ALTER TABLE turno_auditoria DROP CONSTRAINT IF EXISTS turno_auditoria_accion_valida;
 ALTER TABLE turno_auditoria ADD CONSTRAINT turno_auditoria_accion_valida
-    CHECK (accion IN ('CREAR', 'CANCELAR', 'REPROGRAMAR', 'SOBRETURNO', 'EXTENDER', 'CONFIRMAR'));
+    CHECK (accion IN ('CREAR', 'CANCELAR', 'REPROGRAMAR', 'SOBRETURNO', 'EXTENDER', 'CONFIRMAR', 'AUSENTE'));

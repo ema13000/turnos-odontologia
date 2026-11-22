@@ -46,6 +46,13 @@ Para un sobreturno, el sistema SHALL asignar el sillón en el servidor: prefiere
 - **WHEN** el personal crea un sobreturno de "Consulta" a las 10:30 con margen de 10 minutos
 - **THEN** la operación se rechaza con `SIN_SILLON_DISPONIBLE`
 
+#### Scenario: Un sillón tomado en una carrera se descarta y se prueba el siguiente
+- **GIVEN** el Sillón 1 y el Sillón 2 activos y libres a las 10:00
+- **AND** el Sillón 1 es tomado por otra operación después de la verificación del dominio
+- **WHEN** el personal crea un sobreturno de "Consulta" con la Dra. A a las 10:00
+- **THEN** el sobreturno se crea en el Sillón 2
+- **AND** solo si no queda ningún sillón libre se rechaza con `SIN_SILLON_DISPONIBLE`
+
 ### Requirement: Excepción de sobreturno solo para la agenda del profesional
 
 Un sobreturno SHALL poder superponerse con turnos activos del mismo profesional, pero MUST NOT superponerse con el intervalo de limpieza de ningún sillón. La excepción se aplica únicamente a la restricción del profesional; la del sillón, incluido su margen, sigue vigente. Los turnos normales conservan ambas restricciones.
@@ -102,6 +109,24 @@ El sistema SHALL permitir al personal extender el fin de un turno `RESERVADO` o 
 - **WHEN** el personal pide extenderlo con un `fin` absoluto de 10:30 o de 10:20
 - **THEN** la operación se rechaza con `DATOS_INVALIDOS`
 - **AND** el turno queda sin cambios
+
+#### Scenario: Extensión de un turno ya iniciado
+- **GIVEN** un turno activo de 10:00 a 10:30 con la Dra. A en el Sillón 1 y el reloj en las 10:20
+- **WHEN** el personal pide extenderlo con un `fin` absoluto de 10:45 y un motivo administrativo
+- **THEN** el turno pasa a terminar a las 10:45 con `extendido` verdadero
+- **AND** conserva su `numeroReserva` original y su estado
+
+#### Scenario: Extensión de un turno ya iniciado con un fin que no está en el futuro
+- **GIVEN** un turno activo de 10:00 a 10:30 y el reloj en las 10:50
+- **WHEN** el personal pide extenderlo con un `fin` absoluto de 10:45
+- **THEN** la operación se rechaza con `DATOS_INVALIDOS`
+- **AND** el turno queda sin cambios
+
+#### Scenario: Extender un turno iniciado no habilita crear turnos en el pasado
+- **GIVEN** el reloj en las 10:20 y un turno activo ya iniciado de 10:00 a 10:30
+- **WHEN** el personal pide crear un turno nuevo con inicio 10:00
+- **THEN** la operación se rechaza con `INICIO_EN_EL_PASADO`
+- **AND** no se crea ningún turno
 
 ### Requirement: Atomicidad y doble garantía en sobreturnos y extensiones
 

@@ -17,12 +17,14 @@ record TurnoResponse(
         OffsetDateTime inicio,
         OffsetDateTime fin,
         String estado,
-        String numeroReserva) {
+        String numeroReserva,
+        boolean esSobreturno,
+        boolean extendido) {
 
     static TurnoResponse de(Turno t, ZoneId zona) {
         return new TurnoResponse(t.id(), t.pacienteId(), t.profesionalId(), t.sillonId(), t.prestacionId(),
                 t.intervalo().inicio().atZone(zona).toOffsetDateTime(),
                 t.intervalo().fin().atZone(zona).toOffsetDateTime(),
-                t.estado().name(), t.numeroReserva().valor());
+                t.estado().name(), t.numeroReserva().valor(), t.esSobreturno(), t.extendido());
     }
 }

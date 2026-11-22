@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /** Base de los tests de integración de seguridad: PostgreSQL real, MockMvc y datos ficticios. */
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 public abstract class IntegracionSeguridadBase {
@@ -28,7 +30,7 @@ public abstract class IntegracionSeguridadBase {
 
     @BeforeEach
     void limpiarDatos() {
-        // OJO: vacía las tablas de la base de desarrollo/prueba
+        // OJO: vacía las tablas de la base de tests (DB_TEST_URL)
         jdbc.execute("TRUNCATE usuario, turno, paciente, prestacion, sillon, profesional RESTART IDENTITY CASCADE");
     }
 

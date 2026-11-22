@@ -29,7 +29,7 @@ class RestriccionesTurnoIntegrationTest {
 
     @BeforeAll
     static void migrar() throws SQLException {
-        Flyway.configure().dataSource(URL, USER, PASSWORD).load().migrate();
+        Flyway.configure().dataSource(URL, USER, PASSWORD).outOfOrder(true).load().migrate();
         conn = DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
@@ -40,7 +40,7 @@ class RestriccionesTurnoIntegrationTest {
 
     @BeforeEach
     void datosFicticios() throws SQLException {
-        // OJO: vacía las tablas de la base local de desarrollo
+        // OJO: vacía las tablas de la base de tests (DB_TEST_URL)
         try (Statement st = conn.createStatement()) {
             st.execute("TRUNCATE turno, paciente, prestacion, sillon, profesional RESTART IDENTITY CASCADE");
         }

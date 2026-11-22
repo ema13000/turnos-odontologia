@@ -253,7 +253,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
   - `knowledge-base/09_decisiones_y_supuestos.md` §DD-10, §SU-05
 
 ### [C-03] `persistencia-base-postgres`
-- **Estado**: `[X]` completo (2026-11-21, PR pendiente). Evidencia: `docs/evidencia/etapa-c03-tests.txt`
+- **Estado**: `[x]` completo (2026-11-21, PR #12 y #19). Evidencia: `docs/evidencia/etapa-c03-tests.txt`
 - **Responsable**: Juan Cruz
 - **Scope**:
   - `docker-compose.yml` con PostgreSQL 15+. `.env.example` (`DB_URL`, `DB_USER`, `DB_PASSWORD`).
@@ -275,7 +275,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
 > C-04 y C-05 corren en paralelo apenas C-03 está en `master`.
 
 ### [C-04] `configuracion-consultorio`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completo (2026-11-22, PR #15). Specs: `openspec/specs/catalogo-consultorio/` y `configuracion-margen/` (nuevos); change archivado en `openspec/changes/archive/2026-11-22-configuracion-consultorio/`. Migraciones V2 y V2_1 (seed solo en `dev`)
 - **Responsable**: Emanuel
 - **Scope**:
   - CRUD `/api/v1/profesionales`, `/sillones`, `/prestaciones` (US-001, US-002, US-003). Desactivar en lugar de borrar (RN-AG-11).
@@ -291,7 +291,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
   - `knowledge-base/06_funcionalidades.md` §Épica 1
 
 ### [C-05] `auth-sesion-roles`
-- **Estado**: `[x]` completo (2026-11-21, PR pendiente). Specs: `openspec/specs/seguridad-autenticacion/`, `seguridad-autorizacion/`, `cuentas-pacientes/`; change archivado en `openspec/changes/archive/2026-11-21-auth-sesion-roles/`. Evidencia: `docs/evidencia/etapa-c05-auth.txt`
+- **Estado**: `[x]` completo (2026-11-21, PR #14). Specs: `openspec/specs/seguridad-autenticacion/`, `seguridad-autorizacion/`, `cuentas-pacientes/`; change archivado en `openspec/changes/archive/2026-11-21-auth-sesion-roles/`. Evidencia: `docs/evidencia/etapa-c05-auth.txt`
 - **Responsable**: Juan Sebastián
 - **Scope**:
   - Spring Security con **sesión y cookie** `HttpOnly`/`SameSite=Lax`, CSRF habilitado (DD-10). Contraseñas con BCrypt.
@@ -346,7 +346,7 @@ C-01 → C-03 → C-05 → C-06 → C-10 → C-12 → C-14
   - `knowledge-base/09_decisiones_y_supuestos.md` §DD-08, §DD-11
 
 ### [C-08] `sobreturno-y-extension`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completo (2026-11-22, PR #21). Migración V6. Falta el archive del change (`openspec/changes/sobreturno-y-extension/`)
 - **Responsable**: Juan Cruz
 - **Scope**:
   - `POST /api/v1/turnos/sobreturno` con motivo obligatorio. Puede pisar la agenda del profesional, **nunca la limpieza del sillón**; si no hay sillón libre, `409 SIN_SILLON_DISPONIBLE` (RN-AG-06; US-013).

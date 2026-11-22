@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 
-/** Migración V7 (C-11): tabla notificacion, columnas de contacto del paciente y acción CONFIRMAR de la auditoría. */
+/** Migración V7 (C-11): tabla notificacion, columnas de contacto del paciente y acciones CONFIRMAR y AUSENTE de la auditoría. */
 @Tag("integration")
 class V7MigrationIntegrationTest extends IntegracionNotificacionesBase {
 
@@ -83,10 +83,10 @@ class V7MigrationIntegrationTest extends IntegracionNotificacionesBase {
     }
 
     @Test
-    @DisplayName("La auditoría acepta las seis acciones y rechaza otras")
-    void auditoriaConSeisAcciones() {
+    @DisplayName("La auditoría acepta las siete acciones y rechaza otras")
+    void auditoriaConSieteAcciones() {
         long turno = turnoId();
-        for (String accion : List.of("CREAR", "CANCELAR", "REPROGRAMAR", "SOBRETURNO", "EXTENDER", "CONFIRMAR")) {
+        for (String accion : List.of("CREAR", "CANCELAR", "REPROGRAMAR", "SOBRETURNO", "EXTENDER", "CONFIRMAR", "AUSENTE")) {
             jdbc.update("INSERT INTO turno_auditoria(turno_id, accion, actor, fecha) VALUES (?,?,'recepcion',now())",
                     turno, accion);
         }

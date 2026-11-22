@@ -36,6 +36,6 @@ Hoy un turno `RESERVADO` nunca pasa a `CONFIRMADO` y el consultorio no tiene for
   - Sofía (`agenda/domain`, `agenda/application`, `agenda/infrastructure`): `Turno.confirmado()`, un caso de uso `ConfirmarTurno` nuevo, la acción `CONFIRMAR` de `AuditoriaTurnos` y `ServicioAgenda.confirmar`. Todo aditivo; la consulta de turnos a recordar es propia de `notificaciones`.
   - Juan Sebastián (`shared/security`): **ningún cambio**; `/api/v1/public/**` ya es `permitAll` y CSRF sigue activo.
 - **Configuración**: variables `NOTIFICACIONES_BASE_URL`, `CONSULTORIO_NOMBRE`, `CONSULTORIO_DIRECCION`; `.env.example` solo con valores ficticios. Se activa `@EnableScheduling` y la tarea se puede apagar por propiedad.
-- **Orden de merge**: C-08 (V6) tiene que entrar antes que C-11. Las dos migraciones reescriben el mismo `CHECK` de `turno_auditoria`, y V7 lo deja con las seis acciones.
+- **Orden de merge**: C-08 (V6) ya está en `master`. Las dos migraciones reescriben el mismo `CHECK` de `turno_auditoria`, y V7 lo deja con las siete acciones (incluida `AUSENTE`, que usa C-13).
 - **Tests**: unitarios por escenario (Strict TDD) e integración `@Tag("integration")` con PostgreSQL real y `Clock` fijo 2026-12-01 08:00.
 - **Fuera de scope**: C-07 (conectar ausencias), C-10 (links de cancelar/reprogramar y reserva online), C-17 (consentimiento), C-09 y C-12 (pantallas), envío real por WhatsApp o SMTP, confirmación de la reserva (`CONFIRMACION`) y aviso de cancelación (`CANCELACION`).

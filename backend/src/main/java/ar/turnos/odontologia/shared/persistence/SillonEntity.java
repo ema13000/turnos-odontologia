@@ -17,4 +17,12 @@ public class SillonEntity {
     public Long getId() { return id; }
     public String getNombre() { return nombre; }
     public boolean isActivo() { return activo; }
+
+    // ---------- Modificaciones (C-04) ----------
+
+    public void renombrar(String nombre) { this.nombre = nombre; }
+
+    public void activar() { this.activo = true; }
+
+    public void desactivar() { this.activo = false; }
 }

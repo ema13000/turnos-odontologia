@@ -2,10 +2,13 @@ package ar.turnos.odontologia.agenda.infrastructure;
 
 import ar.turnos.odontologia.agenda.application.CancelarTurno;
 import ar.turnos.odontologia.agenda.application.ConfirmarTurno;
+import ar.turnos.odontologia.agenda.application.CrearSobreturno;
 import ar.turnos.odontologia.agenda.application.CrearTurno;
+import ar.turnos.odontologia.agenda.application.ExtenderTurno;
 import ar.turnos.odontologia.agenda.application.GeneradorNumeroReserva;
 import ar.turnos.odontologia.agenda.application.RecursosAgenda;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurno;
+import ar.turnos.odontologia.agenda.application.SillonesDisponibles;
 import ar.turnos.odontologia.agenda.application.TurnoRepository;
 import ar.turnos.odontologia.agenda.domain.Margen;
 import java.security.SecureRandom;
@@ -48,6 +51,18 @@ class AgendaConfig {
     CrearTurno crearTurno(TurnoRepository turnos, RecursosAgenda recursos, GeneradorNumeroReserva numeros,
                           Clock reloj, Margen margen) {
         return new CrearTurno(turnos, recursos, numeros, reloj, margen);
+    }
+
+    @Bean
+    CrearSobreturno crearSobreturno(TurnoRepository turnos, RecursosAgenda recursos,
+                                    SillonesDisponibles sillones, GeneradorNumeroReserva numeros,
+                                    Clock reloj, Margen margen) {
+        return new CrearSobreturno(turnos, recursos, sillones, numeros, reloj, margen);
+    }
+
+    @Bean
+    ExtenderTurno extenderTurno(TurnoRepository turnos, CrearTurno crearTurno) {
+        return new ExtenderTurno(turnos, crearTurno);
     }
 
     @Bean

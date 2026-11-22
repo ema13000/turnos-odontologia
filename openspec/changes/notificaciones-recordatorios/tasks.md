@@ -9,7 +9,7 @@
 
 ## 1. Migración V7
 
-- [x] 1.1 RED: escribir `V7MigrationIntegrationTest` que compruebe la tabla `notificacion` con sus `CHECK` (`canal`, `tipo` con `REASIGNACION`, `estado`), el índice único parcial de `RECORDATORIO` por turno, el token único, las tres columnas nuevas de `paciente` con valor por defecto `FALSE`, y las seis acciones del `CHECK` de `turno_auditoria`; verlo fallar; GREEN: crear `V7__notificaciones.sql` (archivo nuevo, sin editar V1, V3 ni V4) con `DROP CONSTRAINT IF EXISTS` para el `CHECK` de acciones; TRIANGULATE: un paciente existente queda sin consentimiento, un segundo `RECORDATORIO` del mismo turno se rechaza, uno `REASIGNACION` repetido se acepta, los dos `EXCLUDE` de `turno` siguen presentes; REFACTOR: revisar nombres de restricciones. Verificar con `./gradlew integrationTest --tests '*V7MigrationIntegrationTest'`
+- [x] 1.1 RED: escribir `V7MigrationIntegrationTest` que compruebe la tabla `notificacion` con sus `CHECK` (`canal`, `tipo` con `REASIGNACION`, `estado`), el índice único parcial de `RECORDATORIO` por turno, el token único, las tres columnas nuevas de `paciente` con valor por defecto `FALSE`, y las siete acciones del `CHECK` de `turno_auditoria`; verlo fallar; GREEN: crear `V7__notificaciones.sql` (archivo nuevo, sin editar V1, V3 ni V4) con `DROP CONSTRAINT IF EXISTS` para el `CHECK` de acciones; TRIANGULATE: un paciente existente queda sin consentimiento, un segundo `RECORDATORIO` del mismo turno se rechaza, uno `REASIGNACION` repetido se acepta, los dos `EXCLUDE` de `turno` siguen presentes; REFACTOR: revisar nombres de restricciones. Verificar con `./gradlew integrationTest --tests '*V7MigrationIntegrationTest'`
 
 ## 2. Dominio de notificaciones
 
