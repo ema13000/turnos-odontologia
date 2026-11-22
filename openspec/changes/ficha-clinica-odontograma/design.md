@@ -3,14 +3,15 @@
 ## Context
 
 - **Agenda (C-01 y C-06, Sofia)**:
-  - `Turno` es un `record` inmutable con `cancelado()` para cambiar de estado.
+  - `Turno` es un `record` inmutable con `cancelado()` para cambiar de estado. C-08 (mergeado en el PR #21) le sumó `esSobreturno`, `motivoSobreturno`, `extendido` y `motivoExtension`, y `cancelado()` copia esos cuatro campos.
   - `EstadoTurno` ya tiene `AUSENTE`, y `esActivo()` solo vale para `RESERVADO` y `CONFIRMADO`.
   - `TurnoRepository.buscarParaModificar(id)` bloquea la fila, y `guardar` actualiza el estado si el turno tiene id.
   - `ServicioAgenda` es el borde transaccional: cada operación y su auditoría van en la misma transacción, con reintento por deadlock.
   - `AgendaConfig` publica un `Clock` como bean.
 - **Base**:
   - V4 dejó los `EXCLUDE` de `turno` limitados a `estado IN ('RESERVADO','CONFIRMADO')`: un turno `AUSENTE` ya no ocupa la agenda en la base.
-  - El `CHECK` `turno_auditoria_accion_valida` de V4 acepta `CREAR`, `CANCELAR` y `REPROGRAMAR`. C-08 (`sobreturno-y-extension`, en propuesta) lo redefine en V6 con `SOBRETURNO` y `EXTENDER`.
+  - El `CHECK` `turno_auditoria_accion_valida` acepta hoy `CREAR`, `CANCELAR`, `REPROGRAMAR`, `SOBRETURNO` y `EXTENDER`. Lo creó V4 con las tres primeras, y la V6 de C-08, ya mergeada, lo redefinió con las otras dos.
+  - Los perfiles `dev` y `test` usan `out-of-order` en Flyway, y `build.gradle` fija `user.timezone`. Los dos vinieron con C-04, ya mergeado.
 - **Seguridad (C-05)**:
   - `/api/v1/**` permite solo a los tres roles del personal, y `@EnableMethodSecurity` está activo.
   - El principal `UsuarioAutenticado` expone `username()` y `profesionalId()`. El `profesionalId` es nulo si el usuario no está vinculado a un profesional.
@@ -76,7 +77,7 @@ El `PUT` recibe una lista de 1 a 32 cambios. Primero se valida cada uno en el do
 ### D6. La ausencia es una operación de la agenda
 Se agrega a la agenda, con aviso a Sofia:
 - **`agenda/domain`**:
-  - `Turno.ausente()`, que devuelve el mismo turno en `AUSENTE`, como `cancelado()`.
+  - `Turno.ausente()`, que devuelve el mismo turno en `AUSENTE`, como `cancelado()`. Copia todos los campos del record, incluidos los de sobreturno y extensión de C-08 (ver Risks).
   - `TURNO_NO_INICIADO` en `CodigoRechazo`.
   - `AusenciaNoPermitidaException`, cuando el profesional del turno no es el de la sesión.
 - **`agenda/application`**:
@@ -115,7 +116,9 @@ Se crea `V8__ficha_clinica.sql` con cuatro partes:
    - `estado` en el catálogo.
 
    Lleva un índice `(paciente_id, pieza, cara, registrado_en DESC)` y el trigger de solo agregado (D3).
-3. **El `CHECK` de `turno_auditoria`** se reemplaza por `accion IN ('CREAR','CANCELAR','REPROGRAMAR','SOBRETURNO','EXTENDER','AUSENTE')`. Incluye las acciones de C-08 para que, si V6 se aplica antes, V8 no las borre.
+3. **El `CHECK` de `turno_auditoria`** se borra y se vuelve a crear con la lista completa: `accion IN ('CREAR','CANCELAR','REPROGRAMAR','SOBRETURNO','EXTENDER','AUSENTE')`. PostgreSQL no permite ampliar un `CHECK` existente. Es el mismo procedimiento que usó V6 sobre V4, sin editar ninguna migración mergeada.
+   - **V8 siempre se aplica después de V6.** V6 ya está en master y V8 se escribe sobre una rama que la contiene. En una base nueva Flyway aplica por número, y una base existente ya tiene V6. Por eso no hace falta coordinar con C-08: ninguna aplicación de V6 posterior a V8 puede borrar `AUSENTE`.
+   - **Una migración futura que sume otra acción** tiene que copiar la lista entera, incluido `AUSENTE`.
 4. Los `CHECK` repiten en la base las reglas del dominio, como hace la agenda con los `EXCLUDE`.
 
 ### D9. Sin datos de salud en logs ni errores
@@ -137,11 +140,12 @@ Se crea `V8__ficha_clinica.sql` con cuatro partes:
 
 ## Risks / Trade-offs
 
-- **[C-08 cambia los mismos archivos de agenda y el mismo `CHECK`]**: `Turno`, `AuditoriaTurnos.Accion`, `ServicioAgenda`, `AgendaConfig` y V6. → C-13 solo agrega miembros nuevos, sin reordenar ni cambiar firmas, para que el merge sea mecánico. V8 incluye las acciones de C-08, y se le pide a Juan Cruz que V6 incluya `AUSENTE`. El orden en que se mergeen no importa.
+- **[`ausente()` pierde los campos de C-08]**: si `Turno.ausente()` no copia `esSobreturno`, `motivoSobreturno`, `extendido` y `motivoExtension`, la base no los pierde, porque `TurnoRepositoryJpa.guardar` de un turno existente solo actualiza el estado y, si `extendido` es verdadero, la extensión. Pero el turno que devuelve el caso de uso diría que no es sobreturno ni está extendido, y cualquier cambio futuro en `guardar` los borraría de la base. → `ausente()` construye el turno con el constructor completo, como `cancelado()`. Un test de unidad marca como ausente un sobreturno y un turno extendido y verifica que conservan esos campos.
+- **[Otro change agrega una acción de auditoría después de V8]**: si su migración no copia `AUSENTE` en la lista, la ausencia deja de poder auditarse y la operación falla. → Queda anotado en D8 y en el comentario de V8. Además, el test de esquema de V8 comprueba que la lista tiene las seis acciones.
 - **[El trigger de solo agregado bloquea un borrado legítimo futuro]**: por ejemplo, el derecho de supresión de la Ley 25.326. → Para la Ley 26.529, la historia clínica se conserva. Si hiciera falta, una migración posterior reemplaza el trigger.
 - **[Un odontólogo puede leer la ficha de cualquier paciente]**: no solo la de sus pacientes. → Es lo que define la matriz RBAC de la KB (`ODONTOLOGO`: CRUD). Restringirlo por turnos atendidos es una regla nueva que tendría que decidir la líder.
 - **[El margen de limpieza no se aplica al hueco liberado]**: tras una ausencia a las 10:10, se puede dar un turno a las 10:15 en el mismo sillón, sin el margen respecto del turno ausente. → Es lo que pide RN-AG-17: el paciente no vino, no hay nada que limpiar.
-- **[Base de tests con migraciones fuera de orden]**: V8 puede llegar a una base que ya tiene V6. → Los perfiles `dev` y `test` usan `out-of-order` desde C-04. Si C-04 todavía no está mergeado cuando se haga el apply, hay que traer su configuración o esperar su merge.
+- **[Un test con Flyway manual sin `out-of-order`]**: `V6MigrationIntegrationTest` (C-08) corre Flyway a mano sin `.outOfOrder(true)`. En una base `turnos_test` que tenía V6 antes de que llegara la V2 de C-04, ese test falla con "resolved migration not applied: 2". V8 no lo agrava: llega en orden, después de V6. → No es parte de C-13. Se le avisa a Juan Cruz, y si sigue pendiente durante el apply, se corrige en un commit aparte, como en C-04.
 
 ## Migration Plan
 

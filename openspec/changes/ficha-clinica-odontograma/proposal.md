@@ -51,8 +51,8 @@ El odontólogo hoy no tiene dónde registrar los antecedentes, las alergias y la
     - `agenda/application`: el caso de uso `MarcarAusencia` y la acción `AUSENTE` en `AuditoriaTurnos.Accion`.
     - `agenda/infrastructure`: el método en `ServicioAgenda` y el bean en `AgendaConfig`.
     - Son solo agregados, sin cambiar lo que ya existe.
-  - **Juan Cruz**: C-08 (`sobreturno-y-extension`) toca los mismos archivos de agenda y redefine el mismo `CHECK` de `turno_auditoria` en V6. Hay que coordinar que V6 incluya `AUSENTE` y que V8 incluya `SOBRETURNO` y `EXTENDER`, para que el orden en que se apliquen no borre ninguna acción.
-- **Base de datos**: migración `V8` con un `ALTER` del `CHECK` de `turno_auditoria`, que es una tabla de V4. No se edita V4: se reemplaza la restricción desde la migración nueva, como hizo V4 con V1.
+  - C-08 (`sobreturno-y-extension`, ya mergeado) sumó campos a `Turno`. `Turno.ausente()` tiene que copiarlos, como hace `cancelado()`.
+- **Base de datos**: migración `V8`, que borra el `CHECK` de `turno_auditoria` y lo crea de nuevo con la lista completa de acciones: las de V4 y V6, más `AUSENTE`. No se edita ninguna migración mergeada: es el mismo procedimiento que usó V6 sobre V4. Como V6 ya está en master, V8 siempre se aplica después y no hace falta coordinar con C-08.
 - **API**: nuevos endpoints bajo `/api/v1/pacientes/{id}/`, consumidos más adelante por el frontend del personal (C-09).
 - **Governance ALTO** (datos de salud): el apply arranca después de que Sofia revise y apruebe esta propuesta.
 - **Tests**: un test por escenario del spec, con los permisos por rol en integración con PostgreSQL real (`@Tag("integration")`, perfil `test`).
