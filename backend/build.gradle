@@ -33,6 +33,16 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// C-04: en Windows con la hora de Argentina, Java usa el alias viejo "America/Buenos_Aires",
+// que PostgreSQL 16 rechaza al conectarse. Se fija la zona canónica de la KB en los tests y en
+// bootRun. Para el jar (C-14) hay que pasar -Duser.timezone=America/Argentina/Buenos_Aires.
+tasks.withType(Test).configureEach {
+    systemProperty 'user.timezone', 'America/Argentina/Buenos_Aires'
+}
+tasks.withType(JavaExec).configureEach {
+    systemProperty 'user.timezone', 'America/Argentina/Buenos_Aires'
+}
+
 tasks.named('test', Test) {
     useJUnitPlatform {
         excludeTags 'integration'

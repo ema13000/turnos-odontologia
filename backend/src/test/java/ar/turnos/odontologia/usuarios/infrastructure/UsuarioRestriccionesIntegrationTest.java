@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Tag("integration")
 class UsuarioRestriccionesIntegrationTest {
 
-    private static final String URL = env("DB_URL", "jdbc:postgresql://localhost:5432/turnos");
+    private static final String URL = env("DB_TEST_URL", "jdbc:postgresql://localhost:5432/turnos_test");
     private static final String USER = env("DB_USER", "turnos");
     private static final String PASSWORD = env("DB_PASSWORD", "turnos_dev");
     private static final String HASH = "$2a$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ01234";
@@ -30,7 +30,7 @@ class UsuarioRestriccionesIntegrationTest {
 
     @BeforeAll
     static void migrar() throws SQLException {
-        Flyway.configure().dataSource(URL, USER, PASSWORD).load().migrate();
+        Flyway.configure().dataSource(URL, USER, PASSWORD).outOfOrder(true).load().migrate();
         conn = DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
@@ -41,7 +41,7 @@ class UsuarioRestriccionesIntegrationTest {
 
     @BeforeEach
     void datosFicticios() throws SQLException {
-        // OJO: vacía las tablas de la base local de desarrollo
+        // OJO: vacía las tablas de la base de tests (DB_TEST_URL)
         try (Statement st = conn.createStatement()) {
             st.execute("TRUNCATE usuario, turno, paciente, prestacion, sillon, profesional RESTART IDENTITY CASCADE");
         }

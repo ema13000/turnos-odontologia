@@ -4,12 +4,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Arranca la aplicación completa. Desde C-03 eso incluye la conexión a PostgreSQL (DB_URL), así que
- * es un test de integración: corre con {@code ./gradlew integrationTest}, no con {@code ./gradlew test}.
+ * Desde C-03 el contexto necesita PostgreSQL (JPA y Flyway), así que es un test de integración:
+ * corre con {@code ./gradlew integrationTest} contra la base de tests, no con {@code ./gradlew test}.
  */
 @Tag("integration")
+@ActiveProfiles("test")
 @SpringBootTest
 class TurnosOdontologiaApplicationTest {
 
