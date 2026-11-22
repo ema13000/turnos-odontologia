@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Tag("integration")
 class RestriccionesTurnoIntegrationTest {
 
-    // C-04: usa la base de tests, porque el TRUNCATE de abajo vaciaba la de desarrollo y su seed.
     private static final String URL = env("DB_TEST_URL", "jdbc:postgresql://localhost:5432/turnos_test");
     private static final String USER = env("DB_USER", "turnos");
     private static final String PASSWORD = env("DB_PASSWORD", "turnos_dev");
@@ -30,7 +29,7 @@ class RestriccionesTurnoIntegrationTest {
 
     @BeforeAll
     static void migrar() throws SQLException {
-        Flyway.configure().dataSource(URL, USER, PASSWORD).load().migrate();
+        Flyway.configure().dataSource(URL, USER, PASSWORD).outOfOrder(true).load().migrate();
         conn = DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
@@ -127,6 +126,21 @@ class RestriccionesTurnoIntegrationTest {
         insertarTurno(profA, sillon2, DIEZ, "CONFIRMADO", true, "Urgencia");
         // mismo sillón: rechazado
         assertThatThrownBy(() -> insertarTurno(profB, sillon1, DIEZ, "CONFIRMADO", true, "Urgencia"))
+                .satisfies(e -> assertSqlState(e, "23P01"));
+    }
+
+    // Agregados por C-06 (V4): solo RESERVADO y CONFIRMADO ocupan la agenda.
+
+    @Test
+    void turno_ausente_no_bloquea_el_horario() throws SQLException {
+        insertarTurno(profA, sillon1, DIEZ, "AUSENTE", false, null);
+        insertarTurno(profA, sillon1, DIEZ);
+    }
+
+    @Test
+    void turno_reservado_bloquea_el_horario() throws SQLException {
+        insertarTurno(profA, sillon1, DIEZ, "RESERVADO", false, null);
+        assertThatThrownBy(() -> insertarTurno(profB, sillon1, DIEZ.plusMinutes(15)))
                 .satisfies(e -> assertSqlState(e, "23P01"));
     }
 }

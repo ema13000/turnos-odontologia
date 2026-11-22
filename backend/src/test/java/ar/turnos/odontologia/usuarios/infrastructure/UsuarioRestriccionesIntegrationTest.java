@@ -30,7 +30,7 @@ class UsuarioRestriccionesIntegrationTest {
 
     @BeforeAll
     static void migrar() throws SQLException {
-        Flyway.configure().dataSource(URL, USER, PASSWORD).load().migrate();
+        Flyway.configure().dataSource(URL, USER, PASSWORD).outOfOrder(true).load().migrate();
         conn = DriverManager.getConnection(URL, USER, PASSWORD);
     }
 

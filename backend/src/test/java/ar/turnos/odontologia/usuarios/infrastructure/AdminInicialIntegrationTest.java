@@ -52,7 +52,7 @@ class AdminInicialIntegrationTest {
         String url = env("DB_TEST_URL", "jdbc:postgresql://localhost:5432/turnos_test");
         String usuario = env("DB_USER", "turnos");
         String clave = env("DB_PASSWORD", "turnos_dev");
-        Flyway.configure().dataSource(url, usuario, clave).load().migrate();
+        Flyway.configure().dataSource(url, usuario, clave).outOfOrder(true).load().migrate();
         try (Connection conn = DriverManager.getConnection(url, usuario, clave); Statement st = conn.createStatement()) {
             // OJO: vacía las tablas de la base de tests (DB_TEST_URL)
             st.execute("TRUNCATE usuario, turno, paciente, prestacion, sillon, profesional RESTART IDENTITY CASCADE");

@@ -15,7 +15,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.UUID;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,21 +30,25 @@ class CrearTurnoTest {
     private static final ZoneId BUENOS_AIRES = ZoneId.of("America/Argentina/Buenos_Aires");
     private static final LocalDate DIA = LocalDate.of(2026, 12, 1);
 
-    private static final UUID PACIENTE = UUID.randomUUID();
-    private static final UUID DRA_A = UUID.randomUUID();
-    private static final UUID DR_B = UUID.randomUUID();
-    private static final UUID SILLON_1 = UUID.randomUUID();
-    private static final UUID SILLON_2 = UUID.randomUUID();
-    private static final UUID CONSULTA = UUID.randomUUID();
+    // Identificadores BIGINT ficticios (DD-12).
+    private static final Long PACIENTE = 1L;
+    private static final Long OTRO_PACIENTE = 2L;
+    private static final Long DRA_A = 1L;
+    private static final Long DR_B = 2L;
+    private static final Long SILLON_1 = 1L;
+    private static final Long SILLON_2 = 2L;
+    private static final Long CONSULTA = 1L;
 
     private TurnoRepositoryEnMemoria turnos;
-    private PrestacionRepositoryEnMemoria prestaciones;
+    private RecursosAgendaEnMemoria recursos;
+    private GeneradorNumeroReservaSecuencial numeros;
 
     @BeforeEach
     void prepararAgenda() {
         turnos = new TurnoRepositoryEnMemoria();
-        prestaciones = new PrestacionRepositoryEnMemoria();
-        prestaciones.agregar(CONSULTA, Duration.ofMinutes(30));
+        recursos = new RecursosAgendaEnMemoria();
+        recursos.agregarPrestacion(CONSULTA, Duration.ofMinutes(30));
+        numeros = new GeneradorNumeroReservaSecuencial();
     }
 
     // ---------- Requirement: Intervalo del turno ----------
@@ -61,6 +64,7 @@ class CrearTurnoTest {
         assertThat(turno.estado()).isEqualTo(EstadoTurno.RESERVADO);
         assertThat(turno.intervalo().inicio()).isEqualTo(a(10, 0));
         assertThat(turno.intervalo().fin()).isEqualTo(a(10, 30));
+        assertThat(turno.id()).isNotNull();
         assertThat(turnos.todos()).containsExactly(turno);
     }
 
@@ -202,6 +206,71 @@ class CrearTurnoTest {
         assertThat(turno.estado()).isEqualTo(EstadoTurno.RESERVADO);
     }
 
+    // ---------- Requirement: Número de reserva (C-06) ----------
+
+    @Test
+    @DisplayName("Turno nuevo con número de reserva")
+    void turnoNuevoConNumeroDeReserva() {
+        // GIVEN una agenda sin turnos
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        Turno turno = crear(DRA_A, SILLON_1, a(10, 0));
+
+        // THEN el turno tiene un número de reserva con el formato XXXX-XXXX y sin caracteres ambiguos
+        assertThat(turno.numeroReserva().valor())
+                .matches("[A-Z2-9]{4}-[A-Z2-9]{4}")
+                .doesNotContain("0", "O", "1", "I", "L");
+    }
+
+    @Test
+    @DisplayName("Dos turnos tienen números de reserva distintos")
+    void dosTurnosTienenNumerosDistintos() {
+        // GIVEN una agenda sin turnos
+        // WHEN se crean un turno con la Dra. A en el Sillón 1 y otro con el Dr. B en el Sillón 2 a las 10:00
+        Turno primero = crear(DRA_A, SILLON_1, a(10, 0));
+        Turno segundo = crear(DR_B, SILLON_2, a(10, 0));
+
+        // THEN los dos turnos tienen números de reserva distintos
+        assertThat(primero.numeroReserva()).isNotEqualTo(segundo.numeroReserva());
+    }
+
+    // ---------- Requirement: Sin turnos con recursos inactivos (C-06) ----------
+
+    @Test
+    @DisplayName("Profesional inactivo")
+    void profesionalInactivo() {
+        // GIVEN que la Dra. A está inactiva
+        recursos.desactivarProfesional(DRA_A);
+
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        // THEN el turno se rechaza con RECURSO_INACTIVO
+        assertRechazo(() -> crear(DRA_A, SILLON_1, a(10, 0)), CodigoRechazo.RECURSO_INACTIVO);
+        assertThat(turnos.todos()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Sillón inactivo")
+    void sillonInactivo() {
+        // GIVEN que el Sillón 1 está inactivo
+        recursos.desactivarSillon(SILLON_1);
+
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        // THEN el turno se rechaza con RECURSO_INACTIVO
+        assertRechazo(() -> crear(DRA_A, SILLON_1, a(10, 0)), CodigoRechazo.RECURSO_INACTIVO);
+        assertThat(turnos.todos()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Prestación inactiva")
+    void prestacionInactiva() {
+        // GIVEN que la prestación "Consulta" está inactiva
+        recursos.desactivarPrestacion(CONSULTA);
+
+        // WHEN se crea un turno de "Consulta" con la Dra. A en el Sillón 1 a las 10:00
+        // THEN el turno se rechaza con RECURSO_INACTIVO
+        assertRechazo(() -> crear(DRA_A, SILLON_1, a(10, 0)), CodigoRechazo.RECURSO_INACTIVO);
+        assertThat(turnos.todos()).isEmpty();
+    }
+
     // ---------- Ayudas del fixture ----------
 
     private static Instant a(int hora, int minuto) {
@@ -213,25 +282,25 @@ class CrearTurnoTest {
     }
 
     private CrearTurno casoDeUso(Clock reloj, Margen margen) {
-        return new CrearTurno(turnos, prestaciones, reloj, margen);
+        return new CrearTurno(turnos, recursos, numeros, reloj, margen);
     }
 
     /** Crea un turno de "Consulta" con el reloj a las 08:00 y el margen de 10 minutos. */
-    private Turno crear(UUID profesional, UUID sillon, Instant inicio) {
+    private Turno crear(Long profesional, Long sillon, Instant inicio) {
         return casoDeUso(relojALas(8, 0), Margen.PREDETERMINADO).ejecutar(comando(profesional, sillon, inicio));
     }
 
-    private static CrearTurnoCommand comando(UUID profesional, UUID sillon, Instant inicio) {
+    private static CrearTurnoCommand comando(Long profesional, Long sillon, Instant inicio) {
         return new CrearTurnoCommand(PACIENTE, profesional, sillon, CONSULTA, inicio);
     }
 
-    private void existenteActivo(UUID profesional, UUID sillon, Instant inicio, Instant fin) {
+    private void existenteActivo(Long profesional, Long sillon, Instant inicio, Instant fin) {
         existente(profesional, sillon, inicio, fin, EstadoTurno.RESERVADO);
     }
 
-    private void existente(UUID profesional, UUID sillon, Instant inicio, Instant fin, EstadoTurno estado) {
-        turnos.guardar(new Turno(UUID.randomUUID(), UUID.randomUUID(), profesional, sillon, CONSULTA,
-                new Intervalo(inicio, fin), estado));
+    private void existente(Long profesional, Long sillon, Instant inicio, Instant fin, EstadoTurno estado) {
+        turnos.guardar(new Turno(null, OTRO_PACIENTE, profesional, sillon, CONSULTA,
+                new Intervalo(inicio, fin), estado, numeros.generar()));
     }
 
     private static void assertRechazo(ThrowingCallable accion, CodigoRechazo esperado) {
