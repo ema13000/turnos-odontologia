@@ -26,7 +26,8 @@ class ConsultaAgendaJpa implements ConsultaAgenda {
                 .filter(t -> sillonId == null || sillonId.equals(t.getSillon().getId()))
                 .map(t -> new TurnoEnAgenda(t.getId(), t.getPaciente().getId(), t.getPaciente().getNombre(),
                         t.getPaciente().getApellido(), t.getProfesional().getId(), t.getSillon().getId(),
-                        t.getPrestacion().getId(), t.getInicio(), t.getFin(), EstadoTurno.valueOf(t.getEstado())))
+                        t.getPrestacion().getId(), t.getInicio(), t.getFin(), EstadoTurno.valueOf(t.getEstado()),
+                        t.isEsSobreturno()))
                 .toList();
     }
 }

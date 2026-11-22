@@ -5,13 +5,20 @@ import ar.turnos.odontologia.agenda.application.AuditoriaTurnos.Accion;
 import ar.turnos.odontologia.agenda.application.CancelarTurno;
 import ar.turnos.odontologia.agenda.application.CancelarTurnoCommand;
 import ar.turnos.odontologia.agenda.application.ConsultaAgenda;
+import ar.turnos.odontologia.agenda.application.CrearSobreturno;
+import ar.turnos.odontologia.agenda.application.CrearSobreturnoCommand;
 import ar.turnos.odontologia.agenda.application.CrearTurno;
 import ar.turnos.odontologia.agenda.application.CrearTurnoCommand;
+import ar.turnos.odontologia.agenda.application.ExtenderTurno;
+import ar.turnos.odontologia.agenda.application.ExtenderTurnoCommand;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurno;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurnoCommand;
+import ar.turnos.odontologia.agenda.application.SillonTomadoException;
 import ar.turnos.odontologia.agenda.domain.Turno;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -32,6 +39,8 @@ public class ServicioAgenda {
     static final int INTENTOS = 3;
 
     private final CrearTurno crearTurno;
+    private final CrearSobreturno crearSobreturno;
+    private final ExtenderTurno extenderTurno;
     private final CancelarTurno cancelarTurno;
     private final ReprogramarTurno reprogramarTurno;
     private final ConsultaAgenda consulta;
@@ -39,9 +48,12 @@ public class ServicioAgenda {
     private final TransactionTemplate transaccion;
     private final TransactionTemplate lectura;
 
-    ServicioAgenda(CrearTurno crearTurno, CancelarTurno cancelarTurno, ReprogramarTurno reprogramarTurno,
-                   ConsultaAgenda consulta, AuditoriaTurnos auditoria, PlatformTransactionManager transacciones) {
+    ServicioAgenda(CrearTurno crearTurno, CrearSobreturno crearSobreturno, ExtenderTurno extenderTurno,
+                   CancelarTurno cancelarTurno, ReprogramarTurno reprogramarTurno, ConsultaAgenda consulta,
+                   AuditoriaTurnos auditoria, PlatformTransactionManager transacciones) {
         this.crearTurno = crearTurno;
+        this.crearSobreturno = crearSobreturno;
+        this.extenderTurno = extenderTurno;
         this.cancelarTurno = cancelarTurno;
         this.reprogramarTurno = reprogramarTurno;
         this.consulta = consulta;
@@ -55,6 +67,33 @@ public class ServicioAgenda {
         return enTransaccion(() -> {
             Turno turno = crearTurno.ejecutar(comando);
             auditoria.registrar(turno.id(), Accion.CREAR, actor, null);
+            return turno;
+        });
+    }
+
+    public Turno crearSobreturno(CrearSobreturnoCommand comando, String actor) {
+        // Si la base rechaza un sillón que el dominio vio libre (otra operación lo tomó), esa transacción ya está
+        // abortada: se rehace entera sin ese sillón. Cada vuelta suma un sillón descartado, así que termina.
+        Set<Long> descartados = new HashSet<>();
+        while (true) {
+            try {
+                return enTransaccion(() -> {
+                    Turno turno = crearSobreturno.ejecutar(comando, descartados);
+                    auditoria.registrar(turno.id(), Accion.SOBRETURNO, actor, null);
+                    return turno;
+                });
+            } catch (SillonTomadoException e) {
+                if (!descartados.add(e.sillonId())) {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    public Turno extender(ExtenderTurnoCommand comando, String actor) {
+        return enTransaccion(() -> {
+            Turno turno = extenderTurno.ejecutar(comando);
+            auditoria.registrar(turno.id(), Accion.EXTENDER, actor, null);
             return turno;
         });
     }

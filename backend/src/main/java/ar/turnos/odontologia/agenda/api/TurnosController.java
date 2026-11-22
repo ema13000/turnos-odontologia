@@ -1,7 +1,9 @@
 package ar.turnos.odontologia.agenda.api;
 
 import ar.turnos.odontologia.agenda.application.CancelarTurnoCommand;
+import ar.turnos.odontologia.agenda.application.CrearSobreturnoCommand;
 import ar.turnos.odontologia.agenda.application.CrearTurnoCommand;
+import ar.turnos.odontologia.agenda.application.ExtenderTurnoCommand;
 import ar.turnos.odontologia.agenda.application.ReprogramarTurnoCommand;
 import ar.turnos.odontologia.agenda.infrastructure.ServicioAgenda;
 import ar.turnos.odontologia.shared.security.UsuarioAutenticado;
@@ -45,6 +47,15 @@ class TurnosController {
         return TurnoResponse.de(agenda.crear(comando, usuario.getUsername()), zona);
     }
 
+    @PostMapping("/sobreturno")
+    @ResponseStatus(HttpStatus.CREATED)
+    TurnoResponse crearSobreturno(@Valid @RequestBody CrearSobreturnoRequest pedido,
+                                  @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        CrearSobreturnoCommand comando = new CrearSobreturnoCommand(pedido.pacienteId(), pedido.profesionalId(),
+                pedido.prestacionId(), pedido.inicio().toInstant(), pedido.motivo());
+        return TurnoResponse.de(agenda.crearSobreturno(comando, usuario.getUsername()), zona);
+    }
+
     @GetMapping
     List<TurnoAgendaResponse> agenda(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime desde,
@@ -72,6 +83,13 @@ class TurnosController {
         ReprogramarTurnoCommand comando = new ReprogramarTurnoCommand(id, pedido.dni(), pedido.numeroReserva(),
                 pedido.inicio().toInstant(), pedido.profesionalId(), pedido.sillonId());
         return TurnoResponse.de(agenda.reprogramar(comando, usuario.getUsername()), zona);
+    }
+
+    @PostMapping("/{id}/extender")
+    TurnoResponse extender(@PathVariable Long id, @Valid @RequestBody ExtenderTurnoRequest pedido,
+                           @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        ExtenderTurnoCommand comando = new ExtenderTurnoCommand(id, pedido.fin().toInstant(), pedido.motivo());
+        return TurnoResponse.de(agenda.extender(comando, usuario.getUsername()), zona);
     }
 
     /** {@code hasta} no es posterior a {@code desde}. */

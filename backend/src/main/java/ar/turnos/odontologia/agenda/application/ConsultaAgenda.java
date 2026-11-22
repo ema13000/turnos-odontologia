@@ -24,5 +24,6 @@ public interface ConsultaAgenda {
             Long prestacionId,
             Instant inicio,
             Instant fin,
-            EstadoTurno estado) {}
+            EstadoTurno estado,
+            boolean esSobreturno) {}
 }

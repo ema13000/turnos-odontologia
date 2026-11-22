@@ -206,6 +206,23 @@ class CrearTurnoTest {
         assertThat(turno.estado()).isEqualTo(EstadoTurno.RESERVADO);
     }
 
+    @Test
+    @DisplayName("Extender un turno iniciado no habilita crear turnos en el pasado")
+    void extenderUnTurnoIniciadoNoHabilitaCrearEnElPasado() {
+        // GIVEN el reloj en las 10:20 y un turno activo ya iniciado de 10:00 a 10:30
+        Turno original = existenteActivo(DRA_A, SILLON_1, a(10, 0), a(10, 30));
+        CrearTurno crearTurno = casoDeUso(relojALas(10, 20), Margen.PREDETERMINADO);
+
+        // WHEN se pide crear un turno nuevo con inicio 10:00 (también tras extender el existente)
+        new ExtenderTurno(turnos, crearTurno)
+                .ejecutar(new ExtenderTurnoCommand(original.id(), a(10, 45), "Motivo ficticio"));
+
+        // THEN se rechaza con INICIO_EN_EL_PASADO y no se crea ningún turno nuevo
+        assertRechazo(() -> crearTurno.ejecutar(comando(DR_B, SILLON_2, a(10, 0))),
+                CodigoRechazo.INICIO_EN_EL_PASADO);
+        assertThat(turnos.todos()).hasSize(1);
+    }
+
     // ---------- Requirement: Número de reserva (C-06) ----------
 
     @Test
@@ -271,6 +288,32 @@ class CrearTurnoTest {
         assertThat(turnos.todos()).isEmpty();
     }
 
+    // ---------- Regresión de la firma de preparar (C-08) ----------
+
+    @Test
+    @DisplayName("La firma original de preparar calcula el fin con la duración de la prestación")
+    void prepararSinFinAlternativo() {
+        CrearTurno crearTurno = casoDeUso(relojALas(8, 0), Margen.PREDETERMINADO);
+
+        Turno preparado = crearTurno.preparar(comando(DRA_A, SILLON_1, a(10, 0)), null);
+
+        assertThat(preparado.intervalo().fin()).isEqualTo(a(10, 30));
+        assertThat(turnos.todos()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("La firma original de preparar sigue ignorando el turno original de una reprogramación")
+    void prepararConReemplazaA() {
+        CrearTurno crearTurno = casoDeUso(relojALas(8, 0), Margen.PREDETERMINADO);
+        Turno original = existenteActivo(DRA_A, SILLON_1, a(10, 0), a(10, 30));
+
+        Turno preparado = crearTurno.preparar(comando(DRA_A, SILLON_1, a(10, 0)), original.id());
+
+        assertThat(preparado.intervalo().fin()).isEqualTo(a(10, 30));
+        assertThat(preparado.id()).isNull();
+        assertThat(turnos.todos()).containsExactly(original);
+    }
+
     // ---------- Ayudas del fixture ----------
 
     private static Instant a(int hora, int minuto) {
@@ -294,12 +337,12 @@ class CrearTurnoTest {
         return new CrearTurnoCommand(PACIENTE, profesional, sillon, CONSULTA, inicio);
     }
 
-    private void existenteActivo(Long profesional, Long sillon, Instant inicio, Instant fin) {
-        existente(profesional, sillon, inicio, fin, EstadoTurno.RESERVADO);
+    private Turno existenteActivo(Long profesional, Long sillon, Instant inicio, Instant fin) {
+        return existente(profesional, sillon, inicio, fin, EstadoTurno.RESERVADO);
     }
 
-    private void existente(Long profesional, Long sillon, Instant inicio, Instant fin, EstadoTurno estado) {
-        turnos.guardar(new Turno(null, OTRO_PACIENTE, profesional, sillon, CONSULTA,
+    private Turno existente(Long profesional, Long sillon, Instant inicio, Instant fin, EstadoTurno estado) {
+        return turnos.guardar(new Turno(null, OTRO_PACIENTE, profesional, sillon, CONSULTA,
                 new Intervalo(inicio, fin), estado, numeros.generar()));
     }
 

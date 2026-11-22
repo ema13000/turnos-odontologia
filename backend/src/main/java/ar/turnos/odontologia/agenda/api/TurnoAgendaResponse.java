@@ -15,12 +15,13 @@ record TurnoAgendaResponse(
         Long prestacionId,
         OffsetDateTime inicio,
         OffsetDateTime fin,
-        String estado) {
+        String estado,
+        boolean esSobreturno) {
 
     static TurnoAgendaResponse de(TurnoEnAgenda t, ZoneId zona) {
         return new TurnoAgendaResponse(t.id(), t.pacienteId(), t.pacienteNombre(), t.pacienteApellido(),
                 t.profesionalId(), t.sillonId(), t.prestacionId(),
                 t.inicio().atZone(zona).toOffsetDateTime(), t.fin().atZone(zona).toOffsetDateTime(),
-                t.estado().name());
+                t.estado().name(), t.esSobreturno());
     }
 }
