@@ -52,7 +52,7 @@ El odontólogo hoy no tiene dónde registrar los antecedentes, las alergias y la
     - `agenda/infrastructure`: el método en `ServicioAgenda` y el bean en `AgendaConfig`.
     - Son solo agregados, sin cambiar lo que ya existe.
   - C-08 (`sobreturno-y-extension`, ya mergeado) sumó campos a `Turno`. `Turno.ausente()` tiene que copiarlos, como hace `cancelado()`.
-- **Base de datos**: migración `V8`, que borra el `CHECK` de `turno_auditoria` y lo crea de nuevo con la lista completa de acciones: las de V4 y V6, más `AUSENTE`. No se edita ninguna migración mergeada: es el mismo procedimiento que usó V6 sobre V4. Como V6 ya está en master, V8 siempre se aplica después y no hace falta coordinar con C-08.
+- **Base de datos**: migración `V8`, que borra el `CHECK` de `turno_auditoria` y lo crea de nuevo con la lista completa de siete acciones: las de V4 y V6, `CONFIRMAR` de C-11 y `AUSENTE`. No se edita ninguna migración mergeada: es el mismo procedimiento que usaron V6 y V7. La V7 de C-11 (Juan Cruz) deja la misma lista, así que el orden en que se mergeen C-11 y C-13 no importa.
 - **API**: nuevos endpoints bajo `/api/v1/pacientes/{id}/`, consumidos más adelante por el frontend del personal (C-09).
 - **Governance ALTO** (datos de salud): el apply arranca después de que Sofia revise y apruebe esta propuesta.
 - **Tests**: un test por escenario del spec, con los permisos por rol en integración con PostgreSQL real (`@Tag("integration")`, perfil `test`).
