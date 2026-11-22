@@ -8,6 +8,7 @@ import ar.turnos.odontologia.agenda.domain.ReferenciaInexistenteException;
 import ar.turnos.odontologia.agenda.domain.Turno;
 import ar.turnos.odontologia.agenda.domain.TurnoRechazadoException;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,18 +43,41 @@ public class CrearTurno {
         return turnos.guardar(preparar(comando, null));
     }
 
+    /** Firma original: el fin se calcula con la duración de la prestación. */
+    Turno preparar(CrearTurnoCommand comando, Long reemplazaA) {
+        return preparar(comando, reemplazaA, null);
+    }
+
     /**
      * Arma y verifica un turno nuevo sin guardarlo. Si {@code reemplazaA} no es nulo, ese turno no cuenta
      * como conflicto: es el original de una reprogramación, que se cancela en la misma operación.
+     * {@code finAlternativo} permite reutilizar todas las validaciones en la extensión de un turno.
      */
-    Turno preparar(CrearTurnoCommand comando, Long reemplazaA) {
+    Turno preparar(CrearTurnoCommand comando, Long reemplazaA, Instant finAlternativo) {
         if (comando.inicio().isBefore(reloj.instant())) {
             throw new TurnoRechazadoException(CodigoRechazo.INICIO_EN_EL_PASADO,
                     "No se puede crear un turno en el pasado");
         }
+        return armar(comando, reemplazaA, finAlternativo);
+    }
 
+    /**
+     * Verifica la extensión del turno {@code turnoId}, que puede estar ya iniciado: lo que no puede quedar en el
+     * pasado es el nuevo fin, no el inicio. Es el único camino que omite el control de inicio de
+     * {@link #preparar}: crear y reprogramar siguen rechazando inicios pasados (RN-AG-09).
+     */
+    Turno prepararExtension(CrearTurnoCommand comando, Long turnoId, Instant nuevoFin) {
+        if (!nuevoFin.isAfter(reloj.instant())) {
+            throw new TurnoRechazadoException(CodigoRechazo.DATOS_INVALIDOS,
+                    "El nuevo fin debe ser posterior al momento actual");
+        }
+        return armar(comando, turnoId, nuevoFin);
+    }
+
+    private Turno armar(CrearTurnoCommand comando, Long reemplazaA, Instant finAlternativo) {
         RecursosAgenda.Prestacion prestacion = verificarRecursos(comando);
-        Intervalo intervalo = new Intervalo(comando.inicio(), comando.inicio().plus(prestacion.duracion()));
+        Instant fin = finAlternativo != null ? finAlternativo : comando.inicio().plus(prestacion.duracion());
+        Intervalo intervalo = new Intervalo(comando.inicio(), fin);
 
         List<Turno> cercanos = turnos.buscarQueIntersecan(comando.profesionalId(),
                 comando.sillonId(), intervalo.ampliadoPor(margen)).stream()

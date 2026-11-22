@@ -124,3 +124,11 @@ Si dos sobreturnos compiten por el último sillón libre, el sistema MUST acepta
 - **THEN** una respuesta es `201`
 - **AND** la otra es `409` con el código `SIN_SILLON_DISPONIBLE`
 - **AND** solo hay un sobreturno activo a las 10:00
+
+#### Scenario: Dos sobreturnos al mismo tiempo con dos sillones libres
+- **GIVEN** los usuarios `recepcion` y `ana.ejemplo` con sesión iniciada
+- **AND** el Sillón 1 y el Sillón 2 libres a las 10:00
+- **WHEN** los dos piden al mismo tiempo un sobreturno de "Consulta" con inicio 10:00
+- **THEN** las dos respuestas son `201`
+- **AND** los dos sobreturnos quedan en sillones distintos
+- **AND** hay un registro de auditoría `SOBRETURNO` por cada uno

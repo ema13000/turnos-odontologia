@@ -29,6 +29,17 @@ public final class Agenda {
         });
     }
 
+    /**
+     * C-08: verificación de sobreturnos. Ignora las colisiones por profesional (RN-AG-06), pero mantiene
+     * la restricción del sillón y su margen de limpieza (RN-AG-03 y RN-AG-04).
+     */
+    public void verificarSillon(Turno nuevo, Collection<Turno> existentes) {
+        if (existentes.stream().anyMatch(e -> conflictoConSillon(nuevo, e) != ConflictoSillon.NINGUNO)) {
+            throw new TurnoRechazadoException(CodigoRechazo.SIN_SILLON_DISPONIBLE,
+                    "No hay un sillón libre con el margen de " + margen.valor().toMinutes() + " minutos");
+        }
+    }
+
     Optional<CodigoRechazo> buscarConflicto(Turno nuevo, Collection<Turno> existentes) {
         boolean solapaProfesional = false;
         boolean solapaSillon = false;
@@ -39,14 +50,18 @@ public final class Agenda {
                 continue;
             }
             boolean compartePorProfesional = nuevo.mismoProfesionalQue(existente);
-            boolean compartePorSillon = nuevo.mismoSillonQue(existente);
-            if (!compartePorProfesional && !compartePorSillon) {
-                continue;
+            boolean seSuperpone = nuevo.intervalo().seSuperponeCon(existente.intervalo());
+            if (compartePorProfesional && seSuperpone) {
+                solapaProfesional = true;
             }
-            if (nuevo.intervalo().seSuperponeCon(existente.intervalo())) {
-                solapaProfesional |= compartePorProfesional;
-                solapaSillon |= compartePorSillon;
-            } else if (nuevo.intervalo().seAcercaA(existente.intervalo(), margen)) {
+            if (nuevo.mismoSillonQue(existente)) {
+                switch (conflictoConSillon(nuevo, existente)) {
+                    case SOLAPE -> solapaSillon = true;
+                    case MARGEN -> faltaMargen = true;
+                    case NINGUNO -> { }
+                }
+            } else if (compartePorProfesional && !seSuperpone
+                    && nuevo.intervalo().seAcercaA(existente.intervalo(), margen)) {
                 faltaMargen = true;
             }
         }
@@ -62,6 +77,22 @@ public final class Agenda {
         }
         return Optional.empty();
     }
+
+    /** Cálculo compartido por la verificación normal y por la de sobreturnos. */
+    private ConflictoSillon conflictoConSillon(Turno nuevo, Turno existente) {
+        if (!existente.esActivo() || !nuevo.mismoSillonQue(existente)) {
+            return ConflictoSillon.NINGUNO;
+        }
+        if (nuevo.intervalo().seSuperponeCon(existente.intervalo())) {
+            return ConflictoSillon.SOLAPE;
+        }
+        if (nuevo.intervalo().seAcercaA(existente.intervalo(), margen)) {
+            return ConflictoSillon.MARGEN;
+        }
+        return ConflictoSillon.NINGUNO;
+    }
+
+    private enum ConflictoSillon { NINGUNO, SOLAPE, MARGEN }
 
     private String mensajePara(CodigoRechazo codigo) {
         return switch (codigo) {

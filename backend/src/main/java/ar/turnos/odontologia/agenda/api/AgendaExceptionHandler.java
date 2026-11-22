@@ -1,5 +1,6 @@
 package ar.turnos.odontologia.agenda.api;
 
+import ar.turnos.odontologia.agenda.domain.CodigoRechazo;
 import ar.turnos.odontologia.agenda.domain.ReferenciaInexistenteException;
 import ar.turnos.odontologia.agenda.domain.TurnoInexistenteException;
 import ar.turnos.odontologia.agenda.domain.TurnoRechazadoException;
@@ -27,6 +28,9 @@ class AgendaExceptionHandler {
 
     @ExceptionHandler(TurnoRechazadoException.class)
     ProblemDetail turnoRechazado(TurnoRechazadoException e) {
+        if (e.codigo() == CodigoRechazo.DATOS_INVALIDOS) {
+            return datosInvalidos(List.of(error(campoDeDatosInvalidos(e.getMessage()), e.getMessage())));
+        }
         return problema(HttpStatus.CONFLICT, "Turno rechazado", e.codigo().name(), e.getMessage());
     }
 
@@ -72,6 +76,17 @@ class AgendaExceptionHandler {
     @ExceptionHandler(TurnosController.PeriodoInvalidoException.class)
     ProblemDetail periodoInvalido(TurnosController.PeriodoInvalidoException e) {
         return datosInvalidos(List.of(error("hasta", e.getMessage())));
+    }
+
+    /** Los rechazos de negocio por datos inválidos informan el campo que los originó (motivo o fin). */
+    private static String campoDeDatosInvalidos(String mensaje) {
+        if (mensaje == null) {
+            return "cuerpo";
+        }
+        if (mensaje.contains("motivo")) {
+            return "motivo";
+        }
+        return mensaje.contains("fin") ? "fin" : "cuerpo";
     }
 
     private static ProblemDetail datosInvalidos(List<Map<String, String>> errores) {

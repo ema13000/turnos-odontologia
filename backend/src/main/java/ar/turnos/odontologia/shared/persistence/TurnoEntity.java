@@ -31,7 +31,12 @@ public class TurnoEntity {
     // C-06 (V4): los turnos nuevos arrancan en RESERVADO, como en el dominio de C-01
     private String estado = "RESERVADO";
     private boolean esSobreturno;
+    @Column(columnDefinition = "text")
     private String motivoSobreturno;
+    // C-08 (V6): la extensión se guarda en la misma fila y recalcula fin_con_margen con el margen vigente.
+    private boolean extendido;
+    @Column(columnDefinition = "text")
+    private String motivoExtension;
     private String codigoReserva;
 
     @Version
@@ -55,6 +60,23 @@ public class TurnoEntity {
     /** C-06: cancelar o reprogramar cambia el estado del turno. */
     public void cambiarEstado(String nuevoEstado) { this.estado = nuevoEstado; }
 
+    /** C-08: marca el turno como sobreturno y guarda su motivo administrativo (nunca clínico). */
+    public void marcarSobreturno(String motivo) {
+        this.esSobreturno = true;
+        this.motivoSobreturno = motivo;
+    }
+
+    /**
+     * C-08: extiende el fin de la fila, recalcula el fin con margen y marca la extensión.
+     * El aumento de {@code version} lo hace JPA por el {@code @Version} existente.
+     */
+    public void actualizarExtension(Instant nuevoFin, Instant nuevoFinConMargen, String motivo) {
+        this.fin = nuevoFin;
+        this.finConMargen = nuevoFinConMargen;
+        this.extendido = true;
+        this.motivoExtension = motivo;
+    }
+
     public ProfesionalEntity getProfesional() { return profesional; }
     public SillonEntity getSillon() { return sillon; }
     public PrestacionEntity getPrestacion() { return prestacion; }
@@ -67,5 +89,7 @@ public class TurnoEntity {
     public String getEstado() { return estado; }
     public boolean isEsSobreturno() { return esSobreturno; }
     public String getMotivoSobreturno() { return motivoSobreturno; }
+    public boolean isExtendido() { return extendido; }
+    public String getMotivoExtension() { return motivoExtension; }
     public long getVersion() { return version; }
 }
