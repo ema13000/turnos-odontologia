@@ -7,8 +7,11 @@ import ar.turnos.odontologia.agenda.domain.Margen;
 import ar.turnos.odontologia.agenda.domain.ReferenciaInexistenteException;
 import ar.turnos.odontologia.agenda.domain.Turno;
 import ar.turnos.odontologia.agenda.domain.TurnoRechazadoException;
+import ar.turnos.odontologia.agenda.domain.reglas.ReglasDisponibilidad;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,8 +20,8 @@ import java.util.Optional;
  * Caso de uso: crear un turno sin solapamientos por profesional ni por sillón (US-010).
  *
  * <p>Orden de validación: primero el pasado (RN-AG-09), después que existan los recursos y que estén
- * activos (RN-AG-11), el cálculo del fin (RN-AG-01) y por último los conflictos con margen
- * (RN-AG-02 a RN-AG-05).
+ * activos (RN-AG-11), el cálculo del fin (RN-AG-01), la disponibilidad del profesional (ausencia, bloqueo y
+ * horario de trabajo, C-07) y por último los conflictos con margen (RN-AG-02 a RN-AG-05).
  */
 public class CrearTurno {
 
@@ -28,9 +31,20 @@ public class CrearTurno {
     private final Clock reloj;
     private final Margen margen;
     private final Agenda agenda;
+    private final DisponibilidadProfesional disponibilidad;
+    private final ZoneId zona;
 
+    /** Sin reglas de disponibilidad: es el constructor anterior a C-07 y lo usan sus tests (design D2). */
     public CrearTurno(TurnoRepository turnos, RecursosAgenda recursos, GeneradorNumeroReserva numeros,
             Clock reloj, Margen margen) {
+        this(turnos, recursos, numeros, reloj, margen, DisponibilidadProfesional.SIN_RESTRICCIONES, ZoneOffset.UTC);
+    }
+
+    /** @param zona zona horaria de la agenda, para ubicar el turno en las franjas semanales (C-07, D4) */
+    public CrearTurno(TurnoRepository turnos, RecursosAgenda recursos, GeneradorNumeroReserva numeros,
+            Clock reloj, Margen margen, DisponibilidadProfesional disponibilidad, ZoneId zona) {
+        this.disponibilidad = Objects.requireNonNull(disponibilidad, "disponibilidad");
+        this.zona = Objects.requireNonNull(zona, "zona");
         this.turnos = Objects.requireNonNull(turnos, "turnos");
         this.recursos = Objects.requireNonNull(recursos, "recursos");
         this.numeros = Objects.requireNonNull(numeros, "numeros");
@@ -58,26 +72,29 @@ public class CrearTurno {
             throw new TurnoRechazadoException(CodigoRechazo.INICIO_EN_EL_PASADO,
                     "No se puede crear un turno en el pasado");
         }
-        return armar(comando, reemplazaA, finAlternativo);
+        return armar(comando, reemplazaA, finAlternativo, true);
     }
 
     /**
      * Verifica la extensión del turno {@code turnoId}, que puede estar ya iniciado: lo que no puede quedar en el
      * pasado es el nuevo fin, no el inicio. Es el único camino que omite el control de inicio de
-     * {@link #preparar}: crear y reprogramar siguen rechazando inicios pasados (RN-AG-09).
+     * {@link #preparar}: crear y reprogramar siguen rechazando inicios pasados (RN-AG-09). La extensión puede
+     * pasar el fin de la franja de trabajo (RN-AG-14), pero no entrar en una ausencia o un bloqueo (C-07).
      */
     Turno prepararExtension(CrearTurnoCommand comando, Long turnoId, Instant nuevoFin) {
         if (!nuevoFin.isAfter(reloj.instant())) {
             throw new TurnoRechazadoException(CodigoRechazo.DATOS_INVALIDOS,
                     "El nuevo fin debe ser posterior al momento actual");
         }
-        return armar(comando, turnoId, nuevoFin);
+        return armar(comando, turnoId, nuevoFin, false);
     }
 
-    private Turno armar(CrearTurnoCommand comando, Long reemplazaA, Instant finAlternativo) {
+    private Turno armar(CrearTurnoCommand comando, Long reemplazaA, Instant finAlternativo, boolean exigirHorario) {
         RecursosAgenda.Prestacion prestacion = verificarRecursos(comando);
         Instant fin = finAlternativo != null ? finAlternativo : comando.inicio().plus(prestacion.duracion());
         Intervalo intervalo = new Intervalo(comando.inicio(), fin);
+        ReglasDisponibilidad.verificar(intervalo, disponibilidad.periodos(comando.profesionalId(), intervalo),
+                zona, exigirHorario);
 
         List<Turno> cercanos = turnos.buscarQueIntersecan(comando.profesionalId(),
                 comando.sillonId(), intervalo.ampliadoPor(margen)).stream()
